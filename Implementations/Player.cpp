@@ -1,6 +1,5 @@
 #include <vector>
 #include <string>
-#include <iostream>
 #include "../Headers/Player.h"
 using namespace std;
 
@@ -29,8 +28,11 @@ Player::~Player()
     territoriesToAttack.clear();
     territoriesToDefend.clear();
     cards.clear();
-    orderList= new OrdersList();
+    delete orderList;
+    orderList = NULL;
+    //orderList= new OrdersList();
 }
+
 
 vector<string*> Player::toDefend()
 {
@@ -72,18 +74,23 @@ OrdersList* Player::getOrderList() {
     return orderList;
 }
 
-/*Player& Player::operator=(const Player& player)
+Player& Player::operator=(const Player& player)
 {
-    // TODO: insert return statement here
-
+    this->name = player.name;
+    this->territoriesToDefend = player.territoriesToDefend;
+    this->territoriesToAttack = player.territoriesToAttack;
+    this->cards = player.cards;
+    this->orderList = player.orderList;
+    return *this;
 }
 
+string Player::getPlayerName() {
+    return name;
+}
+
+/*
 ostream& operator<<(ostream& os, const Player& player)
 {
     // TODO: insert return statement here
 }*/
 
-/*
-void Player::printOrders() {
-    cout << getOrderList() << endl;
-}*/

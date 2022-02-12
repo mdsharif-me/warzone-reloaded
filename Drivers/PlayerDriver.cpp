@@ -34,6 +34,8 @@ int main()
     player ->issueOrder("Deploy");
     player->issueOrder("Bomb");
 
+    //Printing Player's name
+    cout << "Players name is: " << player->getPlayerName() <<endl;
     //Printing all the orders issued
     cout << "All the orders are: \n";
     cout << *player->getOrderList() << endl;

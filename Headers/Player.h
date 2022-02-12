@@ -26,11 +26,11 @@ public:
     Player(string name, vector<string*> ta, vector<string*> td, vector<string*> c);
     Player(const Player&);
     ~Player();
+    string getPlayerName();
     vector<string *> toDefend();
     vector<string *> toAttack();
     void issueOrder(const std::string&);
-    OrdersList* getOrderList();
-    void printOrders();
+    OrdersList* getOrderList();             //accessor
 
     //assignment operator
     Player& operator=(const Player& player);
