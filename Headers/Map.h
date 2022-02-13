@@ -12,7 +12,8 @@ class MapLoader {
 public:
 	MapLoader(std::string inputFileName);
 	bool validateMap();
-	void createMap();
+	void createTerritory();
+	int getNthSpace(std::string inputString, int index);
 
 private:
 	std::string mapFileName;
@@ -25,14 +26,31 @@ private:
 class Map {
 public:
 	Map(int territoriesCount);
-	std::vector<std::string> getTerritoryNames();
-	void setTerritoryNames(std::vector<std::string>);
-	void addTerritoryEdge(int TerritoryA, int TerritoryB);
+	void setTerritory(Territory objTerritory);
 
 private:
 	int territoriesCount;
-	std::list<int>* territories;
-	std::vector<std::string> territoryNames;
-	std::vector<std::string> continents;
-	std::string players;
+	std::vector<Territory> territoryObjects;
+};
+
+class Territory {
+public:
+	Territory(std::string territoryName, std::string continentName, std::string edges, std::string playerName, int armyCount);
+	std::string getTerritoryName();
+	std::string getContinentName();
+	std::string getEdges();
+	std::string getPlayerName();
+	int getArmyCount();
+	void setTerritoryName(std::string territoryName);
+	void setContinentName(std::string continentName);
+	void setEdges(std::string edges);
+	void setPlayerName(std::string playerName);
+	void setArmyCount(int armyCount);
+
+private:
+	std::string territoryName;
+	std::string continentName;
+	std::string edges;
+	std::string playerName;
+	int armyCount;
 };
