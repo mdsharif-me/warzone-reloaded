@@ -11,7 +11,7 @@ int main() {
 	MapLoader map(mapFileName);
 	if (map.validateMap()) {
 		std::cout << "Creating map \"" << mapFileName << "\"...\n";
-		map.createMap();
+		map.createTerritory();
 	}
 	else {
 		std::cout << "Error: Map file \"" << mapFileName << "\" is not a valid map.";
