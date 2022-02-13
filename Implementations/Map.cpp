@@ -68,32 +68,76 @@ bool MapLoader::validateMap() {
 	return false; // Invalid map
 }
 
-// MapLoader - Create map
-void MapLoader::createMap() {
-	Map map1(territories.size());
-	map1.setTerritoryNames(territories);
+// MapLoader - Create territory
+void MapLoader::createTerritory() {
+	Map listofterr(territories.size());
+	//map1.setTerritoryNames(territories);
+
+	for (int i = 1; i <= territories.size(); i++) {
+		std::string tempTerritoryName = territories[i].substr(getNthSpace(territories[i], 0), getNthSpace(territories[i], getNthSpace(territories[i], 0)));
+		std::string tempContinentName = continents[i].substr(getNthSpace(continents[i], 0), getNthSpace(continents[i], getNthSpace(continents[i], 0)));
+		std::string tempEdge = edges[i].substr(getNthSpace(edges[i], 0), getNthSpace(edges[i], getNthSpace(edges[i], 0)));
+		Territory tempTerritory(tempTerritoryName, tempContinentName, tempEdge, tempEdge, 0);
+		listofterr.setTerritory(tempTerritory);
+	}
 
 
 	std::cout << "Map \"" << mapFileName << "\" has created.";
+}
+
+int MapLoader::getNthSpace(std::string inputString, int index) {
+	return inputString.find(' ', index) + 1;
 }
 
 
 // Map - Constructor
 Map::Map(int territoriesCount) {
 	this->territoriesCount = territoriesCount;
-	territories = new std::list<int>[territoriesCount];
 }
 
 // Map - Getters/Setters
-std::vector<std::string> Map::getTerritoryNames() {
-	return territoryNames;
-}
-void Map::setTerritoryNames(std::vector<std::string> inputVector) {
-	territoryNames = inputVector;
+void Map::setTerritory(Territory objTerritory) {
+	territoryObjects.push_back(objTerritory);
 }
 
-// Map - Add adjacency
-void Map::addTerritoryEdge(int TerritoryA, int TerritoryB) {
-	territories[TerritoryA].push_back(TerritoryB);
-	territories[TerritoryB].push_back(TerritoryA);
+
+// Territory - Constructors
+Territory::Territory(std::string territoryName, std::string continentName, std::string edges, std::string playerName, int armyCount) {
+	territoryName = territoryName;
+	continentName = continentName;
+	edges = edges;
+	playerName = playerName;
+	armyCount = armyCount;
+}
+
+// Territory - Getters/Setters
+std::string Territory::getTerritoryName() {
+	return territoryName;
+}
+std::string Territory::getContinentName() {
+	return continentName;
+}
+std::string Territory::getEdges() {
+	return edges;
+}
+std::string Territory::getPlayerName() {
+	return playerName;
+}
+int Territory::getArmyCount() {
+	return armyCount;
+}
+void Territory::setTerritoryName(std::string territoryName) {
+	territoryName = territoryName;
+}
+void Territory::setContinentName(std::string continentName) {
+	continentName = continentName;
+}
+void Territory::setEdges(std::string edges) {
+	territoryName = territoryName;
+}
+void Territory::setPlayerName(std::string playerName) {
+	playerName = playerName;
+}
+void Territory::setArmyCount(int armyCount) {
+	armyCount = armyCount;
 }
