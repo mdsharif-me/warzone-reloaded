@@ -6,18 +6,14 @@ using namespace std;
 
 int main()
 {
-    vector<string*> territoriesToDefend;
-    vector<string*> territoriesToAttack;
-    string territory1 = "Asia";
-    string territory2 = "NAmerica";
-    string territory3 = "SAmerica";
-    string territory4 = "Europe";
+    vector<Territory*> territoriesToDefend;
+    vector<Territory*> territoriesToAttack;
 
     //Adding arbitrary list of territories that are to be attacked and defended.
-    territoriesToAttack.push_back(&territory1);
-    territoriesToAttack.push_back(&territory2);
-    territoriesToDefend.push_back(&territory3);
-    territoriesToDefend.push_back(&territory4);
+    territoriesToAttack.push_back(new Territory("Asia"));
+    territoriesToAttack.push_back(new Territory("NAmerica"));
+    territoriesToDefend.push_back(new Territory("SAmerica"));
+    territoriesToDefend.push_back(new Territory("Europe"));
 
     //Adding hand of cards owned by the player
     vector<string*> cards;
@@ -29,7 +25,8 @@ int main()
     cards.push_back(&blockade);
 
     //Creating Player object.
-    Player* player = new Player("Deep",territoriesToAttack, territoriesToDefend, cards);
+    string playerName = "Deep";
+    Player* player = new Player(playerName, territoriesToAttack, territoriesToDefend, cards);
     //Issuing orders using issueOrder() method
     player ->issueOrder("Deploy");
     player->issueOrder("Bomb");
@@ -41,18 +38,18 @@ int main()
     cout << *player->getOrderList() << endl;
 
     //Printing all the territories to be attacked
-    vector<string*> toAttack = (*player).toAttack();
+    vector<Territory*> toAttack = (*player).toAttack();
     cout << "Territories to be Attacked: ";
     for(int i = 0; i < toAttack.size(); i++){
-        cout << *toAttack[i] << ", ";
+        cout << toAttack[i]->getTerritoryName() << ", ";
     }
     cout << endl;
 
     //Printing all the territories
-    vector<string*> toDefend = (*player).toDefend();
+    vector<Territory*> toDefend = (*player).toDefend();
     cout << "Territories to be Defended: ";
     for(int i = 0; i < toDefend.size(); i++){
-        cout << *toDefend[i] << ", ";
+        cout << toDefend[i]->getTerritoryName() << ", ";
     }
     cout << endl;
 
