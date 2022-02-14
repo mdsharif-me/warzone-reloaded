@@ -20,12 +20,11 @@ private:
     string name;                                //Attribute to the player's name
     vector<Territory*> territoriesToAttack;
     vector<Territory*> territoriesToDefend;
-    vector<string*> cards;                      //player owns a hand of Cards
     OrdersList* orderList;
     Hand* playerHand;
 public:
     Player() = default;                         //Default Constructor
-    Player(string& name, vector<Territory*> ta, vector<Territory*> td, vector<string*> c);
+    Player(string& name, vector<Territory*> ta, vector<Territory*> td, Hand* c);
     Player(const Player&);                      //Copy Constructor
     ~Player();                                  //Destructor
     string getPlayerName();                     //Accessor

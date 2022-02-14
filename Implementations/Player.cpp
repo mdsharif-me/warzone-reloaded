@@ -3,12 +3,12 @@
 #include "../Headers/Player.h"
 using namespace std;
 
-Player::Player(string& name, vector<Territory*> ta, vector<Territory*> td, vector<string *> c)
+Player::Player(string& name, vector<Territory*> ta, vector<Territory*> td, Hand * c)
 {
     this->name = name;
     this->territoriesToAttack = ta;
     this->territoriesToDefend = td;
-    this->cards = c;
+    this->playerHand = c;
     this->orderList = new OrdersList();
 }
 
@@ -18,7 +18,7 @@ Player::Player(const Player& p)
     this->name = p.name;
     this->territoriesToDefend = p.territoriesToDefend;
     this->territoriesToAttack = p.territoriesToAttack;
-    this->cards = p.cards;
+    this->playerHand = p.playerHand;
     this->orderList = p.orderList;
 }
 
@@ -35,7 +35,6 @@ Player::~Player()
         delete t;
     }
     territoriesToDefend.clear();
-    cards.clear();
     delete orderList;
     orderList = NULL;
 }
@@ -102,7 +101,7 @@ Player& Player::operator=(const Player& player)
     this->name = player.name;
     this->territoriesToDefend = player.territoriesToDefend;
     this->territoriesToAttack = player.territoriesToAttack;
-    this->cards = player.cards;
+    this->playerHand = player.playerHand;
     this->orderList = player.orderList;
     return *this;
 }
