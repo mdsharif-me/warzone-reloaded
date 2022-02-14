@@ -80,9 +80,22 @@ OrdersList* Player::getOrderList() {
     return orderList;
 }
 
+Hand* Player::getPlayerHand() {
+    return playerHand;
+}
+
 string Player::getPlayerName() {
     return name;
 }
+
+void Player::setOrderList(OrdersList *orderList) {
+    Player::orderList = orderList;
+}
+
+void Player::setPlayerHand(Hand *playerHand) {
+    Player::playerHand = playerHand;
+}
+
 
 Player& Player::operator=(const Player& player)
 {
@@ -99,12 +112,3 @@ ostream& operator<<(ostream& os, const Player& player)
     os << "Player Name: " << player.name << endl;
     return os;
 }
-
-/*
-Territory::Territory(string t) {
-    this->TerritoryName = t;
-}
-
-string Territory::getTerritoryName() {
-    return TerritoryName;
-}*/

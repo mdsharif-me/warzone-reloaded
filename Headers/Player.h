@@ -13,14 +13,8 @@ using namespace std;
 
 class Order;
 class OrdersList;
-/*class Territory{
-private:
-    string TerritoryName;
-public:
-    Territory() = default;
-    Territory(string name);
-    string getTerritoryName();
-};*/
+class Hand;
+
 class Player {
 private:
     string name;                                //Attribute to the player's name
@@ -28,6 +22,7 @@ private:
     vector<Territory*> territoriesToDefend;
     vector<string*> cards;                      //player owns a hand of Cards
     OrdersList* orderList;
+    Hand* playerHand;
 public:
     Player() = default;                         //Default Constructor
     Player(string& name, vector<Territory*> ta, vector<Territory*> td, vector<string*> c);
@@ -38,6 +33,12 @@ public:
     vector<Territory *> toAttack();             //Accessor
     void issueOrder(const string&);
     OrdersList* getOrderList();                 //Accessor
+    Hand* getPlayerHand();
+
+    void setOrderList(OrdersList *orderList);
+
+    void setPlayerHand(Hand *playerHand);
+
     Player& operator=(const Player& player);    //assignment operator
     friend ostream& operator << (ostream& os, const Player& player); //stream insertion operator for Player
 };
