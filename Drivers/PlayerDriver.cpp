@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include "../Headers/Player.h"
+#include "../Headers/Cards.h"
 using namespace std;
 
 int main()
@@ -16,17 +17,14 @@ int main()
     territoriesToDefend.push_back(new Territory("Europe"));
 
     //Adding hand of cards owned by the player
-    vector<string*> cards;
-    string bomb = "bomb";
-    string reinforcement = "reinforcement";
-    string blockade = "blockade";
-    cards.push_back(&bomb);
-    cards.push_back(&reinforcement);
-    cards.push_back(&blockade);
+    Hand * playerHand = new Hand();
+    playerHand->addToHand(new Card("bomb"));
+    playerHand->addToHand(new Card("reinforcement"));
+    playerHand->addToHand(new Card("blockade"));
 
     //Creating Player object.
     string playerName = "Deep";
-    Player* player = new Player(playerName, territoriesToAttack, territoriesToDefend, cards);
+    Player* player = new Player(playerName, territoriesToAttack, territoriesToDefend, playerHand);
     //Issuing orders using issueOrder() method
     player ->issueOrder("Deploy");
     player->issueOrder("Bomb");
