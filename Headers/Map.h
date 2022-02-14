@@ -10,6 +10,7 @@ Date: 12 Feb, 2022
 
 class Territory {
 public:
+    Territory(std::string territoryName);
 	Territory(std::string territoryName, std::string continentName, std::string edges, std::string playerName, int armyCount);
 	std::string getTerritoryName();
 	std::string getContinentName();

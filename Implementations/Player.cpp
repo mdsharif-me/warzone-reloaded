@@ -100,10 +100,11 @@ ostream& operator<<(ostream& os, const Player& player)
     return os;
 }
 
+/*
 Territory::Territory(string t) {
     this->TerritoryName = t;
 }
 
 string Territory::getTerritoryName() {
     return TerritoryName;
-}
+}*/

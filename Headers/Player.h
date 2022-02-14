@@ -9,19 +9,18 @@
 #include <vector>
 #include <iostream>
 #include "Orders.h"
-//#include "old_Map.h"
 using namespace std;
 
 class Order;
 class OrdersList;
-class Territory{
+/*class Territory{
 private:
     string TerritoryName;
 public:
     Territory() = default;
     Territory(string name);
     string getTerritoryName();
-};
+};*/
 class Player {
 private:
     string name;                                //Attribute to the player's name

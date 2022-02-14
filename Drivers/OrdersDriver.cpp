@@ -9,8 +9,6 @@ using namespace std;
 
 int main() {
 
-    auto* territory1 = new Territory;
-    auto* territory2 = new Territory;
     auto* player = new Player();
 
     auto* deploy = new Deploy();
@@ -24,14 +22,17 @@ int main() {
 
     cout << *ordersList;
 
+    //move first order from index 0 to index 2
     ordersList->move(0, 2);
 
     cout << *ordersList;
 
+    // remove the order at position 0
     ordersList->remove(0);
 
     cout << *ordersList;
 
+    delete ordersList;
 
     return 0;
 }

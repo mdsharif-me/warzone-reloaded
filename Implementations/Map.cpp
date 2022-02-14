@@ -141,3 +141,8 @@ void Territory::setPlayerName(std::string playerName) {
 void Territory::setArmyCount(int armyCount) {
 	armyCount = armyCount;
 }
+
+Territory::Territory(std::string territoryName) {
+    this->territoryName = territoryName;
+
+}
