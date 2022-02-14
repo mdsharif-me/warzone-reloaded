@@ -8,30 +8,27 @@ Date: 12 Feb, 2022
 #include <vector>
 #include <list>
 
-
 class Territory {
 public:
-    Territory() = default;
-    Territory(std::string territoryName, std::string continentName, std::string edges, std::string playerName, int armyCount);
-    std::string getTerritoryName();
-    std::string getContinentName();
-    std::string getEdges();
-    std::string getPlayerName();
-    int getArmyCount();
-    void setTerritoryName(std::string territoryName);
-    void setContinentName(std::string continentName);
-    void setEdges(std::string edges);
-    void setPlayerName(std::string playerName);
-    void setArmyCount(int armyCount);
+	Territory(std::string territoryName, std::string continentName, std::string edges, std::string playerName, int armyCount);
+	std::string getTerritoryName();
+	std::string getContinentName();
+	std::string getEdges();
+	std::string getPlayerName();
+	int getArmyCount();
+	void setTerritoryName(std::string territoryName);
+	void setContinentName(std::string continentName);
+	void setEdges(std::string edges);
+	void setPlayerName(std::string playerName);
+	void setArmyCount(int armyCount);
 
 private:
-    std::string territoryName;
-    std::string continentName;
-    std::string edges;
-    std::string playerName;
-    int armyCount{};
+	std::string territoryName;
+	std::string continentName;
+	std::string edges;
+	std::string playerName;
+	int armyCount;
 };
-
 
 class MapLoader {
 public:
@@ -49,7 +46,6 @@ private:
 };
 
 class Map {
-
 public:
 	Map(int territoriesCount);
 	void setTerritory(Territory objTerritory);

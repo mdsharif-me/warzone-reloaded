@@ -3,7 +3,7 @@
 #include "../Headers/Player.h"
 using namespace std;
 
-Player::Player(string name, vector<string*> ta, vector<string*> td, vector<string*> c)
+Player::Player(string& name, vector<Territory*> ta, vector<Territory*> td, vector<string *> c)
 {
     this->name = name;
     this->territoriesToAttack = ta;
@@ -25,26 +25,32 @@ Player::Player(const Player& p)
 Player::~Player()
 {
     name.clear();
+    for (auto t : territoriesToAttack)
+    {
+        delete t;
+    }
     territoriesToAttack.clear();
+    for (auto t : territoriesToDefend)
+    {
+        delete t;
+    }
     territoriesToDefend.clear();
     cards.clear();
     delete orderList;
     orderList = NULL;
-    //orderList= new OrdersList();
 }
 
-
-vector<string*> Player::toDefend()
+vector<Territory*> Player::toDefend()
 {
     return territoriesToDefend;
 }
 
-vector<string*> Player::toAttack()
+vector<Territory*> Player::toAttack()
 {
     return territoriesToAttack;
 }
 
-void Player::issueOrder(const std::string& orderName) {
+void Player::issueOrder(const string& orderName) {
     const string& nameOfOrder = orderName;
     if (nameOfOrder == "Deploy") {
         auto* deploy = new Deploy;
@@ -74,6 +80,10 @@ OrdersList* Player::getOrderList() {
     return orderList;
 }
 
+string Player::getPlayerName() {
+    return name;
+}
+
 Player& Player::operator=(const Player& player)
 {
     this->name = player.name;
@@ -84,13 +94,16 @@ Player& Player::operator=(const Player& player)
     return *this;
 }
 
-string Player::getPlayerName() {
-    return name;
-}
-
-/*
 ostream& operator<<(ostream& os, const Player& player)
 {
-    // TODO: insert return statement here
-}*/
+    os << "Player Name: " << player.name << endl;
+    return os;
+}
 
+Territory::Territory(string t) {
+    this->TerritoryName = t;
+}
+
+string Territory::getTerritoryName() {
+    return TerritoryName;
+}
