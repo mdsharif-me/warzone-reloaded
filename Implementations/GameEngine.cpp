@@ -1,167 +1,150 @@
 #include <iostream>
 #include <string>
-//#include <GameEngine.h>
-
+#include "GameEngine.h"
 using namespace std;
 
-class start{
-public:
-    string state="Game has started";
-};
+//class
+GameEngine::GameEngine(){
+this->state=state[0];
+}
 
-class map_loaded{
-public:
-    string state="Map loaded";
-};
+//commands
+string state[]= {"start","maploaded","mapvalidated","playersadded","assignreinforcement","issueorders","executeorders","win"};
 
-class map_validated{
-public:
-    string state="Map validated";
 
-};
-
-class player_added{
-public:
-    string state="Player added";
-
-};
-
-class assign_reinforcement{
-string state="reinforcement assigned";
-};
-
-class issue_order{
-string state="order issued";
-};
-
-class execute_orders{
-string state="order executed";
-};
-
-class win{
-string state="Win";
-};
-
+//functions
 string loadmap(string currentphase){
-if (currentphase=="start"){
-    //cout<< "LoadMap created";
-    return "maploaded";
-
-}else {
-cout<<"Invalid";
+if (currentphase==state[0]|| currentphase==state[1]){
+    cout<< "Map loaded"; // success msg
+    return state[1]; // new currentphase return
+} else {
+    cout<< "Error: This command is not available at this stage."; // error message
 return currentphase;
 }
 }
 
+//functions
 string validatemap(string currentphase){
-if (currentphase=="maploaded"){
-    //cout<< "map validated";
-    return "mapvalidated";
+if (currentphase==state[1]){
+    cout<< "map validated";
+    return state[2];
 
 }else {
-cout<<"Invalid";
+cout<<"Error: This command is not available at this stage.";
 return currentphase;
 }
 }
 
 
+//functions
 string addplayer(string currentphase){
-if (currentphase=="addplayer" || currentphase=="mapvalidated"){
-    //cout<< "players added";
-    return "playersadded";
+if (currentphase == state[2]||currentphase == state[3]){
+    cout<< "players added";
+    return state[3];
 
 }else {
-cout<<"Invalid";
+cout<<"Error: This command is not available at this stage.";
 return currentphase;
 }
 }
 
+//functions
 string assigncountries(string currentphase){
-if (currentphase=="addplayer"){
-    //cout<< "assign reinforcement";
-    return "assignreinforcement";
+if (currentphase == state[3]||currentphase == state[6]){
+    cout<< "assign reinforcement";
+    return state[4];
 
 }else {
-cout<<"Invalid";
+cout<<"Error: This command is not available at this stage.";
 return currentphase;
 }
 }
 
+//functions
 string issueorder(string currentphase){
-if (currentphase=="assigncountries"){
-    //cout<< "issue orders";
-    return "issueorder";
+if (currentphase==state[4]|| currentphase == state[5]){
+    cout<< "issue orders";
+    return state[5];
 
 }else {
-cout<<"Invalid";
+cout<<"Error: This command is not available at this stage";
 return currentphase;
 }
 }
 
+//functions
 string endissueorders(string currentphase){
-if (currentphase=="issueorder"){
-    //cout<< "execute orders";
-    return "executeorders";
+if (currentphase==state[5]||currentphase == state[6]){
+    cout<< "execute orders";
+    return state[6];
 
 }else {
-cout<<"Invalid";
+cout<<"Error: This command is not available at this stage";
 return currentphase;
 }
 }
 
+//functions
+string execorder(string currentphase){
+if (currentphase==state[6] ){
+    cout<< "execute orders";
+    return state[6];
+
+}else {
+cout<<"Error: This command is not available at this stage";
+return currentphase;
+}
+}
+
+//functions
 string endexecorders(string currentphase){
-if (currentphase=="endissueorders" ){
-    //cout<< "execute orders";
-    return "executeorders";
+if (currentphase==state[6] ){
+    cout<< "execute orders";
+    return state[4];
 
 } else {
-cout<<"Invalid";
+cout<<"Error: This command is not available at this stage";
 return currentphase;
 }
 }
 
-string execorder(string currentphase){
-if (currentphase=="executeorders" ){
-    //cout<< "execute orders";
-    return "executeorders";
 
-}else {
-cout<<"Invalid";
-return currentphase;
-}
-}
-
+//functions
 string win(string currentphase){
-if (currentphase=="execorder"){
-    //cout<< "win";
-    return "win ";
+if (currentphase==state[6]){
+    cout<< "win";
+    return state[7];
 
 }else {
-cout<<"Invalid";
+cout<<"Error: This command is not available at this stage";
 return currentphase;
 }
 }
+
+//functions
 string end(string currentphase){
-if (currentphase=="win"){
-    //cout<< "end";
-    return "end ";
+if (currentphase==state[7]){
+    cout<< "The end";
+    return "exit";
 
 }else {
-cout<<"Invalid";
+cout<<"Error: This command is not available at this stage";
 return currentphase;
 } }
 
+//functions
 string play(string currentphase){
-if (currentphase=="win"){
-    //cout<< "end";
-    return "start";
+if (currentphase==state[7]){
+    cout<< "Play again";
+    return state[0];
 
 }else {
-cout<<"Invalid";
+cout<<"Error: This command is not available at this stage";
 return currentphase;
 }
 
 }
+
 
 
 
