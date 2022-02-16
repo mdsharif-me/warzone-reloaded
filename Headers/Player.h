@@ -34,9 +34,8 @@ public:
     OrdersList* getOrderList();                 //Accessor
     Hand* getPlayerHand();
 
-    void setOrderList(OrdersList *orderList);
-
-    void setPlayerHand(Hand *playerHand);
+    void setOrderList(OrdersList *orderList);   //Mutator
+    void setPlayerHand(Hand *playerHand);       //Mutator
 
     Player& operator=(const Player& player);    //assignment operator
     friend ostream& operator << (ostream& os, const Player& player); //stream insertion operator for Player

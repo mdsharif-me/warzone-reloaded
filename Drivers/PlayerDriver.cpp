@@ -51,4 +51,12 @@ int main()
     }
     cout << endl;
 
+    //Printing all the card owned by players
+    Hand* handOwnedByPlayer = (*player).getPlayerHand();
+    vector<Card*> cardsOwnedByPlayer = handOwnedByPlayer->getHandCards();
+    cout << "Cards owned: ";
+    for(int i = 0; i < cardsOwnedByPlayer.size(); i++){
+        cout << cardsOwnedByPlayer[i]->getType() << ", ";
+    }
+    cout << endl;
 }
