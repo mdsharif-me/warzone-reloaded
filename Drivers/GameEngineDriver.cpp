@@ -5,62 +5,58 @@
 using namespace std;
 
 int main(){
-    string currentphase= "start";
+    string currentState="start";
     string input;
     cout << "Game has started\n";
+
+    while (true){
+        cout<<"\nCurrent state: "<< currentState << "\n";
+            cout<<"Type a command: ";
     cin >> input;
-
-
     if (input=="loadmap"){
-        cout <<"Map loaded\n";
-        currentphase=loadmap(currentphase);
+        currentState=loadmap(currentState);
 
     }else if(input=="validatemap"){
-         cout <<"Map validated\n";
-         currentphase=validatemap(currentphase);
+         currentState=validatemap(currentState);
 
 
     }else if(input=="addplayer"){
-         cout <<"players added\n";
-         currentphase=addplayer(currentphase);
+         currentState=addplayer(currentState);
 
 
     }else if(input=="assigncountries"){
-         cout <<"assign reinforcement\n";
-         currentphase=assigncountries(currentphase);
+        currentState=assigncountries(currentState);
 
     }else if(input=="issueorder"){
-         cout <<"issue orders\n";
-         currentphase=issueorder(currentphase);
+         currentState=issueorder(currentState);
 
 
     }else if(input=="endissueorders"){
-         cout <<"execute orders\n";
-         currentphase=endissueorders(currentphase);
+         currentState=endissueorders(currentState);
 
     }else if(input=="execorder"){
-         cout <<"execute orders\n";
-         currentphase=execorder(currentphase);
+        currentState=execorder(currentState);
 
     }else if(input=="endexecorders"){
-         cout <<"assign reinforcement\n";
-         currentphase=endexecorders(currentphase);
+        currentState=endexecorders(currentState);
 
     }else if(input=="win"){
-         cout <<"win\n";
-         currentphase=win(currentphase);
+         currentState=win(currentState);
 
     }else if(input=="end"){
-         cout <<"Program Ended";
-         currentphase=end(currentphase);
+         currentState=end(currentState);
+         if (currentState=="exit"){
+            return 0;
+         }
 
     }else if(input=="play"){
-         cout <<"Started again\n";
-         currentphase=play(currentphase);
+         currentState = play(currentState);
 
     }else {
         cout<< "Invalid input\n";
-
     }
 
 }
+
+}
+
