@@ -1,9 +1,16 @@
 #ifndef GAMEENGINE_H_INCLUDED
 #define GAMEENGINE_H_INCLUDED
 #include<iostream>
-
 using namespace std;
+class GameEngine{
+public:
+    GameEngine();
+    GameEngine(const string state);
+    ~GameEngine();
 
+private:
+    string state;
+    };
 string loadmap(string currentphase);
 string validatemap(string currentphase);
 string addplayer(string currentphase);
