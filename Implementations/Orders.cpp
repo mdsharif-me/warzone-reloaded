@@ -7,6 +7,8 @@
 #include <string>
 #include "../Headers/Orders.h"
 #include <vector>
+#include <random>
+#include <functional>
 
 using namespace std;
 
@@ -59,6 +61,78 @@ void Order::print(ostream &os) const {
     cout << "Order" << endl;
 }
 
+Territory *Order::getTerritory() const {
+    return territory;
+}
+
+void Order::setTerritory(Territory *territory) {
+    Order::territory = territory;
+}
+
+Territory *Order::getStartTerritory() const {
+    return startTerritory;
+}
+
+void Order::setStartTerritory(Territory *startTerritory) {
+    Order::startTerritory = startTerritory;
+}
+
+Territory *Order::getTargetTerritory() const {
+    return targetTerritory;
+}
+
+void Order::setTargetTerritory(Territory *targetTerritory) {
+    Order::targetTerritory = targetTerritory;
+}
+
+Player *Order::getPlayer() const {
+    return player;
+}
+
+void Order::setPlayer(Player *player) {
+    Order::player = player;
+}
+
+Player *Order::getTargetPlayer() const {
+    return targetPlayer;
+}
+
+void Order::setTargetPlayer(Player *targetPlayer) {
+    Order::targetPlayer = targetPlayer;
+}
+
+const vector<Territory *> &Order::getTerritories() const {
+    return territories;
+}
+
+void Order::setTerritories(const vector<Territory *> &territories) {
+    Order::territories = territories;
+}
+
+int Order::getNrArmies() const {
+    return nrArmies;
+}
+
+void Order::setNrArmies(int nrArmies) {
+    Order::nrArmies = nrArmies;
+}
+
+int Order::getNrArmiesToAttack() const {
+    return nrArmiesToAttack;
+}
+
+void Order::setNrArmiesToAttack(int nrArmiesToAttack) {
+    Order::nrArmiesToAttack = nrArmiesToAttack;
+}
+
+int Order::getNrArmiesToDefend() const {
+    return nrArmiesToDefend;
+}
+
+void Order::setNrArmiesToDefend(int nrArmiesToDefend) {
+    Order::nrArmiesToDefend = nrArmiesToDefend;
+}
+
 
 /**
  * Orders List Class Implementation
@@ -70,7 +144,6 @@ void Order::print(ostream &os) const {
 OrdersList::OrdersList(const vector<Order *> &ordersList) : orders(ordersList) {
     this -> orders = ordersList;
 }
-
 
 // copy constructor implementation
 OrdersList::OrdersList(const OrdersList &orderList) {
@@ -90,7 +163,12 @@ OrdersList& OrdersList::operator=(OrdersList *otherList) {
 }
 
 
-//stream insertion operator implementation
+/**
+ * stream insertion operator implementation
+ * @param ostream
+ * @param ordersList
+ * @return
+ */
 ostream &operator<<(ostream &ostream, const OrdersList &ordersList) {
     ostream << "[\n";
     for (int i = 0; i < ordersList.orders.size(); ++i) {
@@ -101,16 +179,27 @@ ostream &operator<<(ostream &ostream, const OrdersList &ordersList) {
 }
 
 
-// adds an order to the list
+/**
+ * adds an order to the list
+ * @param order
+ */
 void OrdersList::add(Order* order) {
     orders.push_back(order);
 }
 
-//removes an order from the list
+/**
+ * removes an order from the list
+ * @param index
+ */
 void OrdersList::remove(int index) {
     orders.erase(orders.begin() + index);
 }
 
+/**
+ * Method to move an order inside the list.
+ * @param from
+ * @param to
+ */
 void OrdersList::move(int from, int to) {
     if (from < 0 || from > orders.size() || to < 0 || to > orders.size()) {
         throw std::invalid_argument("Provided indexes are out of vector range.");
@@ -151,26 +240,34 @@ Deploy& Deploy::operator=(const Deploy &deploy) {
     return *this;
 }
 
-// stream insertion implementation
-/*ostream& operator << (ostream &ostream, const Order &info) {
-    info.print(ostream);
-    return ostream;
-    //return ostream << "Deploy " << deploy.nrArmies << " to " << deploy.targetTerritory << endl;
-}*/
+
 void Deploy::print(std::ostream &os) const {
     cout << "Deploy " << this->nrArmies << " to " << this->targetTerritory << endl;
 }
 
+/**
+ * Method to validate a deploy order
+ * @return
+ */
 bool Deploy::validate() {
-    bool isValid;
-    isValid = true;
-    return isValid;
+
+    for (Territory* territory: player->getTerritories()) {
+        if (territory->getPlayerName() == targetTerritory->getPlayerName()) {
+            return true;
+        }
+    }
+    return false;
 }
 
+/**
+ * Method to execute a deploy operation
+ */
 void Deploy::execute() {
     bool validOrder = this->validate();
     if(validOrder) {
-        cout << "Troops have been deployed" << endl;
+        player->setReinforcementPoll(player->getReinforcementPool() - nrArmies);
+        targetTerritory->setArmyCount(targetTerritory->getArmyCount() + this->nrArmies);
+        cout << nrArmies << " troops have been deployed to " << targetTerritory->getTerritoryName() << endl;
     }
 }
 
@@ -207,25 +304,72 @@ Advance& Advance::operator=(const Advance &advance){
     return *this;
 }
 
-/*ostream &operator<<(ostream &ostream, const Advance &advance) {
-    return <#initializer#>;
-}*/
 
 // method to validate an order
 bool Advance::validate() {
-    bool isValid;
-    isValid = true;
-    return isValid;
+    if (startTerritory->getPlayerName() != player->getPlayerName()) {
+        return false;
+    }
+    // check if territory is adjacent
+    //return false
+
+    return true;
 }
 
 // method to execute an order
 void Advance  :: execute() {
-    bool orderValid = this->validate();
-    if (orderValid) {
+    bool orderIsValid = this->validate();
+    if (orderIsValid) {
+        if (startTerritory->getPlayerName() == player->getPlayerName() &&
+            targetTerritory->getPlayerName() == player->getPlayerName()) {
+            // decrease #armies in the source territory
+            startTerritory->setArmyCount(startTerritory->getArmyCount() - this->nrArmies);
+            // increase #armies in the target territories
+            targetTerritory->setArmyCount(targetTerritory->getArmyCount() + this->nrArmies);
+        } else if (targetTerritory->getPlayerName() != player->getPlayerName()) {
+            bool attackerKilledDefending = false;
+            bool defenderKilledAttacker = false;
+
+
+            std::default_random_engine generator;
+            std::uniform_int_distribution<int> distribution(1,100);
+            auto dice = std::bind ( distribution, generator );
+
+            for (int i = 0; i < this->nrArmies; i++) {
+                int roll = dice();
+
+                attackerKilledDefending = (roll < 60);
+                defenderKilledAttacker = (roll  < 70);
+
+                if (defenderKilledAttacker) {
+                    if(startTerritory->getArmyCount() != 0) {
+                        startTerritory->setArmyCount(startTerritory->getArmyCount() - 1);
+                    }
+                } else if (attackerKilledDefending) {
+                    if(targetTerritory->getArmyCount() != 0) {
+                        targetTerritory->setArmyCount(targetTerritory->getArmyCount() - 1);
+                    }
+                }
+                if (targetTerritory->getArmyCount() == 0) {
+                    targetTerritory->setPlayerName(startTerritory->getPlayerName());
+                    targetTerritory->setArmyCount(startTerritory->getArmyCount());
+                    startTerritory->setArmyCount(0);
+                }
+            }
+        }
+
         cout << "Advance order executed" << endl;
+        if (targetTerritory->getPlayerName() == this->player->getPlayerName()) {
+            cout << "The territory" << targetTerritory->getTerritoryName() << " has been conquered" << endl;
+        }
+        //receive a Card if at least one territory conquered.
     }
 }
 
+/**
+ * Method to print the results
+ * @param os
+ */
 void Advance::print(ostream &os) const {
     cout << "Advance " << this->nrArmies << " to " << this->targetTerritory << endl;
 }
@@ -259,19 +403,29 @@ Bomb& Bomb::operator=(const Bomb &bomb){
 
 // method to validate an order
 bool Bomb  :: validate() {
-    bool isValid;
-    isValid = true;
-    return isValid;
+    for(Territory* territory: player->getTerritories()) {
+        if(targetTerritory->getPlayerName() == territory->getPlayerName()) {
+            return false;
+        }
+        // else if territory is not adjacent
+        // return false;
+    }
+    return true;
 }
 
 // method to execute an order
 void Bomb  :: execute() {
     bool orderValid = this->validate();
     if (orderValid) {
+        targetTerritory->setArmyCount(targetTerritory->getArmyCount() / 2);
         cout << "Bomb order executed" << endl;
     }
 }
 
+/**
+ * Method to print the results
+ * @param os
+ */
 void Bomb::print(ostream &os) const {
     cout << "Bomb " << this->targetTerritory << endl;
 }
@@ -282,21 +436,21 @@ void Bomb::print(ostream &os) const {
  */
 
 //constructor implementation
-Blockade::Blockade(Player* player, Territory* territory){
+Blockade::Blockade(Player* player, Territory* targetTerritory){
     this->player = player;
-    this->territory = territory;
+    this->targetTerritory = targetTerritory;
 }
 
 //copy constructor implementation
 Blockade::Blockade(const Blockade &blockade) : Order(blockade){
     this->player = blockade.player;
-    this->territory = blockade.territory;
+    this->targetTerritory = blockade.targetTerritory;
 }
 
 //assignment operator implementation
 Blockade& Blockade::operator=(const Blockade &blockade){
     this->player = blockade.player;
-    this->territory=blockade.territory;
+    this->targetTerritory=blockade.targetTerritory;
 
     return *this;
 }
@@ -308,15 +462,26 @@ void Blockade::print(ostream &os) const {
 
 // method to valida an order
 bool Blockade  :: validate() {
-    bool isValid;
-    isValid = true;
-    return isValid;
+    for(Territory* territory: player->getTerritories()) {
+        if (targetTerritory->getPlayerName() == territory->getPlayerName()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // method to execute an order
 void Blockade  :: execute() {
     bool orderValid = this->validate();
     if (orderValid) {
+
+        //double the number of armies
+        targetTerritory->setArmyCount(targetTerritory->getArmyCount() * 2);
+
+        // set territory to the Neutral Player
+        auto* neutralPlayer = new Player();
+        neutralPlayer->setName("NeutralPlayer");
+        targetTerritory->setPlayerName(neutralPlayer->getPlayerName());
         cout << "Blockade order executed" << endl;
     }
 }
@@ -361,15 +526,23 @@ void Airlift::print(ostream &os) const {
 
 // method to valida an order
 bool Airlift  :: validate() {
-    bool isValid;
-    isValid = true;
-    return isValid;
+    for(Territory* territory: player->getTerritories()) {
+        if (territory->getPlayerName() == startTerritory->getPlayerName() &&
+            territory->getPlayerName() == targetTerritory->getPlayerName()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // method to execute an order
 void Airlift  :: execute() {
     bool orderValid = this->validate();
     if (orderValid) {
+        //increase number of armies in the target territories
+        targetTerritory->setArmyCount(targetTerritory->getArmyCount() + this->nrArmies);
+        //decrease number of armies in the source territory
+        startTerritory->setArmyCount(startTerritory->getArmyCount() - this->nrArmies);
         cout << "Airlift order executed" << endl;
     }
 }
@@ -407,15 +580,19 @@ void Negotiate::print(ostream &os) const {
 
 // method to validate an order
 bool Negotiate  :: validate() {
-    bool isValid;
-    isValid = true;
-    return isValid;
+    for(Territory* territory: player->getTerritories()) {
+        if (territory->getPlayerName() == this->targetTerritory->getPlayerName()) {
+            return false;
+        }
+    }
+    return true;
 }
 
 // method to execute an order
 void Negotiate  :: execute() {
     bool orderValid = this->validate();
     if (orderValid) {
+        // invalidate attack orders
         cout << "Negotiate order executed" << endl;
     }
 }

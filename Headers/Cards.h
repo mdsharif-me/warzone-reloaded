@@ -16,6 +16,9 @@ using namespace std;
 class Hand;
 class Deck;
 
+/**
+ * Class declaration to manage cards
+ */
 class Card {
 private:
     std::string type;
@@ -24,13 +27,17 @@ public:
     Card() = default;
     Card(std::string type);
     ~Card();
-    void play(const std::string& type, Player* player, Hand* hand, Deck* deck);
+    void play(const std::string& type, Player* player, Deck* deck);
     Card& operator = (Card *card);
     friend ostream& operator << (ostream &os, const Card &card);
     std::string getType() const;
+    void setType(const string&);
 
 };
 
+/**
+ * Class declaration to manage player Hand
+ */
 class Hand {
     std::vector<Card *> handCards;
 
@@ -50,6 +57,9 @@ public:
 };
 
 
+/**
+ * Class declaration to manage Deck
+ */
 class Deck {
 private:
     std::vector<Card *> deckCards;
@@ -58,13 +68,15 @@ public:
     Deck() = default;
     Deck(vector<Card *> dc);
     ~Deck();
-    vector<Card *> getDeckCards();
     Deck& operator = (Deck *deck);
     friend ostream& operator << (ostream &os, const Deck &deck);
-    void draw(Hand* hand);
+    void draw(Player* player);
     void removeFromDeck(int);
     void addToDeck(Card*);
     void print();
+
+    vector<Card *> getDeckCards();
+    void setDeckCards(const vector<Card *> &newDeckCards);
 
 };
 

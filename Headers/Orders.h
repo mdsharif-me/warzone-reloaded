@@ -40,21 +40,58 @@ public:
     bool validate();
 
     //execute methods to be inherited by the Orders subclasses
-    void execute();
+    virtual void execute() = 0;
 
     // stream assignment operator
     virtual void print(std::ostream& os) const;
 
-
-    Territory* territory{};
+protected:
+    Player* player{};
+    //Territory* territory{};
     Territory* startTerritory{};
     Territory* targetTerritory{};
-    Player* player{};
     Player* targetPlayer{};
     vector<Territory*> territories;
     int nrArmies{};
     int nrArmiesToAttack{};
     int nrArmiesToDefend{};
+
+public:
+    Territory *getTerritory() const;
+
+    void setTerritory(Territory *territory);
+
+    Territory *getStartTerritory() const;
+
+    void setStartTerritory(Territory *startTerritory);
+
+    Territory *getTargetTerritory() const;
+
+    void setTargetTerritory(Territory *targetTerritory);
+
+    Player *getPlayer() const;
+
+    void setPlayer(Player *player);
+
+    Player *getTargetPlayer() const;
+
+    void setTargetPlayer(Player *targetPlayer);
+
+    const vector<Territory *> &getTerritories() const;
+
+    void setTerritories(const vector<Territory *> &territories);
+
+    int getNrArmies() const;
+
+    void setNrArmies(int nrArmies);
+
+    int getNrArmiesToAttack() const;
+
+    void setNrArmiesToAttack(int nrArmiesToAttack);
+
+    int getNrArmiesToDefend() const;
+
+    void setNrArmiesToDefend(int nrArmiesToDefend);
 };
 
 /**

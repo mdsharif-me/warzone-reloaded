@@ -68,7 +68,18 @@ int main() {
     airlift->execute();
     negotiate->execute();
 
-    delete ordersList;
+    for (auto & someOrder : ordersList->orders) {
+        delete someOrder;
+    }
+
+    order = nullptr;
+    deploy = nullptr;
+    advance = nullptr;
+    bomb = nullptr;
+    airlift = nullptr;
+    negotiate = nullptr;
+    ordersList = nullptr;
+
 
     return 0;
 }

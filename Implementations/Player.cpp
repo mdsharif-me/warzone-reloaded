@@ -1,3 +1,4 @@
+#include <utility>
 #include <vector>
 #include <string>
 #include "../Headers/Player.h"
@@ -6,8 +7,8 @@ using namespace std;
 Player::Player(string& name, vector<Territory*> ta, vector<Territory*> td, Hand * c)
 {
     this->name = name;
-    this->territoriesToAttack = ta;
-    this->territoriesToDefend = td;
+    this->territoriesToAttack = std::move(ta);
+    this->territoriesToDefend = std::move(td);
     this->playerHand = c;
     this->orderList = new OrdersList();
 }
@@ -36,7 +37,7 @@ Player::~Player()
     }
     territoriesToDefend.clear();
     delete orderList;
-    orderList = NULL;
+    orderList = nullptr;
 }
 
 vector<Territory*> Player::toDefend()
@@ -47,6 +48,10 @@ vector<Territory*> Player::toDefend()
 vector<Territory*> Player::toAttack()
 {
     return territoriesToAttack;
+}
+
+vector<Territory *> Player::getTerritories() {
+    return territories;
 }
 
 void Player::issueOrder(const string& orderName) {
@@ -87,11 +92,11 @@ string Player::getPlayerName() {
     return name;
 }
 
-void Player::setOrderList(OrdersList *orderList) {
+void Player::setOrderList(OrdersList *newOrderList) {
     Player::orderList = orderList;
 }
 
-void Player::setPlayerHand(Hand *playerHand) {
+void Player::setPlayerHand(Hand *newPlayerHand) {
     Player::playerHand = playerHand;
 }
 
@@ -111,3 +116,22 @@ ostream& operator<<(ostream& os, const Player& player)
     os << "Player Name: " << player.name << endl;
     return os;
 }
+
+
+int Player::getReinforcementPool() {
+    return reinforcementPool;
+}
+
+void Player::setReinforcementPoll(int nrArmies) {
+    reinforcementPool += nrArmies;
+}
+
+void Player::setName(const string &newName) {
+    this->name = newName;
+
+}
+
+const string& Player::getName() const {
+    return name;
+}
+
