@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <cmath>
+#include <algorithm>
 #include "../Headers/GameEngine.h"
 using namespace std;
 
@@ -9,8 +11,8 @@ GameEngine::GameEngine(){
 }
 
 //commands
-string states[]= {"start","maploaded","mapvalidated","playersadded","assignreinforcement","issueorders","executeorders","win"};
-
+string states[]= {"start","maploaded","mapvalidated","playersadded","assignreinforcement",
+                  "issueorders","executeorders","win"};
 
 //functions
 string GameEngine::loadMap(string currentPhase){
@@ -144,6 +146,84 @@ string GameEngine::play(string currentPhase){
         cout<<"Error: This command is not available at this stage";
         return currentPhase;
     }
+}
+
+void GameEngine::reinforcmentPhase(vector<Player *>) {
+    int numOfArmies = 0;
+    vector<Player *>::iterator it;
+    for (it = this->player_list.begin(); it != this->player_list.end(); it++) {
+        //iterating through list of players
+        // (# of territories owned divided by 3, rounded down
+        numOfArmies = (*it)->getTerritories().size();
+        numOfArmies = floor(numOfArmies / 3);
+
+        vector<Continent *> mapContinents = this->map->getContinents();  // get all continents for current map
+        vector<Territory *> playerTerritories = (*it)->getTerritories(); // get the user's territories
+        vector<string> playerTerritoriesName;                            // get the user's territories name
+
+        // iterate through player's territories and add their name
+        for (auto territory: playerTerritories) {
+            playerTerritoriesName.push_back(territory->getTerritoryName());
+        }
+
+        // sort the vector for later processing
+        sort(playerTerritoriesName.begin(), playerTerritoriesName.end());
+
+        // check for each continent if user owns all territories
+        for (auto continent: mapContinents) {
+            vector<Territory *> mapTerritories = continent->getMembers();
+            int n = mapTerritories.size();
+            vector<string> continentTerritoriesName;
+
+            // iterate through continent's territories and add their name
+            for (auto territory: mapTerritories) {
+                continentTerritoriesName.push_back(territory->getTerritoryName());
+            }
+
+            // temp vector for set_difference
+            vector<string> v(n);
+            vector<string>::iterator iter, st;
+
+            // Sort vector to use set_difference
+            sort(continentTerritoriesName.begin(), continentTerritoriesName.end());
+
+            // compare both vector
+            iter = set_difference(continentTerritoriesName.begin(),
+                                  continentTerritoriesName.end(),
+                                  playerTerritoriesName.begin(),
+                                  playerTerritoriesName.end(), v.begin());
+
+            for (st = v.begin(); st != iter; ++st) {
+            } // add into st until it's not equal to iter
+
+            // if the set difference has no element
+            // means the player owns the continent
+            if ((st - v.begin()) == 0) {
+                numOfArmies += continent->getControlBonus();
+            }
+        }
+
+        // minimal number of reinforcement armies per turn for any player is 3.
+        if (numOfArmies < 3) {
+            numOfArmies = 3;
+        }
+
+        // add new army number to the user's pool
+        int totalArmySize = (*it)->getReinforcementPool() + numOfArmies;
+        (*it)->setReinforcementPool(totalArmySize);
+    }
+}
+
+void GameEngine::excuteOrderPhase() {
+
+
+}
+void GameEngine::startupPhase() {
+
+}
+
+void GameEngine::mainGameLoop() {
+
 }
 
 
