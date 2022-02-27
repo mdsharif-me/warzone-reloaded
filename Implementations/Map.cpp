@@ -7,7 +7,7 @@ Date: 12 Feb, 2022
 #include <fstream>
 #include <string>
 #include <sstream>
-#include "Map.h"
+#include "../Headers/Map.h"
 
 // MapLoader - Constructor/Destructor
 MapLoader::MapLoader(std::string inputFileName) {

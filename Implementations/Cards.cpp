@@ -6,8 +6,6 @@
 #include <vector>
 #include <string>
 #include "../Headers/Cards.h"
-#include <vector>
-
 using namespace std;
 
 class Player;

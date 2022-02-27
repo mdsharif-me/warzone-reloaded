@@ -7,25 +7,22 @@ public:
     GameEngine();
     GameEngine(const string state);
     ~GameEngine();
+    string loadMap(string currentPhase);
+    string validateMap(string currentPhase);
+    string addPlayer(string currentPhase);
+    string assignCountries(string currentPhase);
+    string issueOrder(string currentPhase);
+    string endIssueOrders(string currentPhase);
+    string endExecOrders(string currentPhase);
+    string win(string currentPhase);
+    string execOrder(string currentPhase);
+    string end(string currentPhase);
+    string play(string currentPhase);
+    void mainGameLoop();
 
 private:
     string state;
-    };
-string loadmap(string currentphase);
-string validatemap(string currentphase);
-string addplayer(string currentphase);
-string assigncountries(string currentphase);
-string issueorder(string currentphase);
-string endissueorders(string currentphase);
-string endexecorders(string currentphase);
-string win(string currentphase);
-string execorder(string currentphase);
-string end(string currentphase);
-string play(string currentphase);
-
-
-
-
+};
 
 #endif // GAMEENGINE_H_INCLUDED
 
