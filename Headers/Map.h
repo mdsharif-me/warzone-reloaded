@@ -6,56 +6,108 @@ Date: 12 Feb, 2022
 #pragma once
 #include <iostream>
 #include <vector>
-#include <list>
+#include "Player.h"
+#include <map>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <algorithm>
+using namespace std;
 
 class Territory {
 public:
 	Territory();
-	~Territory();
-	Territory(std::string territoryName, std::string continentName, std::string playerName, int armyCount);
-	std::string getTerritoryName();
-	std::string getContinentName();
-	std::string getPlayerName();
+    ~Territory();
+	Territory(string territoryName, string continentName, string playerName, int armyCount);
+	Territory(string territoryName, string continentName);
+    string getTerritoryName();
+	string getContinentName();
+	string getPlayerName();
 	int getArmyCount();
-	void setTerritoryName(std::string territoryName);
-	void setContinentName(std::string continentName);
-	void setPlayerName(std::string playerName);
+    bool getIsVisited();
+    vector<Territory*> getAdjTerritories();
+	void setTerritoryName(string territoryName);
+	void setContinentName(string continentName);
+	void setPlayerName(string playerName);
 	void setArmyCount(int armyCount);
+    void setIsVisited(bool visited);
 
 private:
-	std::string territoryName;
-	std::string continentName;
-	std::string playerName;
-	int armyCount;
+    void addAdjTerritory(Territory* t);
+	string territoryName;
+    vector<Territory*> adjTerritories;
+	string continentName;
+	string playerName;
+    int armyCount;
+    bool isVisited;
+};
+
+class Continent {
+public:
+    Continent();
+    Continent(string name, int armies);
+    Continent(string name, int armies, vector<Territory*> members);
+    Continent(const Continent &continent);
+    Continent& operator=(const Continent &continent);
+    friend ostream& operator<<(ostream& out, Continent continent);
+    void addTerritory(Territory* territory);
+    string getName();
+    vector<Territory*> getMembers();
+    int getControlBonus();
+private:
+    string name;
+    int controlBonus;
+    vector<Territory*> members;
 };
 
 class Map {
 public:
-	Map(int territoriesCount);
 	~Map();
-	std::list<int> getEdge(int index);
-	void setEdge(int edgeA, int edgeB);
+    Map(const Map& map);
+    Map() = default;
+    //list<int> getEdge(int index);
+	void addEdge(Territory* edgeA, Territory* edgeB); //addBorder
+    vector<Territory*> getTerritories();
+    void addTerritory(Territory* t);
+    vector<Continent*> getContinents();
+    void addContinent(Continent* c);
+    void addTerritoryToContinent(Territory* territory, int continentId);
+    bool mapValidate();
+    bool checkMapConnectedGraph();
+    bool checkContinentGraphs();
+    int visitNeighbours(Territory* territory, int visited);
+    int visitContinentNeighbours(Territory* territory, string continent, int visited);
+    void resetVisitedTerritories();
+    bool checkIfValidContinent();
+    int getContinentIndex(Continent* continent);
+    void addEdgeIndex(int t1, int t2);
 
 private:
 	int territoriesCount;
-	std::list<int>* map;
+    vector<Territory*> territories;
+    vector<Continent*> continents;
 };
 
 class MapLoader {
 public:
-	MapLoader(std::string inputFileName);
-	bool validateMap();
-	void createTerritory();
-	void buildMap();
-	std::string extractWord(std::string inputString, int index);
-	int extractInt(std::string inputString, int index);
-	std::vector<int> extractAllInt(std::string inputString);
+	MapLoader(string inputFileName);
+    MapLoader(const MapLoader &mapLoader); // copy constructor
+    ~MapLoader(); // destructor
+    Map* createMap();
+	bool extract();
+    void buildMap();
+	string extractWord(string inputString, int index);
+	int extractInt(string inputString, int index);
+	vector<int> extractAllInt(string inputString);
+    MapLoader& operator=(const MapLoader &mapLoader);
+    friend ostream& operator<<(ostream& out, const MapLoader &mapLoader);
 
 private:
-	std::string mapFileName;
+	string mapFileName;
 	int fieldCount;
-	std::vector<std::string> continents;
-	std::vector<std::string> countries;
-	std::vector<std::string> borders;
-	std::vector<Territory> territories;
+	vector<string> continents;
+	vector<string> countries;
+	vector<string> borders;
+    vector<string> simpleTokenizer(string s);
+    bool isNumber(const string&);
 };

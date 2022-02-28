@@ -2,25 +2,29 @@
 Author: Mohammad Shariful Islam
 Date: 12 Feb, 2022
 */
-
-
-#include <fstream>
-#include <string>
-#include <sstream>
-#include "Map.h"
+#include "../Headers/Map.h"
+using namespace std;
 
 // MapLoader - Constructor/Destructor
-MapLoader::MapLoader(std::string inputFileName) {
+MapLoader::MapLoader(string inputFileName) {
 	this->mapFileName = inputFileName;
 	this->fieldCount = 0;
 }
-
-
+MapLoader::MapLoader(const MapLoader &mapLoader) {
+    this->fieldCount = mapLoader.fieldCount;
+    this->borders = mapLoader.borders;
+    this->countries = mapLoader.countries;
+    this->continents = mapLoader.continents;
+}
+MapLoader::~MapLoader() {
+    continents.clear();
+    countries.clear();
+    borders.clear();
+}
 // MapLoader - Validate map
-bool MapLoader::validateMap() {
-	std::cout << "\nValidating map file \"" << mapFileName << "\"...";
-	std::ifstream mapFile(mapFileName);
-	std::string currentLine;
+bool MapLoader::extract() {
+	ifstream mapFile(mapFileName);
+	string currentLine;
 	bool insideContinents = false, insideCountries = false, insideBorders = false;
 
 	while (getline(mapFile, currentLine)) { // Get the current section of the map file
@@ -66,103 +70,205 @@ bool MapLoader::validateMap() {
 		}
 	}
 	if (fieldCount == 3) { // All 3 fields has been found -> valid
-		return true;
+		fieldCount = 0;
+        return true;
 	}
 	return false; // Invalid map
 }
-
 // MapLoader - Create territory
-void MapLoader::createTerritory() {
-	std::cout << "\nCreating territories...";
-	for (int i = 0; i < countries.size(); i++) {
-		std::string territoryName = extractWord(countries[i], 1);
-		std::string continentName = extractWord(continents[extractInt(countries[i], 2) - 1], 0);
-		std::string playerName = "example_player_name";
-		int armyCount = 5;
-		Territory tempTerritory(territoryName, continentName, playerName, armyCount);
-		territories.push_back(tempTerritory);
-	}
+Map *MapLoader::createMap() {
+    Map *map = new Map(); // new Map
+    for (int i = 0; i < continents.size(); i++){
+        vector<string> singleContinentInfo = simpleTokenizer(continents[i]);
+        string continentName = singleContinentInfo[0];
+        string armies = singleContinentInfo[1];
+        Continent* tempContinent = new Continent(continentName, stoi(armies));
+        map->addContinent(tempContinent);
+    }
+    for (int i = 0; i < countries.size(); i++) {
+        vector<string> singleCountryInfo = simpleTokenizer(countries[i]);
+        string territoryName = singleCountryInfo[1];
+        //string territoryName = extractWord(countries[i], 1);
+        //string continentName = extractWord(continents[extractInt(countries[i], 2) - 1], 0);
+        string continentName = map->getContinents()[stoi(singleCountryInfo[2])-1]->getName();
+        Territory* tempTerritory = new Territory(territoryName, continentName);
+        //territories.push_back(tempTerritory);
+        map->getContinents()[stoi(singleCountryInfo[2])-1]->addTerritory(tempTerritory);
+        map->addTerritory(tempTerritory);
+    }
+    for(int i = 0; i < borders.size(); i++){
+        vector<string> singleBorderInfo = simpleTokenizer(borders[i]);
+        int countryID = stoi(singleBorderInfo[0]);
+        for (int j = 1; j < singleBorderInfo.size(); j++){
+            map->addEdge(map->getTerritories()[countryID-1], map->getTerritories()[stoi(singleBorderInfo[j])-1]);
+        }
+    }
+    return map;
 }
-
 // MapLoader - Build the map
 void MapLoader::buildMap() {
-	createTerritory();
+	Map* map = createMap();
+	cout << "\nBuilding the map...";
+	//Map map(territories.size());
+	//vector<int> edges;
 
-	std::cout << "\nBuilding the map...";
-	Map map(territories.size());
-	std::vector<int> edges;
-
-	for (int i = 0; i < territories.size(); i++) {
-		edges = extractAllInt(borders[i]);
-		for (int j = 1; j < edges.size(); j++) {
-			map.setEdge(i, edges[j] - 1);
-		}
-	}
+	//for (int i = 0; i < territories.size(); i++) {
+	//	edges = extractAllInt(borders[i]);
+	//	for (int j = 1; j < edges.size(); j++) {
+	//		map.setEdge(i, edges[j] - 1);
+	//	}
+	//}
 }
-
 // MapLoader - Get nth word/number in a string
-std::string MapLoader::extractWord(std::string inputString, int index) {
-	std::stringstream ss;
-	ss << inputString;
-	std::vector<std::string> words;
-	std::string temp;
-	while (!ss.eof()) {
-		ss >> temp;
-		words.push_back(temp);
-		temp = "";
-	}
-	return words[index];
-}
-int MapLoader::extractInt(std::string inputString, int index) {
-	std::stringstream ss;
-	ss << inputString;
-	std::vector<int> numbers;
-	std::string temp;
-	int temp2;
-	while (!ss.eof()) {
-		ss >> temp;
-		std::stringstream(temp) >> temp2;
-		numbers.push_back(temp2);
-	}
-	return numbers[index];
-}
 // MapLoader - Get all integers from a string
-std::vector<int> MapLoader::extractAllInt(std::string inputString) {
-	std::stringstream ss;
-	ss << inputString;
-	std::vector<int> numbers;
-	std::string temp;
-	int temp2;
-	while (!ss.eof()) {
-		ss >> temp;
-		std::stringstream(temp) >> temp2;
-		numbers.push_back(temp2);
-	}
-	return numbers;
+vector<string> MapLoader::simpleTokenizer(string s) {
+    vector<string> results;
+    stringstream ss(s);
+    string word;
+    while (ss >> word) {
+        results.push_back(word);
+    }
+    return results;
+}
+bool MapLoader::isNumber(const string& number)
+{
+    for (char const &c : number) {
+        if (std::isdigit(c) == 0) return false;
+    }
+    return true;
+}
+MapLoader &MapLoader::operator=(const MapLoader &mapLoader) {
+    this->fieldCount = mapLoader.fieldCount;
+    this->continents = mapLoader.continents;
+    this->countries = mapLoader.countries;
+    this->borders = mapLoader.borders;
+
+    return *this;
+}
+ostream &operator<<(ostream &out, const MapLoader &mapLoader) {
+    out << "Map Name: " << mapLoader.mapFileName << endl;
+    return out;
 }
 
 
 // Map - Constructor/Destructor
-Map::Map(int territoriesCount) {
-	this->territoriesCount = territoriesCount;
-	map = new std::list<int>[territoriesCount];
+Map::Map(const Map &map) {
+    //TODO:
 }
-
 Map::~Map() {
-	delete[] map;
+    for (auto t : territories)
+    {
+        delete t;
+    }
+    this->territories.clear();
+    for (auto c : continents)
+    {
+        delete c;
+    }
+    this->continents.clear();
 }
-
-// Map - Getters/Setters
-std::list<int> Map::getEdge(int index) {
-	return map[index];
+void Map::addEdge(Territory *edgeA, Territory *edgeB) {
+    edgeA->getAdjTerritories().push_back(edgeB);
+    edgeB->getAdjTerritories().push_back(edgeA);
 }
-void Map::setEdge(int edgeA, int edgeB) {
-	this->map[edgeA].push_back(edgeB);
-	this->map[edgeB].push_back(edgeA);
+void Map::addTerritoryToContinent(Territory *territory, int continentId) {
+    this->getContinents()[continentId]->addTerritory(territory);
 }
-
-// Map - Validate
-
+vector<Territory *> Map::getTerritories() {
+    return this->territories;
+}
+void Map::addTerritory(Territory *t) {
+    this->territories.push_back(t);
+}
+vector<Continent *> Map::getContinents() {
+    return this->continents;
+}
+void Map::addContinent(Continent *c) {
+    this->continents.push_back(c);
+}
+int Map::visitNeighbours(Territory *territory, int visited) {
+    vector<Territory*> adjacentNodes = territory->getAdjTerritories();
+    for (size_t i = 0; i < adjacentNodes.size(); i++) {
+        if (adjacentNodes[i]->getIsVisited() == false) {
+            adjacentNodes[i]->setIsVisited(true);
+            visited = visitNeighbours(adjacentNodes[i], visited);
+        }
+    }
+    cout << "\nVisiting " + territory->getTerritoryName() + "..." << endl;
+    cout << "Total territories visited: " + to_string(visited + 1) << endl;
+    return visited + 1;
+}
+void Map::resetVisitedTerritories() {
+    for (size_t i = 0; i < territories.size(); i++) {
+        if (territories[i]->getIsVisited() == true) {
+            territories[i]->setIsVisited(false);
+        }
+    }
+}
+bool Map::checkMapConnectedGraph() {
+    resetVisitedTerritories();
+    int visited = 0;
+    for (size_t i = 0; i < territories.size(); i++) {
+        if (territories[i]->getIsVisited() == false) {
+            territories[i]->setIsVisited(true);
+            if (territories[i]->getAdjTerritories().size() == 0) {
+                cout << "\nThis Map does not represented a connected graph" << endl;
+                return false;
+            }
+            visited = visitNeighbours(territories[i], visited);
+        }
+    }
+    cout << "\nNumber of territories in the map: " + to_string(visited) << endl;
+    if (visited == territories.size()) {
+        cout << "\nThis Map represents a connected graph!" << endl;
+        return true;
+    }
+    else {
+        cout << "\nThis Map is does not represented as a connected graph!***" << endl;
+        return false;
+    }
+}
+bool Map::mapValidate() {
+    if (checkIfValidContinent() && checkMapConnectedGraph() && checkContinentGraphs()) {
+        cout << "\n***Map is valid!***" << endl;
+        return true;
+    }
+    else {
+        cout << "\n***Map is not valid!***" << endl;
+        return false;
+    }
+}
+bool Map::checkContinentGraphs() {
+    return false;
+}
+bool Map::checkIfValidContinent() {
+    map<string, string> listOfCountries;
+    for (size_t i = 0; i < continents.size(); i++) {
+        vector<Territory*> allTerritoriesInContinent = continents[i]->getMembers();
+        for (size_t j = 0; j < allTerritoriesInContinent.size(); j++)
+            if (listOfCountries.count(allTerritoriesInContinent[j]->getTerritoryName()) > 0) {
+                cout << "\n***Territory " + allTerritoriesInContinent[j]->getTerritoryName() + " DOES NOT have unique membership!" << endl;
+                return false;
+            }
+            else {
+                listOfCountries[allTerritoriesInContinent[j]->getTerritoryName()] = allTerritoriesInContinent[j]->getContinentName();
+            }
+    }
+    cout << "\n***Territories have unique membership!***" << endl;
+    return true;
+}
+int Map::visitContinentNeighbours(Territory *territory, string continent, int visited) {
+    vector<Territory*> adjacentTerritories = territory->getAdjTerritories();
+    for (size_t i = 0; i < adjacentTerritories.size(); i++) {
+        if (adjacentTerritories[i]->getIsVisited() == false && adjacentTerritories[i]->getContinentName() == continent) {
+            adjacentTerritories[i]->setIsVisited(true);
+            visited = visitContinentNeighbours(adjacentTerritories[i], continent, visited);
+        }
+    }
+    cout << "\nVisiting " + territory->getTerritoryName() + "..." << endl;
+    cout << "Total territories visited: " + to_string(visited + 1) << endl;
+    return visited + 1;
+}
 
 
 // Territory - Constructors/Destructor
@@ -172,40 +278,101 @@ Territory::Territory() {
 	this->playerName = "";
 	this->armyCount = 0;
 }
-Territory::Territory(std::string territoryName, std::string continentName, std::string playerName, int armyCount) {
+Territory::Territory(string territoryName, string continentName, string playerName, int armyCount) {
 	this->territoryName = territoryName;
 	this->continentName = continentName;
 	this->playerName = playerName;
 	this->armyCount = armyCount;
 }
+Territory::Territory(string territoryName, string continentName) {
+    this->territoryName = territoryName;
+    this->continentName = continentName;
+}
 Territory::~Territory() {
 	territoryName.clear();
 	continentName.clear();
-	playerName.clear();
+    playerName.clear();
 }
-
+bool Territory::getIsVisited() {
+    return this->isVisited;
+}
+void Territory::setIsVisited(bool visited) {
+    this->isVisited = visited;
+}
 // Territory - Getters/Setters
-std::string Territory::getTerritoryName() {
+string Territory::getTerritoryName() {
 	return this->territoryName;
 }
-std::string Territory::getContinentName() {
+string Territory::getContinentName() {
 	return this->continentName;
 }
-std::string Territory::getPlayerName() {
+string Territory::getPlayerName() {
 	return this->playerName;
 }
 int Territory::getArmyCount() {
 	return this->armyCount;
 }
-void Territory::setTerritoryName(std::string territoryName) {
+void Territory::setTerritoryName(string territoryName) {
 	this->territoryName = territoryName;
 }
-void Territory::setContinentName(std::string continentName) {
+void Territory::setContinentName(string continentName) {
 	this->continentName = continentName;
 }
-void Territory::setPlayerName(std::string playerName) {
+void Territory::setPlayerName(string playerName) {
 	this->playerName = playerName;
 }
 void Territory::setArmyCount(int armyCount) {
 	this->armyCount = armyCount;
+}
+void Territory::addAdjTerritory(Territory *t) {
+    this->adjTerritories.push_back(t);
+}
+vector<Territory *> Territory::getAdjTerritories() {
+    return this->adjTerritories;
+}
+
+
+//Default Constructor
+Continent::Continent() {};
+Continent::Continent(string name, int armies) {
+    this->name = name;
+    controlBonus = armies;
+}
+Continent::Continent(string name, int armies, vector<Territory*> members) {
+    this->name = name;
+    controlBonus = armies;
+    this->members = members;
+}
+// Copy constructor
+Continent::Continent(const Continent &continent) {
+    this->name = continent.name;
+    this->controlBonus = continent.controlBonus;
+    this->members = continent.members;
+}
+// Assignment operator
+Continent& Continent::operator=(const Continent &continent) {
+    this->name = continent.name;
+    this->controlBonus = continent.controlBonus;
+    this->members = continent.members;
+    return *this;
+}
+// Stream insertion operator
+ostream& operator << (ostream &out, Continent continent) {
+    out << "Name: " << continent.getName();
+    return out;
+}
+// Add territory as a member of the continent
+void Continent::addTerritory(Territory* territory) {
+    members.push_back(territory);
+}
+// Return name of continent
+string Continent::getName() {
+    return name;
+}
+// Return list of territories that are a part of continent
+vector<Territory*> Continent::getMembers() {
+    return members;
+}
+int Continent::getControlBonus() {
+    return controlBonus;
 }
