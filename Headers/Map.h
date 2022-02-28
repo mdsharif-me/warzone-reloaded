@@ -8,6 +8,10 @@ Date: 12 Feb, 2022
 #include <vector>
 #include "Player.h"
 #include <map>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <algorithm>
 using namespace std;
 
 class Territory {
@@ -58,10 +62,10 @@ private:
 
 class Map {
 public:
-	Map(int territoriesCount);
 	~Map();
     Map(const Map& map);
-	list<int> getEdge(int index);
+    Map() = default;
+    //list<int> getEdge(int index);
 	void addEdge(Territory* edgeA, Territory* edgeB); //addBorder
     vector<Territory*> getTerritories();
     void addTerritory(Territory* t);
@@ -75,12 +79,13 @@ public:
     int visitContinentNeighbours(Territory* territory, string continent, int visited);
     void resetVisitedTerritories();
     bool checkIfValidContinent();
+    int getContinentIndex(Continent* continent);
+    void addEdgeIndex(int t1, int t2);
 
 private:
 	int territoriesCount;
     vector<Territory*> territories;
     vector<Continent*> continents;
-	// list<int>* map;
 };
 
 class MapLoader {
@@ -88,9 +93,9 @@ public:
 	MapLoader(string inputFileName);
     MapLoader(const MapLoader &mapLoader); // copy constructor
     ~MapLoader(); // destructor
-	bool validateMap();
-	void createTerritory();
-	void buildMap();
+    Map* createMap();
+	bool extract();
+    void buildMap();
 	string extractWord(string inputString, int index);
 	int extractInt(string inputString, int index);
 	vector<int> extractAllInt(string inputString);
@@ -103,5 +108,6 @@ private:
 	vector<string> continents;
 	vector<string> countries;
 	vector<string> borders;
-    Map* m;
+    vector<string> simpleTokenizer(string s);
+    bool isNumber(const string&);
 };

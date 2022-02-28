@@ -9,6 +9,7 @@
 #include <vector>
 #include <iostream>
 #include "Orders.h"
+#include "Map.h"
 using namespace std;
 
 class Order;
@@ -37,14 +38,11 @@ public:
     OrdersList* getOrderList();                 //Accessor
     Hand* getPlayerHand();
     int getReinforcementPool();
-
     const string& getName() const;
-
     void setOrderList(OrdersList *orderList);   //Mutator
     void setPlayerHand(Hand *playerHand);       //Mutator
     void setReinforcementPoll(int nrArmies);
     void setName(const string& newName);
-
     Player& operator=(const Player& player);    //assignment operator
     friend ostream& operator << (ostream& os, const Player& player); //stream insertion operator for Player
 };

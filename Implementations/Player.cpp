@@ -12,7 +12,6 @@ Player::Player(string& name, vector<Territory*> ta, vector<Territory*> td, Hand 
     this->playerHand = c;
     this->orderList = new OrdersList();
 }
-
 //Shallow copy
 Player::Player(const Player& p)
 {
@@ -22,7 +21,6 @@ Player::Player(const Player& p)
     this->playerHand = p.playerHand;
     this->orderList = p.orderList;
 }
-
 Player::~Player()
 {
     name.clear();
@@ -39,21 +37,17 @@ Player::~Player()
     delete orderList;
     orderList = nullptr;
 }
-
 vector<Territory*> Player::toDefend()
 {
     return territoriesToDefend;
 }
-
 vector<Territory*> Player::toAttack()
 {
     return territoriesToAttack;
 }
-
 vector<Territory *> Player::getTerritories() {
     return territories;
 }
-
 void Player::issueOrder(const string& orderName) {
     const string& nameOfOrder = orderName;
     if (nameOfOrder == "Deploy") {
@@ -79,28 +73,21 @@ void Player::issueOrder(const string& orderName) {
         orderList->add(nullptr);
     }
 }
-
 OrdersList* Player::getOrderList() {
     return orderList;
 }
-
 Hand* Player::getPlayerHand() {
     return playerHand;
 }
-
 string Player::getPlayerName() {
     return name;
 }
-
 void Player::setOrderList(OrdersList *newOrderList) {
     Player::orderList = orderList;
 }
-
 void Player::setPlayerHand(Hand *newPlayerHand) {
     Player::playerHand = playerHand;
 }
-
-
 Player& Player::operator=(const Player& player)
 {
     this->name = player.name;
@@ -110,27 +97,21 @@ Player& Player::operator=(const Player& player)
     this->orderList = player.orderList;
     return *this;
 }
-
 ostream& operator<<(ostream& os, const Player& player)
 {
     os << "Player Name: " << player.name << endl;
     return os;
 }
-
-
 int Player::getReinforcementPool() {
     return reinforcementPool;
 }
-
 void Player::setReinforcementPoll(int nrArmies) {
     reinforcementPool += nrArmies;
 }
-
 void Player::setName(const string &newName) {
     this->name = newName;
 
 }
-
 const string& Player::getName() const {
     return name;
 }

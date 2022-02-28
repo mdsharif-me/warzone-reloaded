@@ -47,7 +47,7 @@ public:
 
 protected:
     Player* player{};
-    //Territory* territory{};
+    Territory* territory{};
     Territory* startTerritory{};
     Territory* targetTerritory{};
     Player* targetPlayer{};

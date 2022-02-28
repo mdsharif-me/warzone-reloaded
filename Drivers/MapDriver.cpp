@@ -13,15 +13,16 @@ int main() {
 	cout << "------------------\n";
 	cout << "\nThe map loader has started.\n" << endl;
 
-	vector<string> mapFileList = { "europass.map", "MyMap.map", "artic.map" };
-
+	vector<string> mapFileList = { "europass.map"};
 	// Check the map files and build maps
 	for (int i = 0; i < mapFileList.size(); i++) {
 		MapLoader map(mapFileList[i]);
-		if (map.validateMap()) {
-			map.buildMap();
-			cout << "\nSuccess: Map \"" << mapFileList[i] << "\" has been built.\n\n";
-		}
+        if(map.extract()) {
+            Map *m = map.createMap();
+            if (m->mapValidate()) {
+                cout << "\nSuccess: Map \"" << mapFileList[i] << "\" has been built.\n\n";
+            }
+        }
 		else {
 			cout << "\nError: Map file \"" << mapFileList[i] << "\" is invalid.\n\n";
 		}
