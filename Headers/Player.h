@@ -15,6 +15,7 @@ using namespace std;
 class Order;
 class OrdersList;
 class Hand;
+class Territory;
 
 class Player {
 private:

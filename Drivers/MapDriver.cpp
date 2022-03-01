@@ -13,7 +13,7 @@ int main() {
 	cout << "------------------\n";
 	cout << "\nThe map loader has started.\n" << endl;
 
-	vector<string> mapFileList = { "europass.map"};
+	vector<string> mapFileList = { "../Maps/canada.map"};
 	// Check the map files and build maps
 	for (int i = 0; i < mapFileList.size(); i++) {
 		MapLoader map(mapFileList[i]);

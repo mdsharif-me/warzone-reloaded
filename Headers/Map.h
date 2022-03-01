@@ -31,9 +31,9 @@ public:
 	void setPlayerName(string playerName);
 	void setArmyCount(int armyCount);
     void setIsVisited(bool visited);
+    void addAdjTerritory(Territory* t);
 
 private:
-    void addAdjTerritory(Territory* t);
 	string territoryName;
     vector<Territory*> adjTerritories;
 	string continentName;

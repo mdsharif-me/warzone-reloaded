@@ -5,6 +5,8 @@ Date: 12 Feb, 2022
 #include "../Headers/Map.h"
 using namespace std;
 
+class Territory;
+
 // MapLoader - Constructor/Destructor
 MapLoader::MapLoader(string inputFileName) {
 	this->mapFileName = inputFileName;
@@ -100,7 +102,9 @@ Map *MapLoader::createMap() {
         vector<string> singleBorderInfo = simpleTokenizer(borders[i]);
         int countryID = stoi(singleBorderInfo[0]);
         for (int j = 1; j < singleBorderInfo.size(); j++){
-            map->addEdge(map->getTerritories()[countryID-1], map->getTerritories()[stoi(singleBorderInfo[j])-1]);
+            Territory* territory1 = map->getTerritories()[countryID - 1];
+            Territory* territory2 = map->getTerritories()[stoi(singleBorderInfo[j]) -1];
+            map->addEdge(territory1, territory2);
         }
     }
     return map;
@@ -168,24 +172,30 @@ Map::~Map() {
     this->continents.clear();
 }
 void Map::addEdge(Territory *edgeA, Territory *edgeB) {
-    edgeA->getAdjTerritories().push_back(edgeB);
-    edgeB->getAdjTerritories().push_back(edgeA);
+    edgeA->addAdjTerritory(edgeB);
+    edgeB->addAdjTerritory(edgeA);
 }
+
 void Map::addTerritoryToContinent(Territory *territory, int continentId) {
     this->getContinents()[continentId]->addTerritory(territory);
 }
+
 vector<Territory *> Map::getTerritories() {
     return this->territories;
 }
+
 void Map::addTerritory(Territory *t) {
     this->territories.push_back(t);
 }
+
 vector<Continent *> Map::getContinents() {
     return this->continents;
 }
+
 void Map::addContinent(Continent *c) {
     this->continents.push_back(c);
 }
+
 int Map::visitNeighbours(Territory *territory, int visited) {
     vector<Territory*> adjacentNodes = territory->getAdjTerritories();
     for (size_t i = 0; i < adjacentNodes.size(); i++) {
@@ -205,6 +215,7 @@ void Map::resetVisitedTerritories() {
         }
     }
 }
+
 bool Map::checkMapConnectedGraph() {
     resetVisitedTerritories();
     int visited = 0;
@@ -219,19 +230,25 @@ bool Map::checkMapConnectedGraph() {
         }
     }
     cout << "\nNumber of territories in the map: " + to_string(visited) << endl;
+    cout << visited << endl;
+    cout << territories.size() << endl;
     if (visited == territories.size()) {
         cout << "\nThis Map represents a connected graph!" << endl;
         return true;
     }
     else {
-        cout << "\nThis Map is does not represented as a connected graph!***" << endl;
+        cout << "\nThis Map does not represented a connected graph!***" << endl;
         return false;
     }
 }
 bool Map::mapValidate() {
-    if (checkIfValidContinent() && checkMapConnectedGraph() && checkContinentGraphs()) {
-        cout << "\n***Map is valid!***" << endl;
-        return true;
+    if (checkIfValidContinent()) {
+        if (checkMapConnectedGraph()) {
+            if (checkContinentGraphs()) {
+                cout << "\n***Map is valid!***" << endl;
+                return true;
+            }
+        }
     }
     else {
         cout << "\n***Map is not valid!***" << endl;
@@ -239,7 +256,33 @@ bool Map::mapValidate() {
     }
 }
 bool Map::checkContinentGraphs() {
-    return false;
+    resetVisitedTerritories();
+    for (size_t i = 0; i < continents.size(); i++) {
+        string continentName = continents[i]->getName();
+        vector<Territory*> continentMembers = continents[i]->getMembers();
+        cout << "\nChecking " + continentName + " which has " + to_string(continentMembers.size()) + " members..." << endl;
+        int visited = 0;
+        for (size_t j = 0; j < continentMembers.size(); j++) {
+            if (!continentMembers[j]->getIsVisited()) {
+                continentMembers[j]->setIsVisited(true);
+                if (continentMembers[j]->getAdjTerritories().empty()) {
+                    cout << "\n***Continent " + continents[i]->getName() + " is NOT a connected subgraph!***" << endl;
+                    return false;
+                }
+                visited = visitContinentNeighbours(continentMembers[j], continentName, visited);
+            }
+        }
+        cout << "\nTotal territories in continent: " + to_string(visited) << endl;
+        if (visited == continentMembers.size()) {
+            cout << "\n***Continent " + continents[i]->getName() + " is a connected subgraph!***" << endl;
+        }
+        else {
+            cout << "\n***Continent " + continents[i]->getName() + " is NOT a connected subgraph!***" << endl;
+            return false;
+        }
+    }
+    cout << "\n***All continents are connected subgraphs!***" << endl;
+    return true;
 }
 bool Map::checkIfValidContinent() {
     map<string, string> listOfCountries;
@@ -260,7 +303,7 @@ bool Map::checkIfValidContinent() {
 int Map::visitContinentNeighbours(Territory *territory, string continent, int visited) {
     vector<Territory*> adjacentTerritories = territory->getAdjTerritories();
     for (size_t i = 0; i < adjacentTerritories.size(); i++) {
-        if (adjacentTerritories[i]->getIsVisited() == false && adjacentTerritories[i]->getContinentName() == continent) {
+        if (!adjacentTerritories[i]->getIsVisited() && adjacentTerritories[i]->getContinentName() == continent) {
             adjacentTerritories[i]->setIsVisited(true);
             visited = visitContinentNeighbours(adjacentTerritories[i], continent, visited);
         }
