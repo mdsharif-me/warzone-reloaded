@@ -105,7 +105,7 @@ ostream& operator<<(ostream& os, const Player& player)
 int Player::getReinforcementPool() {
     return reinforcementPool;
 }
-void Player::setReinforcementPoll(int nrArmies) {
+void Player::setReinforcementPool(int nrArmies) {
     reinforcementPool += nrArmies;
 }
 void Player::setName(const string &newName) {
@@ -116,3 +116,53 @@ const string& Player::getName() const {
     return name;
 }
 
+vector<Territory*> Player::get_neighbour_territories(Player* p) {
+    vector<Territory*> controlled = p->getTerritories();
+    vector<Territory*> neighbouring_terrritories;
+
+    // Get neighbour territories ( territories to attack )
+    for (Territory* c : controlled) {
+        vector<Territory*> attacking = c->getAdjTerritories();
+
+        // for territories to attack find if it's controlled by you
+        for (Territory* neighbour : attacking) {
+            auto result = find(controlled.begin(), controlled.end(), neighbour);
+            auto exists = find(neighbouring_terrritories.begin(), neighbouring_terrritories.end(), neighbour);
+            // vector doesn't contain element and doesn't already exist in vector
+            if (result == controlled.end() && exists == neighbouring_terrritories.end())
+            {
+                neighbouring_terrritories.push_back(neighbour); // push to neighbouring territories vector
+            }
+            else
+            {
+                continue;
+            }
+        }
+    }
+    return neighbouring_terrritories;
+}
+
+// returns neighbours controlled by player
+vector<Territory*> Player::get_friendly_neighbour(Player* p) {
+    vector<Territory*> controlled = p->getTerritories();
+    vector<Territory*> friendly_neighbours;
+
+    // Get neighbour territories ( territories to attack )
+    for (Territory* c : controlled) {
+        vector<Territory*> all_neighbours = c->getAdjTerritories();
+
+        // for territories to attack find if it's controlled by you
+        for (Territory* neighbour : all_neighbours) {
+            auto result = find(controlled.begin(), controlled.end(), neighbour);
+            if (result != controlled.end()) // vector contains the element
+            {
+                friendly_neighbours.push_back(neighbour); // push to neighbouring territories vector
+            }
+            else
+            {
+                continue;
+            }
+        }
+    }
+    return friendly_neighbours;
+}
