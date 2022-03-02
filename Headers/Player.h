@@ -34,18 +34,20 @@ public:
     string getPlayerName();                     //Accessor
     vector<Territory *> toDefend();             //Accessor
     vector<Territory *> toAttack();             //Accessor
-    vector<Territory *> getTerritories();
+    vector<Territory *> getTerritories();       //Accessor
     void issueOrder(const string&);
     OrdersList* getOrderList();                 //Accessor
-    Hand* getPlayerHand();
-    int getReinforcementPool();
-    const string& getName() const;
+    Hand* getPlayerHand();                      //Accessor
+    int getReinforcementPool();                 //Accessor
+    const string& getName() const;              //Accessor
     void setOrderList(OrdersList *orderList);   //Mutator
     void setPlayerHand(Hand *playerHand);       //Mutator
-    void setReinforcementPoll(int nrArmies);
-    void setName(const string& newName);
+    void setReinforcementPool(int nrArmies);    //Mutator
+    void setName(const string& newName);        //Mutator
     Player& operator=(const Player& player);    //assignment operator
     friend ostream& operator << (ostream& os, const Player& player); //stream insertion operator for Player
+    vector<Territory*> get_friendly_neighbour(Player* p);
+    vector<Territory*> get_neighbour_territories(Player* p);
 };
 
 
