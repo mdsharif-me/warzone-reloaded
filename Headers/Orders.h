@@ -98,7 +98,7 @@ public:
  * Class declaration Orders List
  */
 class OrdersList {
-public:
+private:
     vector<Order*> orders;
 
 public:
@@ -124,6 +124,8 @@ public:
     void add(Order* order);
     void remove(int index);
     void move(int from, int to);
+
+    vector<Order* > getOrders();
 
 };
 

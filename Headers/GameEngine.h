@@ -23,9 +23,10 @@ public:
     string play(string currentPhase);
     void startupPhase(); //Assignment 2 Part 2
     void mainGameLoop(); //Assignment 2 Part 3
-    void reinforcmentPhase(vector<Player*>); //Assignment 2 Part 3
+    void reinforcementPhase(vector<Player*>); //Assignment 2 Part 3
     void issueOrdersPhase(vector<Player*>, vector<Territory*>); //Assingment 2 Part 3
     void excuteOrderPhase(); //Assignment 2 Part 3
+    vector<Player *> getPlayersList();
 
 private:
     string state;
