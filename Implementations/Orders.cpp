@@ -256,7 +256,7 @@ void Deploy::print(std::ostream &os) const {
 bool Deploy::validate() {
 
     for (Territory* territory: player->getTerritories()) {
-        if (territory->getPlayerName() == targetTerritory->getPlayerName()) {
+        if (territory->getOwner()->getPlayerName() == targetTerritory->getOwner()->getPlayerName()) {
             return true;
         }
     }
@@ -312,26 +312,35 @@ Advance& Advance::operator=(const Advance &advance){
 
 // method to validate an order
 bool Advance::validate() {
-    if (startTerritory->getPlayerName() != player->getPlayerName()) {
+    if (startTerritory->getOwner()->getPlayerName() != player->getPlayerName()) {
         return false;
     }
-    // check if territory is adjacent
-    //return false
 
-    return true;
+    // check if territory is adjacent
+    for(Territory* territory: startTerritory->getAdjTerritories()) {
+        if (territory->getTerritoryName() == targetTerritory->getTerritoryName()) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 // method to execute an order
 void Advance  :: execute() {
+    int attackerArmies = this->nrArmies;
+    int defenderArmies = targetTerritory->getArmyCount();
+
     bool orderIsValid = this->validate();
     if (orderIsValid) {
-        if (startTerritory->getPlayerName() == player->getPlayerName() &&
-            targetTerritory->getPlayerName() == player->getPlayerName()) {
+        if (startTerritory->getOwner()->getPlayerName() == player->getPlayerName() &&
+            targetTerritory->getOwner()->getPlayerName() == player->getPlayerName()) {
             // decrease #armies in the source territory
             startTerritory->setArmyCount(startTerritory->getArmyCount() - this->nrArmies);
             // increase #armies in the target territories
             targetTerritory->setArmyCount(targetTerritory->getArmyCount() + this->nrArmies);
-        } else if (targetTerritory->getPlayerName() != player->getPlayerName()) {
+
+        } else if (targetTerritory->getOwner()->getPlayerName() != player->getPlayerName()) {
             bool attackerKilledDefending = false;
             bool defenderKilledAttacker = false;
 
@@ -340,7 +349,26 @@ void Advance  :: execute() {
             std::uniform_int_distribution<int> distribution(1,100);
             auto dice = std::bind ( distribution, generator );
 
-            for (int i = 0; i < this->nrArmies; i++) {
+            int roll = dice();
+            while (attackerArmies != 0 && defenderArmies != 0) {
+                if (roll > 40) {
+                    defenderArmies -= 1;
+                }
+                if (roll > 30) {
+                    attackerArmies -= 1;
+                }
+                roll = dice();
+            }
+            targetTerritory->setArmyCount(defenderArmies);
+
+            if (defenderArmies == 0) {
+                targetTerritory->setArmyCount(attackerArmies);
+                targetTerritory->getOwner()->setName(this->player->getPlayerName());
+                player->addTerritory(targetTerritory);
+            }
+
+
+            /*for (int i = 0; i < this->nrArmies; i++) {
                 int roll = dice();
 
                 attackerKilledDefending = (roll < 60);
@@ -360,14 +388,17 @@ void Advance  :: execute() {
                     targetTerritory->setArmyCount(startTerritory->getArmyCount());
                     startTerritory->setArmyCount(0);
                 }
-            }
+            }*/
         }
 
         cout << "Advance order executed" << endl;
-        if (targetTerritory->getPlayerName() == this->player->getPlayerName()) {
+        if (targetTerritory->getOwner()->getPlayerName() == this->player->getPlayerName()) {
             cout << "The territory" << targetTerritory->getTerritoryName() << " has been conquered" << endl;
         }
+        //TO DO
         //receive a Card if at least one territory conquered.
+    } else {
+        cout << "Advance Order is invalid...ignoring...";
     }
 }
 
@@ -409,13 +440,17 @@ Bomb& Bomb::operator=(const Bomb &bomb){
 // method to validate an order
 bool Bomb  :: validate() {
     for(Territory* territory: player->getTerritories()) {
-        if(targetTerritory->getPlayerName() == territory->getPlayerName()) {
+        if(targetTerritory->getOwner()->getPlayerName() == territory->getOwner()->getPlayerName()) {
             return false;
         }
-        // else if territory is not adjacent
-        // return false;
+
     }
-    return true;
+    // check if territory is adjacent
+    for(Territory* territory: startTerritory->getAdjTerritories()) {
+        if (territory->getTerritoryName() == targetTerritory->getTerritoryName()) {
+            return true;
+        }
+    }
 }
 
 // method to execute an order
@@ -468,7 +503,7 @@ void Blockade::print(ostream &os) const {
 // method to valida an order
 bool Blockade  :: validate() {
     for(Territory* territory: player->getTerritories()) {
-        if (targetTerritory->getPlayerName() == territory->getPlayerName()) {
+        if (targetTerritory->getOwner()->getPlayerName() == territory->getOwner()->getPlayerName()) {
             return true;
         }
     }
@@ -482,12 +517,11 @@ void Blockade  :: execute() {
 
         //double the number of armies
         targetTerritory->setArmyCount(targetTerritory->getArmyCount() * 2);
+        targetTerritory->getOwner()->removeTerritory(targetTerritory);
+        targetTerritory->removeOwner();
 
-        // set territory to the Neutral Player
-        auto* neutralPlayer = new Player();
-        neutralPlayer->setName("NeutralPlayer");
-        targetTerritory->setPlayerName(neutralPlayer->getPlayerName());
         cout << "Blockade order executed" << endl;
+        cout << targetTerritory->getTerritoryName() << " has no owner now." << endl;
     }
 }
 
@@ -532,8 +566,8 @@ void Airlift::print(ostream &os) const {
 // method to valida an order
 bool Airlift  :: validate() {
     for(Territory* territory: player->getTerritories()) {
-        if (territory->getPlayerName() == startTerritory->getPlayerName() &&
-            territory->getPlayerName() == targetTerritory->getPlayerName()) {
+        if (territory->getOwner()->getPlayerName() == startTerritory->getOwner()->getPlayerName() &&
+            territory->getOwner()->getPlayerName() == targetTerritory->getOwner()->getPlayerName()) {
             return true;
         }
     }
@@ -586,7 +620,7 @@ void Negotiate::print(ostream &os) const {
 // method to validate an order
 bool Negotiate  :: validate() {
     for(Territory* territory: player->getTerritories()) {
-        if (territory->getPlayerName() == this->targetTerritory->getPlayerName()) {
+        if (territory->getOwner()->getPlayerName() == this->targetTerritory->getOwner()->getPlayerName()) {
             return false;
         }
     }

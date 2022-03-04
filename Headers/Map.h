@@ -18,28 +18,29 @@ class Territory {
 public:
 	Territory();
     ~Territory();
-	Territory(string territoryName, string continentName, string playerName, int armyCount);
+	Territory(string territoryName, string continentName, int armyCount);
 	Territory(string territoryName, string continentName);
     string getTerritoryName();
 	string getContinentName();
-	string getPlayerName();
 	int getArmyCount();
     bool getIsVisited();
     vector<Territory*> getAdjTerritories();
 	void setTerritoryName(string territoryName);
 	void setContinentName(string continentName);
-	void setPlayerName(string playerName);
 	void setArmyCount(int armyCount);
     void setIsVisited(bool visited);
     void addAdjTerritory(Territory* t);
+    void addOwner(Player* player);
+    void removeOwner();
+    Player* getOwner();
 
 private:
 	string territoryName;
     vector<Territory*> adjTerritories;
 	string continentName;
-	string playerName;
     int armyCount;
     bool isVisited;
+    Player* owner;
 };
 
 class Continent {

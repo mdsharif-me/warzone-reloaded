@@ -48,32 +48,52 @@ vector<Territory*> Player::toAttack()
 vector<Territory *> Player::getTerritories() {
     return territories;
 }
-void Player::issueOrder(const string& orderName,Territory* startTerritory, Territory* targetTerritory,
-                        int nrArmies, Player* targetPlayer) {
+
+void Player::issueOrder(const string& orderName, Territory* targetTerritory, int nrOfArmies) {
     const string& nameOfOrder = orderName;
     if (nameOfOrder == "Deploy") {
-        auto* deploy = new Deploy(this, targetTerritory, nrArmies);
+        auto* deploy = new Deploy(this, targetTerritory, nrOfArmies);
         orderList->add(deploy);
-    } else if (nameOfOrder == "Advance") {
-        auto* advance = new Advance(this, startTerritory, targetTerritory, nrArmies);
-        orderList->add(advance);
-    } else if (nameOfOrder == "Bomb") {
-        auto* bomb = new Bomb(this, targetTerritory);
+    }
+}
+
+
+void Player::issueOrder(const string& orderName, Territory* targetTerritory) {
+    const string& nameOfOrder = orderName;
+    if (nameOfOrder == "Bomb") {
+        Bomb* bomb = new Bomb(this, targetTerritory);
         orderList->add(bomb);
     } else if (nameOfOrder == "Blockade") {
         auto* blockade = new Blockade(this, targetTerritory);
         orderList->add(blockade);
-    } else if (nameOfOrder == "Airlift") {
-        auto* airlift = new Airlift(this, startTerritory, targetTerritory, nrArmies);
-        orderList->add(airlift);
-
-    } else if (nameOfOrder == "Negotiate") {
-        auto* negotiate = new Negotiate(this, targetPlayer);
-        orderList->add(negotiate);
-    } else {
-        orderList->add(nullptr);
     }
 }
+
+
+void Player::issueOrder(const string& orderName,Territory* startTerritory, Territory* targetTerritory,int nrOfArmies) {
+    const string &nameOfOrder = orderName;
+    if (nameOfOrder == "Advance") {
+        auto *advance = new Advance(this, startTerritory, targetTerritory, nrOfArmies);
+        orderList->add(advance);
+    } else if (nameOfOrder == "Airlift") {
+        auto *airlift = new Airlift(this, startTerritory, targetTerritory, nrOfArmies);
+        orderList->add(airlift);
+    }
+}
+
+
+
+void Player::issueOrder(const string& orderName, Player* targetPlayer) {
+    const string &nameOfOrder = orderName;
+    if (nameOfOrder == "Negotiate") {
+        auto *negotiate = new Negotiate(this, targetPlayer);
+        orderList->add(negotiate);
+    }
+}
+
+
+
+
 OrdersList* Player::getOrderList() {
     return orderList;
 }
@@ -166,4 +186,14 @@ vector<Territory*> Player::get_friendly_neighbour(Player* p) {
         }
     }
     return friendly_neighbours;
+}
+
+void Player::addTerritory(Territory *territory) {
+    territories.push_back(territory);
+
+}
+
+void Player::removeTerritory(Territory *territory) {
+    std::remove(territories.begin(), territories.end(), territory);
+
 }

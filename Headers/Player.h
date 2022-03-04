@@ -35,8 +35,11 @@ public:
     vector<Territory *> toDefend();             //Accessor
     vector<Territory *> toAttack();             //Accessor
     vector<Territory *> getTerritories();       //Accessor
-    void issueOrder(const string&, Territory* startTerritory, Territory* targetTerritory,
-                    int nrArmies, Player* targetPlayer);
+    void issueOrder(const string& orderName, Territory* targetTerritory, int nrOfArmies);
+    void issueOrder(const string& orderName, Territory* targetTerritory);
+    void issueOrder(const string& orderName,Territory* startTerritory, Territory* targetTerritory,int nrOfArmies);
+    void issueOrder(const string& orderName, Player* targetPlayer);
+
     OrdersList* getOrderList();                 //Accessor
     Hand* getPlayerHand();                      //Accessor
     int getReinforcementPool();                 //Accessor
@@ -49,6 +52,8 @@ public:
     friend ostream& operator << (ostream& os, const Player& player); //stream insertion operator for Player
     vector<Territory*> get_friendly_neighbour(Player* p);
     vector<Territory*> get_neighbour_territories(Player* p);
+    void addTerritory(Territory* territory);
+    void removeTerritory(Territory* territory);
 };
 
 

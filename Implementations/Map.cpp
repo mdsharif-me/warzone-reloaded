@@ -318,13 +318,12 @@ int Map::visitContinentNeighbours(Territory *territory, string continent, int vi
 Territory::Territory() {
 	this->territoryName = "";
 	this->continentName = "";
-	this->playerName = "";
+	this->owner = new Player();
 	this->armyCount = 0;
 }
-Territory::Territory(string territoryName, string continentName, string playerName, int armyCount) {
+Territory::Territory(string territoryName, string continentName, int armyCount) {
 	this->territoryName = territoryName;
 	this->continentName = continentName;
-	this->playerName = playerName;
 	this->armyCount = armyCount;
 }
 Territory::Territory(string territoryName, string continentName) {
@@ -334,7 +333,7 @@ Territory::Territory(string territoryName, string continentName) {
 Territory::~Territory() {
 	territoryName.clear();
 	continentName.clear();
-    playerName.clear();
+    delete owner;
 }
 bool Territory::getIsVisited() {
     return this->isVisited;
@@ -349,9 +348,7 @@ string Territory::getTerritoryName() {
 string Territory::getContinentName() {
 	return this->continentName;
 }
-string Territory::getPlayerName() {
-	return this->playerName;
-}
+
 int Territory::getArmyCount() {
 	return this->armyCount;
 }
@@ -361,9 +358,7 @@ void Territory::setTerritoryName(string territoryName) {
 void Territory::setContinentName(string continentName) {
 	this->continentName = continentName;
 }
-void Territory::setPlayerName(string playerName) {
-	this->playerName = playerName;
-}
+
 void Territory::setArmyCount(int armyCount) {
 	this->armyCount = armyCount;
 }
@@ -372,6 +367,19 @@ void Territory::addAdjTerritory(Territory *t) {
 }
 vector<Territory *> Territory::getAdjTerritories() {
     return this->adjTerritories;
+}
+
+void Territory::removeOwner() {
+    owner = nullptr;
+}
+
+Player *Territory::getOwner() {
+    return owner;
+}
+
+void Territory::addOwner(Player* player) {
+    owner = player;
+
 }
 
 
