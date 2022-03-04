@@ -382,6 +382,22 @@ void Territory::addOwner(Player* player) {
 
 }
 
+bool Territory::isAllied(Player* player) {
+    if (this->getOwner()->getPlayerName() == player->getPlayerName()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Territory::isEnemy(Player *player) {
+    if (this->getOwner()->getPlayerName() != player->getPlayerName()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 
 //Default Constructor
 Continent::Continent() {};

@@ -406,7 +406,7 @@ void Advance  :: execute() {
  * @param os
  */
 void Advance::print(ostream &os) const {
-    cout << "Advance " << this->nrArmies << " to " << this->targetTerritory << endl;
+    cout << "Advance " << this->nrArmies << " to " << this->targetTerritory->getTerritoryName() << endl;
 }
 
 
@@ -466,7 +466,7 @@ void Bomb  :: execute() {
  * @param os
  */
 void Bomb::print(ostream &os) const {
-    cout << "Bomb " << this->targetTerritory << endl;
+    cout << "Bomb " << this->targetTerritory->getTerritoryName() << endl;
 }
 
 
@@ -582,6 +582,7 @@ void Airlift  :: execute() {
         //decrease number of armies in the source territory
         startTerritory->setArmyCount(startTerritory->getArmyCount() - this->nrArmies);
         cout << "Airlift order executed" << endl;
+        cout << "The target territory has now: " << targetTerritory->getArmyCount() << endl;
     }
 }
 
