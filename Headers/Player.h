@@ -35,7 +35,8 @@ public:
     vector<Territory *> toDefend();             //Accessor
     vector<Territory *> toAttack();             //Accessor
     vector<Territory *> getTerritories();       //Accessor
-    void issueOrder(const string&);
+    void issueOrder(const string&, Territory* startTerritory, Territory* targetTerritory,
+                    int nrArmies, Player* targetPlayer);
     OrdersList* getOrderList();                 //Accessor
     Hand* getPlayerHand();                      //Accessor
     int getReinforcementPool();                 //Accessor

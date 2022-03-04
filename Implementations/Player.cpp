@@ -48,26 +48,27 @@ vector<Territory*> Player::toAttack()
 vector<Territory *> Player::getTerritories() {
     return territories;
 }
-void Player::issueOrder(const string& orderName) {
+void Player::issueOrder(const string& orderName,Territory* startTerritory, Territory* targetTerritory,
+                        int nrArmies, Player* targetPlayer) {
     const string& nameOfOrder = orderName;
     if (nameOfOrder == "Deploy") {
-        auto* deploy = new Deploy;
+        auto* deploy = new Deploy(this, targetTerritory, nrArmies);
         orderList->add(deploy);
     } else if (nameOfOrder == "Advance") {
-        auto* advance = new Advance();
+        auto* advance = new Advance(this, startTerritory, targetTerritory, nrArmies);
         orderList->add(advance);
     } else if (nameOfOrder == "Bomb") {
-        Bomb* bomb = new Bomb();
+        auto* bomb = new Bomb(this, targetTerritory);
         orderList->add(bomb);
     } else if (nameOfOrder == "Blockade") {
-        auto* blockade = new Blockade;
+        auto* blockade = new Blockade(this, targetTerritory);
         orderList->add(blockade);
     } else if (nameOfOrder == "Airlift") {
-        auto* airlift = new Airlift();
+        auto* airlift = new Airlift(this, startTerritory, targetTerritory, nrArmies);
         orderList->add(airlift);
 
     } else if (nameOfOrder == "Negotiate") {
-        auto* negotiate = new Negotiate();
+        auto* negotiate = new Negotiate(this, targetPlayer);
         orderList->add(negotiate);
     } else {
         orderList->add(nullptr);

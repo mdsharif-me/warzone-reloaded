@@ -9,11 +9,9 @@ using namespace std;
 GameEngine::GameEngine(){
     this->state=state[0];
 }
-
 //commands
 string states[]= {"start","maploaded","mapvalidated","playersadded","assignreinforcement",
                   "issueorders","executeorders","win"};
-
 //functions
 string GameEngine::loadMap(string currentPhase){
     if (currentPhase == states[0]|| currentPhase == states[1]){
@@ -25,7 +23,6 @@ string GameEngine::loadMap(string currentPhase){
         return currentPhase;
     }
 }
-
 //functions
 string GameEngine::validateMap(string currentPhase){
     if (currentPhase==states[1]){
@@ -37,8 +34,6 @@ string GameEngine::validateMap(string currentPhase){
         return currentPhase;
     }
 }
-
-
 //functions
 string GameEngine::addPlayer(string currentPhase){
     if (currentPhase == states[2]||currentPhase == states[3]){
@@ -50,7 +45,6 @@ string GameEngine::addPlayer(string currentPhase){
         return currentPhase;
     }
 }
-
 //functions
 string GameEngine::assignCountries(string currentPhase){
     if (currentPhase == states[3]||currentPhase == states[6]){
@@ -62,7 +56,6 @@ string GameEngine::assignCountries(string currentPhase){
         return currentPhase;
     }
 }
-
 //functions
 string GameEngine::issueOrder(string currentPhase){
     if (currentPhase == states[4]|| currentPhase == states[5]){
@@ -74,7 +67,6 @@ string GameEngine::issueOrder(string currentPhase){
         return currentPhase;
     }
 }
-
 //functions
 string GameEngine::endIssueOrders(string currentPhase){
     if (currentPhase == states[5]||currentPhase == states[6]){
@@ -110,7 +102,6 @@ string GameEngine::endExecOrders(string currentPhase){
         return currentPhase;
     }
 }
-
 
 //functions
 string GameEngine::win(string currentPhase){
@@ -148,17 +139,16 @@ string GameEngine::play(string currentPhase){
     }
 }
 
-void GameEngine::reinforcmentPhase(vector<Player *>) {
+void GameEngine::reinforcementPhase() {
     int numOfArmies = 0;
-    vector<Player *>::iterator it;
-    for (it = this->player_list.begin(); it != this->player_list.end(); it++) {
-        //iterating through list of players
+    vector<Player*>::iterator i;
+    for (i = this->player_list.begin(); i != this->player_list.end(); i++) {
         // (# of territories owned divided by 3, rounded down
-        numOfArmies = (*it)->getTerritories().size();
+        numOfArmies = (*i)->getTerritories().size();
         numOfArmies = floor(numOfArmies / 3);
 
         vector<Continent *> mapContinents = this->map->getContinents();  // get all continents for current map
-        vector<Territory *> playerTerritories = (*it)->getTerritories(); // get the user's territories
+        vector<Territory *> playerTerritories = (*i)->getTerritories(); // get the user's territories
         vector<string> playerTerritoriesName;                            // get the user's territories name
 
         // iterate through player's territories and add their name
@@ -209,14 +199,48 @@ void GameEngine::reinforcmentPhase(vector<Player *>) {
         }
 
         // add new army number to the user's pool
-        int totalArmySize = (*it)->getReinforcementPool() + numOfArmies;
-        (*it)->setReinforcementPool(totalArmySize);
+        int totalArmySize = (*i)->getReinforcementPool() + numOfArmies;
+        (*i)->setReinforcementPool(totalArmySize);
     }
 }
-
-void GameEngine::excuteOrderPhase() {
-
-
+void GameEngine::executeOrderPhase() {
+    vector<Player *>::iterator it;
+    vector<Order *>::iterator iter;
+    OrdersList* playerOrders;
+    for(Player* player: player_list) {
+        for (Order *order: player->getOrderList()->getOrders()) {
+            if (typeid(*order) != typeid(Deploy))
+            {
+                continue;
+            }
+            order->execute();
+        }
+    }
+    for(Player* player: player_list) {
+        for (Order *order: player->getOrderList()->getOrders()) {
+            if (typeid(*order) == typeid(Deploy))
+            {
+                continue;
+            }
+            order->execute();
+        }
+    }
+    reinforcementPhase(); //goes back to the reinforcement phase
+}
+void GameEngine::issueOrdersPhase()
+{
+    for(Player* p : player_list){
+        cout << "Enter your order or type (end) to end your turn" << p->getName() << endl;
+        cout << "Available orders: Deploy, Advance, Airlift, Bomb, Blockage, and Negotiate" << endl;
+        while (true){
+            string order;
+            cin >> order;
+            if(order == "end"){
+                break;
+            }
+            issueOrder();
+        }
+    }
 }
 void GameEngine::startupPhase() {
 

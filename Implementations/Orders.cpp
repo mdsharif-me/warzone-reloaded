@@ -207,6 +207,10 @@ void OrdersList::move(int from, int to) {
     iter_swap(orders.begin() + from, orders.begin() + to);
 }
 
+vector<Order *> OrdersList::getOrders() {
+    return this->orders;
+}
+
 
 
 
@@ -260,12 +264,13 @@ bool Deploy::validate() {
 }
 
 /**
+/**
  * Method to execute a deploy operation
  */
 void Deploy::execute() {
     bool validOrder = this->validate();
     if(validOrder) {
-        player->setReinforcementPoll(player->getReinforcementPool() - nrArmies);
+        player->setReinforcementPool(player->getReinforcementPool() - nrArmies);
         targetTerritory->setArmyCount(targetTerritory->getArmyCount() + this->nrArmies);
         cout << nrArmies << " troops have been deployed to " << targetTerritory->getTerritoryName() << endl;
     }
