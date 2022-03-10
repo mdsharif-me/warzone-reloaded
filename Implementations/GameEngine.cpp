@@ -17,7 +17,6 @@ vector<Player *> GameEngine::getPlayersList() {
 //commands
 string states[]= {"start","maploaded","mapvalidated","playersadded","assignreinforcement",
                   "issueorders","executeorders","win"};
-
 //functions
 string GameEngine::loadMap(string currentPhase){
     if (currentPhase == states[0]|| currentPhase == states[1]){
@@ -29,7 +28,6 @@ string GameEngine::loadMap(string currentPhase){
         return currentPhase;
     }
 }
-
 //functions
 string GameEngine::validateMap(string currentPhase){
     if (currentPhase==states[1]){
@@ -41,8 +39,6 @@ string GameEngine::validateMap(string currentPhase){
         return currentPhase;
     }
 }
-
-
 //functions
 string GameEngine::addPlayer(string currentPhase){
     if (currentPhase == states[2]||currentPhase == states[3]){
@@ -54,7 +50,6 @@ string GameEngine::addPlayer(string currentPhase){
         return currentPhase;
     }
 }
-
 //functions
 string GameEngine::assignCountries(string currentPhase){
     if (currentPhase == states[3]||currentPhase == states[6]){
@@ -66,7 +61,6 @@ string GameEngine::assignCountries(string currentPhase){
         return currentPhase;
     }
 }
-
 //functions
 string GameEngine::issueOrder(string currentPhase){
     if (currentPhase == states[4]|| currentPhase == states[5]){
@@ -78,7 +72,6 @@ string GameEngine::issueOrder(string currentPhase){
         return currentPhase;
     }
 }
-
 //functions
 string GameEngine::endIssueOrders(string currentPhase){
     if (currentPhase == states[5]||currentPhase == states[6]){
@@ -115,7 +108,6 @@ string GameEngine::endExecOrders(string currentPhase){
     }
 }
 
-
 //functions
 string GameEngine::win(string currentPhase){
     if (currentPhase == states[6]){
@@ -132,6 +124,7 @@ string GameEngine::win(string currentPhase){
 string GameEngine::end(string currentPhase){
     if (currentPhase == states[7]){
         cout<< "The end";
+        this.transition("ending");
         return "exit";
     }
     else {
@@ -144,6 +137,7 @@ string GameEngine::end(string currentPhase){
 string GameEngine::play(string currentPhase){
     if (currentPhase == states[7]){
         cout<< "Play again";
+        this.transition("playing");
         return states[0];
     }
     else {
@@ -154,15 +148,14 @@ string GameEngine::play(string currentPhase){
 
 void GameEngine::reinforcementPhase(vector<Player *>) {
     int numOfArmies = 0;
-    vector<Player *>::iterator it;
-    for (it = this->player_list.begin(); it != this->player_list.end(); it++) {
-        //iterating through list of players
+    vector<Player*>::iterator i;
+    for (i = this->player_list.begin(); i != this->player_list.end(); i++) {
         // (# of territories owned divided by 3, rounded down
-        numOfArmies = (*it)->getTerritories().size();
+        numOfArmies = (*i)->getTerritories().size();
         numOfArmies = floor(numOfArmies / 3);
 
         vector<Continent *> mapContinents = this->map->getContinents();  // get all continents for current map
-        vector<Territory *> playerTerritories = (*it)->getTerritories(); // get the user's territories
+        vector<Territory *> playerTerritories = (*i)->getTerritories(); // get the user's territories
         vector<string> playerTerritoriesName;                            // get the user's territories name
 
         // iterate through player's territories and add their name
@@ -213,271 +206,157 @@ void GameEngine::reinforcementPhase(vector<Player *>) {
         }
 
         // add new army number to the user's pool
-        int totalArmySize = (*it)->getReinforcementPool() + numOfArmies;
-        (*it)->setReinforcementPool(totalArmySize);
+        int totalArmySize = (*i)->getReinforcementPool() + numOfArmies;
+        (*i)->setReinforcementPool(totalArmySize);
     }
 }
 
+string GameEngine::transition(string s){
+	return s; 
+}
+
+
 void GameEngine::issueOrdersPhase(vector<Player*> players, vector<Territory *>) {
-    std::string availableOrders[5] = {"Advance", "Bomb", "Airlift", "Blockade", "Negotiate"};
+    std::string availableOrders[6] = {"Deploy", "Advance", "Bomb", "Airlift", "Blockade", "Negotiate"};
     string choice;
     string startTerritory;
     string targetTerritory;
     string targetPlayer;
     int numberOfArmies;
-    bool orderIsDeploy;
-    bool orderIsAdvance;
-    bool orderIsBomb;
-    bool orderIsAirlift;
-    bool orderIsBlockade;
-    bool orderIsNegotiate;
+    bool isDeploy;
+    bool isAdvance;
+    bool isBomb;
+    bool isAirlift;
+    bool isBlockade;
+    bool isNegotiate;
 
     Territory* start = nullptr;
     Territory* target = nullptr;
     Player* targetPlayerObj = nullptr;
 
     for(Player* player: this->getPlayersList()) {
-
-        // DEPLOY armies until the reinforcement pool is empty
-        int availableArmies = player->getReinforcementPool();
-        int armiesToDeploy = 0;
-        do {
-            if (availableArmies < 1) {
-                break;
-            }
-            if (availableArmies > 0) {
-                for (Territory* territory: player->getTerritories()) {
-                    cout << "# armies to deploy to " << territory->getTerritoryName() << " (max " << player->getReinforcementPool() << ")" << ": ";
-                    cin >> armiesToDeploy;
-                    while (armiesToDeploy > availableArmies || armiesToDeploy < 0) {
-                        cout << "# armies to deploy to " << territory->getTerritoryName() << " (max " << player->getReinforcementPool() << ")" << ": ";
-                        cin >> armiesToDeploy;
-                    }
-                    availableArmies -= armiesToDeploy;
-                    cout << "Deploying " << to_string(armiesToDeploy) << " armies to " << territory->getTerritoryName() << endl;
-                    player->issueOrder(availableOrders[0], territory, numberOfArmies);
-                }
-            }
-        } while (availableArmies > 0);
-
-        if (availableArmies < 1) {
-            cout << "No more armies to deploy.";
+        cout << player->getPlayerName() << endl;
+        cout << "Please choose a start territory from the list:" << endl;
+        for(Territory* territory: player->getTerritories()) {
+            cout << territory->getTerritoryName() << " , ";
         }
 
-
-        // Let the player choose an order
-        bool validChoice = false;
-        while (!validChoice) {
-            cout << "Please enter the desired order from the list bellow:" << endl;
-            for(std::string order: availableOrders) {
-                cout << order << endl;
-            }
-            cout << "Order: ";
-
-            cin >> choice;
-            for(std::string order: availableOrders) {
-                if (choice == order) {
-                    validChoice = true;
+        while (start == nullptr) {
+            cout << "Start territory: ";
+            cin >> startTerritory;
+            for(Territory* territory: player->getTerritories()) {
+                if(territory->getTerritoryName() == startTerritory) {
+                    start = territory;
                     break;
                 }
             }
         }
 
 
-        // FOR ADVANCE ORDER
-        orderIsAdvance = availableOrders[0] == choice;
-        if (orderIsAdvance) {
-            cout << player->getPlayerName() << "choose to ADVANCE " << endl;
-            cout << "Please SELECT a start territory by name from the list:" << endl;
-
-            if (player->getTerritories().size() < 1) {
-                cout << player->getPlayerName() << " has no controlled territories. Nothing to advance" << endl;
-                continue;
-
-            } else {
-                // display the list of territories controlled by player.
-                for(Territory* territory: player->getTerritories()) {
-                    cout << "PLAYER TERRITORY: " << territory->getTerritoryName() << " " << territory->getArmyCount() << " armies." << endl;
-                    for(Territory* neighbour: territory->getAdjTerritories()) {
-                        cout << "     NEIGHBOUR: ";
-                        if(neighbour->isAllied(player)) {
-                            cout << "FRIENDLY ";
-                        } else if(neighbour->isEnemy(player)) {
-                            cout << "ENEMY ";
-                        }
-                        cout << neighbour->getTerritoryName() << " " << neighbour->getArmyCount() << " armies" << endl;
-                    }
-
-                }
-
-                // get user input for START TERRITORY.
-                bool validChoice = false;
-                while (!validChoice) {
-                    cout << "Start territory: ";
-                    cin >> startTerritory;
-                    for(Territory* territory: player->getTerritories()) {
-                        if(territory->getTerritoryName() == startTerritory) {
-                            validChoice = true;
-                            start = territory;
-                        }
-                    }
-                    cout << "Invalid choice." << endl;
-                }
-
-                cout << player->getPlayerName() << " will start ADVANCE from " << start->getTerritoryName() << endl;
-
-                // get input for target territory
-                validChoice = false;
-                do {
-                    cout << "Target territory (by name): " << endl;
-                    cin >> targetTerritory;
-                    for(Territory* territory: start->getAdjTerritories()) {
-                        if (territory->getTerritoryName() == targetTerritory) {
-                            target = territory;
-                            validChoice = true;
-                        }
-                    }
-                } while (!validChoice);
-
-                do {
-                    cout << "Number of Armies to Advance (max " << start->getArmyCount()  << "): " << endl;
-                    cin >> numberOfArmies;
-                    if (numberOfArmies < start->getArmyCount()) {
-                        player->issueOrder(availableOrders[0], target, numberOfArmies);
-                    }
-                } while (numberOfArmies > start->getArmyCount() );
-
-                player->issueOrder(availableOrders[0], start, target, numberOfArmies);
-
+        while (true) {
+            cout << "Please enter the desired order from the list bellow:" << endl;
+            for(std::string order: availableOrders) {
+                cout << order << ", ";
             }
+            cout << endl;
+            cout << "Order: ";
+
+            cin >> choice;
+            for(std::string order: availableOrders) {
+                if (choice == order) {
+                    break;
+                }
+            }
+            break;
         }
 
-        //FOR AIRLIFT ORDER
-        if (orderIsAirlift) {
-            cout << player->getPlayerName() << "choose to AIRLIFT " << endl;
-            cout << "Please SELECT a start territory by name from the list:" << endl;
+        isDeploy = choice == availableOrders[0];
+        if (isDeploy) {
 
-            if (player->getTerritories().size() < 1) {
-                cout << player->getPlayerName() << " has no controlled territories. Nothing to airlift." << endl;
-                continue;
-
-            } else {
-                // display the list of territories controlled by player.
-                for(Territory* territory: player->getTerritories()) {
-                    cout << "PLAYER TERRITORY: " << territory->getTerritoryName() << " " << territory->getArmyCount() << " armies." << endl;
-                    for(Territory* neighbour: territory->getAdjTerritories()) {
-                        if (neighbour->isAllied(player)) {
-                            cout << "     NEIGHBOUR: ";
-                            cout << "FRIENDLY ";
-                            cout << neighbour->getTerritoryName() << " " << neighbour->getArmyCount() << " armies" << endl;
-                        }
+            while (target == nullptr) {
+                cout << "Target territory: " << endl;
+                cin >> targetTerritory;
+                for(Territory* territory: start->getAdjTerritories()) {
+                    if(territory->getTerritoryName() == targetTerritory) {
+                        target = territory;
+                        break;
                     }
                 }
-
-                // get user input for START TERRITORY.
-                bool validChoice = false;
-                while (!validChoice) {
-                    cout << "Start territory: ";
-                    cin >> startTerritory;
-                    for(Territory* territory: player->getTerritories()) {
-                        if(territory->getTerritoryName() == startTerritory) {
-                            validChoice = true;
-                            start = territory;
-                        }
-                    }
-                    cout << "Invalid choice." << endl;
-                }
-
-                cout << player->getPlayerName() << " will start AIRLIFT from " << start->getTerritoryName() << endl;
-
-                // get input for target territory
-                validChoice = false;
-                do {
-                    cout << "Target territory (by name): " << endl;
-                    cin >> targetTerritory;
-                    for(Territory* territory: start->getAdjTerritories()) {
-                        if (territory->isAllied(player)) {
-                            if (territory->getTerritoryName() == targetTerritory) {
-                                target = territory;
-                                validChoice = true;
-                            }
-                        }
-                    }
-                } while (!validChoice);
-
-                do {
-                    cout << "Number of Armies to AIRLIFT (max " << start->getArmyCount()  << "): " << endl;
-                    cin >> numberOfArmies;
-                    if (numberOfArmies < start->getArmyCount()) {
-                        player->issueOrder(availableOrders[2], target, numberOfArmies);
-                    }
-                } while (numberOfArmies > start->getArmyCount() );
             }
+
+            do {
+                cout << "Number of Armies (max " << player->getReinforcementPool() << "): " << endl;
+                cin >> numberOfArmies;
+                if (numberOfArmies < player->getReinforcementPool()) {
+                    player->issueOrder(availableOrders[0], target, numberOfArmies);
+                }
+            } while (numberOfArmies > player->getReinforcementPool());
         }
 
-
-        // FOR BOMB ORDER
-        orderIsBomb = choice == availableOrders[1];
-        if (orderIsBomb) {
-            cout << player->getPlayerName() << "choose to BOMB " << endl;
-            bool validChoice = false;
+        isBomb = choice == availableOrders[2];
+        isBlockade = choice == availableOrders[4];
+        if (isBomb || isBlockade) {
             do {
                 cout << "Target territory: " << endl;
                 cin >> targetTerritory;
                 for(Territory* territory: start->getAdjTerritories()) {
-                    if (territory->isEnemy(player)) {
-                        if (territory->getTerritoryName() == targetTerritory) {
-                            target = territory;
-                            validChoice = true;
-                        }
+                    if (territory->getTerritoryName() == targetTerritory) {
+                        target = territory;
+                        break;
                     }
                 }
-            } while (!validChoice);
+            } while (target == nullptr);
 
-            player->issueOrder(availableOrders[1], target);
+            if (isBomb) {
+                player->issueOrder(availableOrders[2], target);
+            } else if (isBlockade) {
+                player->issueOrder(availableOrders[4], target);
+            }
+
         }
 
-
-        // FOR BLOCKADE ORDER
-        orderIsBlockade = choice == availableOrders[3];
-        if (orderIsBlockade) {
-            cout << player->getPlayerName() << "choose to BLOCKADE " << endl;
-            bool validChoice = false;
+        isAdvance = choice == availableOrders[1];
+        isAirlift = choice == availableOrders[3];
+        if (isAdvance || isAirlift) {
             do {
                 cout << "Target territory: " << endl;
                 cin >> targetTerritory;
                 for(Territory* territory: start->getAdjTerritories()) {
-                    if (territory->isEnemy(player)) {
-                        if (territory->getTerritoryName() == targetTerritory) {
-                            target = territory;
-                            validChoice = true;
-                        }
+                    if (territory->getTerritoryName() == targetTerritory) {
+                        target = territory;
+                        break;
                     }
                 }
-            } while (!validChoice);
+            } while (target == nullptr);
 
-            player->issueOrder(availableOrders[3], target);
+            do {
+                cout << "Number of Armies (max " << start->getArmyCount()  << "): " << endl;
+                cin >> numberOfArmies;
+                if (numberOfArmies < player->getReinforcementPool()) {
+                    player->issueOrder(availableOrders[0], target, numberOfArmies);
+                }
+            } while (numberOfArmies > start->getArmyCount() );
+
+            if (isAdvance ) {
+                player->issueOrder(availableOrders[1], start, target, numberOfArmies);
+            }
+            if (isAirlift) {
+                player->issueOrder(availableOrders[3], start, target, numberOfArmies);
+            }
+
         }
 
 
-
-        // FOR NEGOTIATE ORDER
-        orderIsNegotiate = choice == availableOrders[4];
-        if(orderIsNegotiate) {
-            cout << player->getPlayerName() << "choose to NEGOTIATE " << endl;
+        isNegotiate = choice == availableOrders[5];
+        if(isNegotiate) {
             do {
-                cout << "Please choose a target player by name from the list:" << endl;
+                cout << "Please choose a target player from the list:" << endl;
                 for(Player* player1: this->getPlayersList()) {
                     cout << player1->getPlayerName() << ", ";
                 }
                 cout << endl;
                 cout << "Target Player: " << endl;
                 cin >> targetPlayer;
-
-                if (targetPlayer == player->getPlayerName()) {
-                    cout << "Cannot negotiate with yourself. Please choose a competing player.";
-                    continue;
-                }
 
                 for(Player* player2: this->getPlayersList()) {
                     if(player2->getPlayerName() == targetPlayer) {
@@ -487,7 +366,7 @@ void GameEngine::issueOrdersPhase(vector<Player*> players, vector<Territory *>) 
                 }
             } while (targetPlayerObj == nullptr);
 
-            player->issueOrder(availableOrders[4], targetPlayerObj);
+            player->issueOrder(availableOrders[5], targetPlayerObj);
         }
     }
 }
@@ -518,7 +397,6 @@ void GameEngine::startupPhase() {
 void GameEngine::mainGameLoop() {
 
 }
-
 
 
 

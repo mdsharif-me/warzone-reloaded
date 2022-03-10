@@ -21,6 +21,7 @@ public:
     string execOrder(string currentPhase);
     string end(string currentPhase);
     string play(string currentPhase);
+    string transition(string transit);
     void startupPhase(); //Assignment 2 Part 2
     void mainGameLoop(); //Assignment 2 Part 3
     void reinforcementPhase(vector<Player*>); //Assignment 2 Part 3
