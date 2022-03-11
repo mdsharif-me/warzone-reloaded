@@ -84,6 +84,15 @@ void Player::issueOrder(const string& orderName,Territory* startTerritory, Terri
 
 
 void Player::issueOrder(const string& orderName, Player* targetPlayer) {
+    // 1. The decision-marking code must be implemented within this method.
+    // 1. Finding neighbouring territories that can be attacked. (toAttack() method)
+    // 2. Finding neighbouring territories that can be defended. (toDefend() method)
+    // 3. First Deploy order should be called on territories from toDefend().
+    // 4. Once all the armies of a player are used, he can now call other orders.
+    // 5. Advance Order: Player can move armies to one of his own territories (using toDefend() to make the decision)
+    // 5. Advance Order: Player can move armies to one of the NEIGHBOURING enemy territory to attack them (using toAttack() to make the decision)
+    // 6. Cards in Hand: Issue the corresponding order.
+    // 7. Validating whether they are executed, is not part of this function.
     const string &nameOfOrder = orderName;
     if (nameOfOrder == "Negotiate") {
         auto *negotiate = new Negotiate(this, targetPlayer);

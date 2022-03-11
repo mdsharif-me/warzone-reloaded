@@ -154,7 +154,19 @@ void GameEngine::createPlayers() {
         //TODO: Part2
     }
 }
+
+
+void GameEngine::mainGameLoop() {
+// 1. Round robin fashiion in the order setup in startup phase
+// 2. This loop shall continue until only one of the players owns all the terrotires in the map.
+// 3. Also checks if any player does not control at leasst one territory
+// 4. if so the player is removed from the game.
+}
 void GameEngine::reinforcementPhase() {
+    // 1. Players are given armies that depends on the number of terrtories.
+    // 2. Bonus Armies: Only if the player owns the whole continent.
+    // 3. The minimal number of reinforcement armies per turn for any player is 33.
+    // 4. The reinforcement armies should be placed in player's pool.
     int numOfArmies = 0;
     vector<Player*>::iterator i;
     for (i = this->player_list.begin(); i != this->player_list.end(); i++) {
@@ -375,6 +387,14 @@ void GameEngine::issueOrdersPhase(vector<Player*> players, vector<Territory *>) 
 }
 
 void GameEngine::excuteOrderPhase() {
+    // 1. Once all the players have signified in the same turn that they are not issuing one more order, the game engine goes to executionPhase()
+    // 2. How the orders executed:- New method called nextOrder() should be made.
+    // 3. nextOrder() returns the next order in the OrderList.
+    // 4. Once received, it calls the method execute() created in Part 4.
+    // 5. Record the narrative of its effect stored in the order object.
+    // 6. All deployment orders should be done first in round robin.
+    // 6. This means you for loop all the deplot order from each player first.
+    // 7. Once all the order for all player are executed return back to the reinforcementPhase.
     for(Player* player: this->getPlayersList()) {
         OrdersList* ordersList = player->getOrderList();
         vector<Order* > orders = ordersList->getOrders();
@@ -390,17 +410,13 @@ void GameEngine::excuteOrderPhase() {
             }
         }
     }
-    reinforcementPhase()
-
-
+    reinforcementPhase();
 }
+
 void GameEngine::startupPhase() {
 
 }
 
-void GameEngine::mainGameLoop() {
-
-}
 
 
 

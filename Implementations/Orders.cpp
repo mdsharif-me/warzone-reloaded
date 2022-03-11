@@ -139,7 +139,6 @@ void Order::setNrArmiesToDefend(int nrArmiesToDefend) {
  *
  */
 
-
 // constructor implementation
 OrdersList::OrdersList(const vector<Order *> &ordersList) : orders(ordersList) {
     this -> orders = ordersList;
