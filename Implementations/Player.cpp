@@ -197,3 +197,7 @@ void Player::removeTerritory(Territory *territory) {
     std::remove(territories.begin(), territories.end(), territory);
 
 }
+
+Player::Player(string &name) {
+    this->name = name;
+}

@@ -28,6 +28,7 @@ private:
     int reinforcementPool = 0;
 public:
     Player() = default;                         //Default Constructor
+    Player(string& name);
     Player(string& name, vector<Territory*> ta, vector<Territory*> td, Hand* c);
     Player(const Player&);                      //Copy Constructor
     ~Player();                                  //Destructor

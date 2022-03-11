@@ -144,7 +144,17 @@ string GameEngine::play(string currentPhase){
     }
 }
 
-void GameEngine::reinforcementPhase(vector<Player *>) {
+void GameEngine::createPlayers() {
+    cout << "Enter number of Player:" << endl;
+    int numOfPlayers; cin >> numOfPlayers;
+    for(int i = 0; i < numOfPlayers; i++){
+        cout << "Player " << i << "name: " << endl;
+        string name; cin >> name;
+        this->player_list.push_back(new Player(name));
+        //TODO: Part2
+    }
+}
+void GameEngine::reinforcementPhase() {
     int numOfArmies = 0;
     vector<Player*>::iterator i;
     for (i = this->player_list.begin(); i != this->player_list.end(); i++) {
@@ -380,6 +390,7 @@ void GameEngine::excuteOrderPhase() {
             }
         }
     }
+    reinforcementPhase()
 
 
 }

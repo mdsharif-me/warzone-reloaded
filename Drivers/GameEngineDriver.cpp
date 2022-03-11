@@ -3,8 +3,8 @@
 #include "../Headers/GameEngine.h"
 using namespace std;
 
-int main(){
-    string currentState="start";
+int main() {
+    /*string currentState="start";
     string input;
     cout << "Game has started\n";
     GameEngine* g = new GameEngine();
@@ -42,5 +42,26 @@ int main(){
         }
     }
     delete g;
+     */
+    int numberOfPlayers = 0;
+    vector<Player*> tempPlayers;
+    vector<string> mapFileList = { "../Maps/canada.map"};
+    // Check the map files and build maps
+    for (int i = 0; i < mapFileList.size(); i++) {
+        MapLoader map(mapFileList[i]);
+        if(map.extract()) {
+            Map *m = map.createMap();
+            if (m->mapValidate()) {
+                cout << "\nSuccess: Map \"" << mapFileList[i] << "\" has been built.\n\n";
+            }
+        }
+        else {
+            cout << "\nError: Map file \"" << mapFileList[i] << "\" is invalid.\n\n";
+        }
+    }
+    GameEngine* g = new GameEngine();
+    g->createPlayers();
+
+    return 0;
 }
 
