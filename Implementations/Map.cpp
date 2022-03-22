@@ -370,7 +370,15 @@ void Territory::setArmyCount(int ac) {
 	this->armyCount = ac;
 }
 void Territory::addAdjTerritory(Territory *t) {
-    this->adjTerritories.push_back(t);
+    bool doesExists = false;
+    for(Territory* territory: this->getAdjTerritories()) {
+        if (territory == t) {
+            doesExists = true;
+        }
+    }
+    if (!doesExists) {
+        this->adjTerritories.push_back(t);
+    }
 }
 vector<Territory *> Territory::getAdjTerritories() {
     return this->adjTerritories;
