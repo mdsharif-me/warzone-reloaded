@@ -17,6 +17,7 @@ class Order;
 class OrdersList;
 class Hand;
 class Territory;
+class Deck;
 
 class Player {
 private:

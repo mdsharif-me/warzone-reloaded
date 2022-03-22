@@ -13,6 +13,7 @@ Date: 12 Feb, 2022
 #include <sstream>
 #include <algorithm>
 using namespace std;
+class Player;
 
 class Territory {
 public:
@@ -99,9 +100,6 @@ public:
     Map* createMap();
 	bool extract();
     void buildMap();
-	string extractWord(string inputString, int index);
-	int extractInt(string inputString, int index);
-	vector<int> extractAllInt(string inputString);
     MapLoader& operator=(const MapLoader &mapLoader);
     friend ostream& operator<<(ostream& out, const MapLoader &mapLoader);
 

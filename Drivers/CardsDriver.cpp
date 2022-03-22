@@ -24,13 +24,14 @@ int main() {
     Card *card = new Card(CardTypes[r]);
     deck->addToDeck(card);
     }
-    Hand* hand = new Hand();
-
-    deck->draw(hand);
-    deck->draw(hand);
+    //Hand* hand = new Hand();
+    string name = "Deep";
+    Player* player = new Player(name);
+    deck->draw(player);
+    deck->draw(player);
 
     deck->print();
-    hand->print();
+    //hand->print();
 
 }
 
