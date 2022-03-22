@@ -48,39 +48,7 @@ vector<Territory*> Player::toAttack()
 vector<Territory *> Player::getTerritories() {
     return territories;
 }
-/**
-void Player::issueOrder(const string& orderName, Territory* targetTerritory, int nrOfArmies) {
-    const string& nameOfOrder = orderName;
-    if (nameOfOrder == "Deploy") {
-        auto* deploy = new Deploy(this, targetTerritory, nrOfArmies);
-        orderList->add(deploy);
-    }
-}
- */
-/**
-void Player::issueOrder(const string& orderName, Territory* targetTerritory) {
-    const string& nameOfOrder = orderName;
-    if (nameOfOrder == "Bomb") {
-        Bomb* bomb = new Bomb(this, targetTerritory);
-        orderList->add(bomb);
-    } else if (nameOfOrder == "Blockade") {
-        auto* blockade = new Blockade(this, targetTerritory);
-        orderList->add(blockade);
-    }
-}
- */
-/**
-void Player::issueOrder(const string& orderName,Territory* startTerritory, Territory* targetTerritory,int nrOfArmies) {
-    const string &nameOfOrder = orderName;
-    if (nameOfOrder == "Advance") {
-        auto *advance = new Advance(this, startTerritory, targetTerritory, nrOfArmies);
-        orderList->add(advance);
-    } else if (nameOfOrder == "Airlift") {
-        auto *airlift = new Airlift(this, startTerritory, targetTerritory, nrOfArmies);
-        orderList->add(airlift);
-    }
-}
- **/
+
 void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const string& orderName, Player* targetPlayer) {
     // 1. The decision-marking code must be implemented within this method.
     // 1. Finding neighbouring territories that can be attacked. (toAttack() method)
@@ -145,25 +113,6 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const strin
     while(this->getTerritories().size() != this->territoriesToDefend.size());
 
     // Deployment Ordering
-    /*
-    std::string availableOrders[6] = {"Deploy", "Advance", "Bomb", "Airlift", "Blockade", "Negotiate"};
-    string choice;
-    string startTerritory;
-    string targetTerritory;
-    string targetPlayer;
-    int numberOfArmies;
-    bool isDeploy;
-    bool isAdvance;
-    bool isBomb;
-    bool isAirlift;
-    bool isBlockade;
-    bool isNegotiate;
-
-    Territory* start = nullptr;
-    Territory* target = nullptr;
-    Player* targetPlayerObj = nullptr;
-`
-    */
     cout << this->getPlayerName() << endl;
     cout << "Territories to Defend in priority. " << endl;
     cout << "Please deploy Army to each territory:" << endl;
@@ -335,135 +284,6 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const strin
             cout << "Invalid order." << endl;
         }
     }
-    /*
-        while (start == nullptr) {
-            cout << "Start territory: ";
-            cin >> startTerritory;
-            for(Territory* territory: player->getTerritories()) {
-                if(territory->getTerritoryName() == startTerritory) {
-                    start = territory;
-                    break;
-                }
-            }
-        }
-
-
-        while (true) {
-            cout << "Please enter the desired order from the list bellow:" << endl;
-            for(std::string order: availableOrders) {
-                cout << order << ", ";
-            }
-            cout << endl;
-            cout << "Order: ";
-
-            cin >> choice;
-            for(std::string order: availableOrders) {
-                if (choice == order) {
-                    break;
-                }
-            }
-            break;
-        }
-
-        isDeploy = choice == availableOrders[0];
-        if (isDeploy) {
-
-            while (target == nullptr) {
-                cout << "Target territory: " << endl;
-                cin >> targetTerritory;
-                for(Territory* territory: start->getAdjTerritories()) {
-                    if(territory->getTerritoryName() == targetTerritory) {
-                        target = territory;
-                        break;
-                    }
-                }
-            }
-
-            do {
-                cout << "Number of Armies (max " << player->getReinforcementPool() << "): " << endl;
-                cin >> numberOfArmies;
-                if (numberOfArmies < player->getReinforcementPool()) {
-                    player->issueOrder(availableOrders[0], target, numberOfArmies);
-                }
-            } while (numberOfArmies > player->getReinforcementPool());
-        }
-
-        isBomb = choice == availableOrders[2];
-        isBlockade = choice == availableOrders[4];
-        if (isBomb || isBlockade) {
-            do {
-                cout << "Target territory: " << endl;
-                cin >> targetTerritory;
-                for(Territory* territory: start->getAdjTerritories()) {
-                    if (territory->getTerritoryName() == targetTerritory) {
-                        target = territory;
-                        break;
-                    }
-                }
-            } while (target == nullptr);
-
-            if (isBomb) {
-                player->issueOrder(availableOrders[2], target);
-            } else if (isBlockade) {
-                player->issueOrder(availableOrders[4], target);
-            }
-
-    }
-
-    isAdvance = choice == availableOrders[1];
-    isAirlift = choice == availableOrders[3];
-    if (isAdvance || isAirlift) {
-        do {
-            cout << "Target territory: " << endl;
-            cin >> targetTerritory;
-            for(Territory* territory: start->getAdjTerritories()) {
-                if (territory->getTerritoryName() == targetTerritory) {
-                    target = territory;
-                    break;
-                }
-            }
-        } while (target == nullptr);
-
-        do {
-            cout << "Number of Armies (max " << start->getArmyCount()  << "): " << endl;
-            cin >> numberOfArmies;
-            if (numberOfArmies < player->getReinforcementPool()) {
-                player->issueOrder(availableOrders[0], target, numberOfArmies);
-            }
-        } while (numberOfArmies > start->getArmyCount() );
-
-        if (isAdvance ) {
-            player->issueOrder(availableOrders[1], start, target, numberOfArmies);
-        }
-        if (isAirlift) {
-            player->issueOrder(availableOrders[3], start, target, numberOfArmies);
-        }
-
-    }
-
-
-    isNegotiate = choice == availableOrders[5];
-    if(isNegotiate) {
-        do {
-            cout << "Please choose a target player from the list:" << endl;
-            for(Player* player1: this->getPlayersList()) {
-                cout << player1->getPlayerName() << ", ";
-            }
-            cout << endl;
-            cout << "Target Player: " << endl;
-            cin >> targetPlayer;
-
-            for(Player* player2: this->getPlayersList()) {
-                if(player2->getPlayerName() == targetPlayer) {
-                    targetPlayerObj = player;
-                    break;
-                }
-            }
-        } while (targetPlayerObj == nullptr);
-
-        player->issueOrder(availableOrders[5], targetPlayerObj);
-    }
-    */
 }
 OrdersList* Player::getOrderList() {
     return orderList;
