@@ -33,7 +33,17 @@ public:
     void issueOrdersPhase(); //Assingment 2 Part 3
     void excuteOrderPhase(); //Assignment 2 Part 3
     vector<Player *> getPlayersList();
+    const string &getState() const;
+    void setState(const string &state);
+    Map *getMap() const;
+    void setMap(Map *map);
+    MapLoader *getMapLoader() const;
+    void setMapLoader(MapLoader *mapLoader);
+    const vector<Player *> &getPlayerList() const;
+    void setPlayerList(const vector<Player *> &playerList);
+    Deck *getDeck() const;
 
+    void setDeck(Deck *deck);
 
 private:
     string state;
