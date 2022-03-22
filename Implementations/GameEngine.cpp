@@ -163,14 +163,18 @@ void GameEngine::mainGameLoop() {
 // 4. if so the player is removed from the game.
     int round = 0;
     while (player_list.size() != 1){
+        cout << "Reinforcement Phase begins:" << endl;
         this->reinforcementPhase();
         // To remove player with zero territories.
         for (int i = 0; i < player_list.size(); i++){
             if(player_list[i]->getTerritories().size() == 0){
+                cout << "Removing " << player_list[i] << endl;
                 remove(player_list.begin(), player_list.end(), player_list[i]);
             }
         }
+        cout << "Issuing Order Phase begins:" << endl;
         this->issueOrdersPhase();
+        cout << "Executing Order Phase begins:" << endl;
         this->excuteOrderPhase();
         round++;
     }
@@ -284,8 +288,52 @@ void GameEngine::excuteOrderPhase() {
     }
 }
 
+GameEngine::GameEngine(const string state) {
+
+}
+
 void GameEngine::startupPhase() {
 
+}
+
+const string &GameEngine::getState() const {
+    return state;
+}
+
+void GameEngine::setState(const string &state) {
+    GameEngine::state = state;
+}
+
+Map *GameEngine::getMap() const {
+    return map;
+}
+
+void GameEngine::setMap(Map *map) {
+    GameEngine::map = map;
+}
+
+MapLoader *GameEngine::getMapLoader() const {
+    return map_loader;
+}
+
+void GameEngine::setMapLoader(MapLoader *mapLoader) {
+    map_loader = mapLoader;
+}
+
+const vector<Player *> &GameEngine::getPlayerList() const {
+    return player_list;
+}
+
+void GameEngine::setPlayerList(const vector<Player *> &playerList) {
+    player_list = playerList;
+}
+
+Deck *GameEngine::getDeck() const {
+    return deck;
+}
+
+void GameEngine::setDeck(Deck *deck) {
+    GameEngine::deck = deck;
 }
 
 

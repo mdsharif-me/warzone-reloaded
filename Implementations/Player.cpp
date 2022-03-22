@@ -65,7 +65,8 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const strin
     cout << "The following are enemy territories, decide priority of the territories to be attacked:" << endl;
     vector<Territory*> enemyTerritories = get_neighbour_territories(this);
     for(int i = 1; i <= enemyTerritories.size(); i++){
-        cout << i  << ": "<< this->getTerritories()[i-1]->getTerritoryName() << endl;
+        cout << i  << ": "<< this->getTerritories()[i-1]->getTerritoryName() << "Army count: " <<
+        this->getTerritories()[i-1]->getArmyCount() << endl;
     }
     cout <<"Select the order of priority by writing the number (type 0 to stop)" << endl;
     do{
@@ -79,10 +80,10 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const strin
         else{
             if(!checkIfAlreadyExists(enemyTerritories[numberOrder-1], this->territoriesToAttack)) {
                 this->territoriesToAttack.push_back(enemyTerritories[numberOrder-1]);
-                cout << "Territory successfully added";
+                cout << "Territory successfully added" << endl;
             }
             else{
-                cout << "Territory already in the list";
+                cout << "Territory already in the list" << endl;
             }
         }
     }
@@ -105,10 +106,10 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const strin
         else{
             if(!checkIfAlreadyExists(this->getTerritories()[numberOrder-1], this->territoriesToDefend)) {
                 this->territoriesToDefend.push_back(this->getTerritories()[numberOrder-1]);
-                cout << "Territory successfully added";
+                cout << "Territory successfully added" << endl;
             }
             else{
-                cout << "Territory already in the list";
+                cout << "Territory already in the list" << endl;
             }
         }
     }

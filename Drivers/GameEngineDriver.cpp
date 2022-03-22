@@ -47,10 +47,11 @@ int main() {
     vector<Player*> tempPlayers;
     vector<string> mapFileList = { "../Maps/canada.map"};
     // Check the map files and build maps
+    Map * m;
     for (int i = 0; i < mapFileList.size(); i++) {
         MapLoader map(mapFileList[i]);
         if(map.extract()) {
-            Map *m = map.createMap();
+            m = map.createMap();
             if (m->mapValidate()) {
                 cout << "\nSuccess: Map \"" << mapFileList[i] << "\" has been built.\n\n";
             }
@@ -60,8 +61,54 @@ int main() {
         }
     }
     GameEngine* g = new GameEngine();
-    g->createPlayers();
+    //g->createPlayers();
+    //g->startupPhase();
+    vector<Territory*> playerTerritories;
+    vector<Territory*> playertoDefend;
+    vector<Territory*> playertoAttack;
+    vector<Territory*> enemyTerritories;
+    vector<Territory*> enemytoDefend;
+    vector<Territory*> enemytoAttack;
+    int numberOfArmies;
 
+
+    auto* player = new Player();
+    auto * enemyPlayer = new Player();
+    player->setName("Mike");
+    enemyPlayer->setName("Enemy");
+
+    vector<Territory *> allTerritories = m->getTerritories();
+    playerTerritories.reserve(3);
+    for(int i = 0; i < 3; i++) {
+        playerTerritories.push_back(allTerritories[i]);
+        allTerritories[i]->setArmyCount(3);
+    }
+
+    enemyTerritories.reserve(3);
+    for(int i = 3; i < 6; i++) {
+        enemyTerritories.push_back(allTerritories[i]);
+        allTerritories[i]->setArmyCount(3);
+    }
+
+    for(int i = 0; i < 3; i++) {
+        playerTerritories[i]->addOwner(player);
+        enemyTerritories[i]->addOwner(enemyPlayer);
+    }
+
+    player->setTerritories(playerTerritories);
+    player->setReinforcementPool(50); // should be done in part 2
+    enemyPlayer->setTerritories(enemyTerritories);
+    enemyPlayer->setReinforcementPool(50); // part2
+
+    Deck* deck = new Deck();
+    vector<Player* > players;
+    players.push_back(player);
+    players.push_back(enemyPlayer);
+    g->setPlayerList(players);
+    g->setDeck(deck);
+    g->setMap(m);
+    cout << "Main Game loop:" << endl;
+    g->mainGameLoop();
     return 0;
 }
 
