@@ -97,6 +97,7 @@ public:
 /**
  * Class declaration Orders List
  */
+
 class OrdersList {
 private:
     vector<Order*> orders;
@@ -108,24 +109,18 @@ public:
 
     //constructor
     OrdersList(const vector<Order *> &orders);
-
     //copy constructor
     OrdersList(const OrdersList &orderList);
-
     //destructor
     ~OrdersList();
-
     // assignment operator
     OrdersList& operator = (OrdersList *orderList);
-
     // stream insertion operator
     friend ostream& operator << (ostream &ostream, const OrdersList &orderList);
-
     void add(Order* order);
     void remove(int index);
     void move(int from, int to);
-
-    vector<Order* > getOrders();
+    vector<Order*> getOrders();
 
 };
 

@@ -10,6 +10,7 @@
 #include <iostream>
 #include "Orders.h"
 #include "Map.h"
+#include "Cards.h"
 using namespace std;
 
 class Order;
@@ -29,6 +30,7 @@ private:
     bool newTerritoryConquered;
 public:
     Player() = default;                         //Default Constructor
+    Player(string& name);
     Player(string& name, vector<Territory*> ta, vector<Territory*> td, Hand* c);
     Player(const Player&);                      //Copy Constructor
     ~Player();                                  //Destructor
@@ -36,11 +38,7 @@ public:
     vector<Territory *> toDefend();             //Accessor
     vector<Territory *> toAttack();             //Accessor
     vector<Territory *> getTerritories();       //Accessor
-    void issueOrder(const string& orderName, Territory* targetTerritory, int nrOfArmies);
-    void issueOrder(const string& orderName, Territory* targetTerritory);
-    void issueOrder(const string& orderName,Territory* startTerritory, Territory* targetTerritory,int nrOfArmies);
-    void issueOrder(const string& orderName, Player* targetPlayer);
-
+    void issueOrder(Deck* deck, vector<Player*> players_list);
     OrdersList* getOrderList();                 //Accessor
     Hand* getPlayerHand();                      //Accessor
     int getReinforcementPool();                 //Accessor
@@ -52,12 +50,11 @@ public:
     Player& operator=(const Player& player);    //assignment operator
     friend ostream& operator << (ostream& os, const Player& player); //stream insertion operator for Player
     vector<Territory*> get_friendly_neighbour(Player* p);
-    vector<Territory*> get_neighbour_territories(Player* p);
+    static vector<Territory*> get_neighbour_territories(Player* p);
     void addTerritory(Territory* territory);
     void removeTerritory(Territory* territory);
-
+    bool checkIfAlreadyExists(Territory*, vector<Territory*>);
     bool isNewTerritoryConquered() const;
-
     void setNewTerritoryConquered(bool newTerritoryConquered);
 };
 

@@ -139,7 +139,6 @@ void Order::setNrArmiesToDefend(int nrArmiesToDefend) {
  *
  */
 
-
 // constructor implementation
 OrdersList::OrdersList(const vector<Order *> &ordersList) : orders(ordersList) {
     this -> orders = ordersList;
@@ -208,7 +207,7 @@ void OrdersList::move(int from, int to) {
 }
 
 vector<Order *> OrdersList::getOrders() {
-    return orders;
+    return this->orders;
 }
 
 
@@ -263,6 +262,7 @@ bool Deploy::validate() {
     return false;
 }
 
+/**
 /**
  * Method to execute a deploy operation
  */
@@ -390,7 +390,6 @@ void Advance::print(ostream &os) const {
 }
 
 
-
 /**
  * Class to implement Bomb
  */
@@ -414,7 +413,6 @@ Bomb& Bomb::operator=(const Bomb &bomb){
 
     return *this;
 }
-
 
 // method to validate an order
 bool Bomb  :: validate() {
@@ -588,7 +586,6 @@ Negotiate::Negotiate(const Negotiate &negotiate) : Order(negotiate){
 Negotiate& Negotiate::operator=(const Negotiate &negotiate){
     this->player = negotiate.player;
     this->targetPlayer = negotiate.targetPlayer;
-
     return *this;
 }
 
