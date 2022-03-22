@@ -263,17 +263,21 @@ void GameEngine::excuteOrderPhase() {
     for(Player* player: this->getPlayersList()) {
         vector<Order* > orders = player->getOrderList()->getOrders();
         for(Order* order: orders) {
-            if (typeid(order) == typeid(Deploy)) {
+            if (dynamic_cast<const Deploy*>(order) != nullptr) {
                 order->execute();
+                player->getOrderList()->removeOrder(order);
             }
         }
-        for(Order* order: orders) {
-            if (typeid(order) != typeid(Deploy)) {
-                order->execute();
-            }
-        }
-        orders.clear();
     }
+
+    for(Player* player: this->getPlayersList()) {
+        vector<Order* > orders = player->getOrderList()->getOrders();
+        for(Order* order: orders) {
+                order->execute();
+                player->getOrderList()->removeOrder(order);
+        }
+    }
+
     // resetting negotiating players
     for(Player* playerrr: this->getPlayersList()) {
         playerrr->getNegotiatePlayersList().clear();

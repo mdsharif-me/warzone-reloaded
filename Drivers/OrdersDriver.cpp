@@ -126,18 +126,16 @@ int main() {
 
     for(Player* gamePlayer: players) {
         for (auto order: gamePlayer->getOrderList()->getOrders()) {
-            if (typeid(order) == typeid(Deploy)) {
+            if (dynamic_cast<const Deploy*>(order) != nullptr) {
                 order->execute();
+                gamePlayer->getOrderList()->removeOrder(order);
             }
         }
     }
     for(Player* gamePlayer: players) {
         for (auto order: gamePlayer->getOrderList()->getOrders()) {
-            if (typeid(order) == typeid(Deploy)) {
-                continue;
-            }
             order->execute();
-
+            gamePlayer->getOrderList()->removeOrder(order);
         }
     }
 

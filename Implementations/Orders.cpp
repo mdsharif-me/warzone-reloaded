@@ -214,6 +214,15 @@ vector<Order *> OrdersList::getOrders() {
     return this->orders;
 }
 
+void OrdersList::removeOrder(Order* order) {
+    for (int i = 0; i < this->getOrders().size(); ++i) {
+        if (this->getOrders()[i] == order) {
+            this->remove(i);
+        }
+    }
+
+}
+
 
 
 

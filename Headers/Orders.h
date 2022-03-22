@@ -121,6 +121,7 @@ public:
     void remove(int index);
     void move(int from, int to);
     vector<Order*> getOrders();
+    void removeOrder(Order* order);
 
 };
 
