@@ -15,6 +15,8 @@ Date: 12 Feb, 2022
 using namespace std;
 class Player;
 
+class Player;
+
 class Territory {
 public:
 	Territory();

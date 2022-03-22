@@ -11,6 +11,7 @@ Player::Player(string& name, vector<Territory*> ta, vector<Territory*> td, Hand 
     this->territoriesToDefend = std::move(td);
     this->playerHand = c;
     this->orderList = new OrdersList();
+    this->newTerritoryConquered = false;
 }
 //Shallow copy
 Player::Player(const Player& p)
@@ -20,6 +21,7 @@ Player::Player(const Player& p)
     this->territoriesToAttack = p.territoriesToAttack;
     this->playerHand = p.playerHand;
     this->orderList = p.orderList;
+    this->newTerritoryConquered = false;
 }
 Player::~Player()
 {
@@ -295,10 +297,10 @@ string Player::getPlayerName() {
     return name;
 }
 void Player::setOrderList(OrdersList *newOrderList) {
-    Player::orderList = orderList;
+    Player::orderList = newOrderList;
 }
 void Player::setPlayerHand(Hand *newPlayerHand) {
-    Player::playerHand = playerHand;
+    Player::playerHand = newPlayerHand;
 }
 Player& Player::operator=(const Player& player)
 {
@@ -406,6 +408,48 @@ bool Player::isNewTerritoryConquered() const {
 void Player::setNewTerritoryConquered(bool arg) {
     Player::newTerritoryConquered = arg;
 }
+
+void Player::addPlayerToNegotiatePlayersList(Player *player) {
+    negotiatePlayersList.push_back(player);
+}
+
+void Player::resetNegotiatePlayersList() {
+    negotiatePlayersList.clear();
+}
+
+void Player::removePlayerFromNegotiatePlayersList(Player *player) {
+    std::remove(negotiatePlayersList.begin(), negotiatePlayersList.end(), player);
+
+}
+
+vector<Player *> Player::getNegotiatePlayersList() {
+    return negotiatePlayersList;
+}
+
+void Player::setTerritoriesToAttack(vector<Territory *> &terrToAttack) {
+    Player::territoriesToAttack = terrToAttack;
+
+}
+
+void Player::setTerritoriesToDefend(vector<Territory *> &terrToDefend) {
+    territoriesToDefend = terrToDefend;
+
+}
+
+vector<Territory *> Player::getTerritoriesToAttack() {
+    return territoriesToAttack;
+}
+
+vector<Territory *> Player::getTerritoriesToDefend() {
+    return territoriesToDefend;
+}
+
+void Player::setTerritories(vector<Territory *> terr) {
+    territories = std::move(terr);
+
+}
+
+
 Player::Player(string &name) {
     this->name = name;
 }

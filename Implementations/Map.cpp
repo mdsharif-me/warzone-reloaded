@@ -9,7 +9,7 @@ class Territory;
 
 // MapLoader - Constructor/Destructor
 MapLoader::MapLoader(string inputFileName) {
-	this->mapFileName = inputFileName;
+	this->mapFileName = move(inputFileName);
 	this->fieldCount = 0;
 }
 MapLoader::MapLoader(const MapLoader &mapLoader) {
@@ -254,6 +254,7 @@ bool Map::mapValidate() {
         cout << "\n***Map is not valid!***" << endl;
         return false;
     }
+    return false;
 }
 bool Map::checkContinentGraphs() {
     resetVisitedTerritories();
@@ -320,15 +321,21 @@ Territory::Territory() {
 	this->continentName = "";
 	this->owner = new Player();
 	this->armyCount = 0;
+    this->isVisited = false;
 }
 Territory::Territory(string territoryName, string continentName, int armyCount) {
-	this->territoryName = territoryName;
-	this->continentName = continentName;
+	this->territoryName = std::move(territoryName);
+	this->continentName = std::move(continentName);
 	this->armyCount = armyCount;
+    this->owner = new Player();
+    this->isVisited = false;
 }
 Territory::Territory(string territoryName, string continentName) {
-    this->territoryName = territoryName;
-    this->continentName = continentName;
+    this->territoryName = move(territoryName);
+    this->continentName = move(continentName);
+    this->owner = new Player();
+    this->isVisited = false;
+    this->armyCount = 0;
 }
 Territory::~Territory() {
 	territoryName.clear();
@@ -352,15 +359,15 @@ string Territory::getContinentName() {
 int Territory::getArmyCount() {
 	return this->armyCount;
 }
-void Territory::setTerritoryName(string territoryName) {
-	this->territoryName = territoryName;
+void Territory::setTerritoryName(string terrName) {
+	this->territoryName = std::move(terrName);
 }
-void Territory::setContinentName(string continentName) {
-	this->continentName = continentName;
+void Territory::setContinentName(string cn) {
+	this->continentName = std::move(cn);
 }
 
-void Territory::setArmyCount(int armyCount) {
-	this->armyCount = armyCount;
+void Territory::setArmyCount(int ac) {
+	this->armyCount = ac;
 }
 void Territory::addAdjTerritory(Territory *t) {
     this->adjTerritories.push_back(t);
@@ -400,14 +407,14 @@ bool Territory::isEnemy(Player *player) {
 
 //Default Constructor
 Continent::Continent() {};
-Continent::Continent(string name, int armies) {
-    this->name = name;
+Continent::Continent(string nm, int armies) {
+    this->name = std::move(nm);
     controlBonus = armies;
 }
-Continent::Continent(string name, int armies, vector<Territory*> members) {
-    this->name = name;
+Continent::Continent(string name, int armies, vector<Territory*> mb) {
+    this->name = std::move(name);
     controlBonus = armies;
-    this->members = members;
+    this->members = mb;
 }
 // Copy constructor
 Continent::Continent(const Continent &continent) {

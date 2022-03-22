@@ -57,6 +57,10 @@ bool Order::validate() {
 
 }
 
+void::Order::execute() {
+
+}
+
 void Order::print(ostream &os) const {
     cout << "Order" << endl;
 }
@@ -252,13 +256,15 @@ void Deploy::print(std::ostream &os) const {
  * Method to validate a deploy order
  * @return
  */
-bool Deploy::validate() {
+bool Deploy::validate(){
 
     for (Territory* territory: player->getTerritories()) {
         if (territory->getOwner()->getPlayerName() == targetTerritory->getOwner()->getPlayerName()) {
+            cout << "Deploy order is valid." << endl;
             return true;
         }
     }
+    cout << "Airlift order is invalid." << endl;
     return false;
 }
 
@@ -271,13 +277,17 @@ void Deploy::execute() {
     if(validOrder) {
         player->setReinforcementPool(player->getReinforcementPool() - nrArmies);
         targetTerritory->setArmyCount(targetTerritory->getArmyCount() + this->nrArmies);
+        cout << player->getPlayerName() << " has executed Deploy order." << endl;
         cout << nrArmies << " troops have been deployed to " << targetTerritory->getTerritoryName() << endl;
+    } else {
+        cout << "Cannot execute invalid Deploy order." << endl;
     }
 }
 
 
 /**
- * Class to handle advance order
+ * Class to handle
+ * order
  */
 
 
@@ -312,16 +322,26 @@ Advance& Advance::operator=(const Advance &advance){
 // method to validate an order
 bool Advance::validate() {
     if (startTerritory->getOwner()->getPlayerName() != player->getPlayerName()) {
+        cout << "Advance order is invalid." << endl;
         return false;
+    }
+
+    for(Player* searchedPlayer: player->getNegotiatePlayersList()) {
+        if (searchedPlayer == this->getTargetPlayer()) {
+            cout << searchedPlayer->getPlayerName() << " is currently negotiating with " << player->getPlayerName() << endl;
+            return false;
+        }
     }
 
     // check if territory is adjacent
     for(Territory* territory: startTerritory->getAdjTerritories()) {
         if (territory->getTerritoryName() == targetTerritory->getTerritoryName()) {
+            cout << "Advance order is valid." << endl;
             return true;
         }
     }
 
+    cout << "Advance order is invalid." << endl;
     return false;
 }
 
@@ -377,7 +397,8 @@ void Advance  :: execute() {
             cout << "The territory" << targetTerritory->getTerritoryName() << " has been conquered" << endl;
         }
     } else {
-        cout << "Advance Order is invalid...ignoring...";
+        cout << "Cannot execute invalid Advance order." << endl;
+
     }
 }
 
@@ -418,16 +439,28 @@ Bomb& Bomb::operator=(const Bomb &bomb){
 bool Bomb  :: validate() {
     for(Territory* territory: player->getTerritories()) {
         if(targetTerritory->getOwner()->getPlayerName() == territory->getOwner()->getPlayerName()) {
+            cout << "Bomb order is invalid." << endl;
             return false;
+        }
+
+        for(Player* searchedPlayer: player->getNegotiatePlayersList()) {
+            if (searchedPlayer == this->getTargetPlayer()) {
+                cout << searchedPlayer->getPlayerName() << " is currently negotiating with " << player->getPlayerName() << endl;
+                return false;
+            }
         }
 
     }
     // check if territory is adjacent
     for(Territory* territory: startTerritory->getAdjTerritories()) {
         if (territory->getTerritoryName() == targetTerritory->getTerritoryName()) {
+            cout << "Bomb order is valid." << endl;
             return true;
         }
     }
+
+    cout << "Invalid Order" << endl;
+    return false;
 }
 
 // method to execute an order
@@ -436,6 +469,8 @@ void Bomb  :: execute() {
     if (orderValid) {
         targetTerritory->setArmyCount(targetTerritory->getArmyCount() / 2);
         cout << "Bomb order executed" << endl;
+    } else {
+        cout << "Cannot execute invalid Bomb order." << endl;
     }
 }
 
@@ -481,9 +516,11 @@ void Blockade::print(ostream &os) const {
 bool Blockade  :: validate() {
     for(Territory* territory: player->getTerritories()) {
         if (targetTerritory->getOwner()->getPlayerName() == territory->getOwner()->getPlayerName()) {
+            cout << "Blockade order is valid." << endl;
             return true;
         }
     }
+    cout << "Deploy order is invalid." << endl;
     return false;
 }
 
@@ -491,7 +528,6 @@ bool Blockade  :: validate() {
 void Blockade  :: execute() {
     bool orderValid = this->validate();
     if (orderValid) {
-
         //double the number of armies
         targetTerritory->setArmyCount(targetTerritory->getArmyCount() * 2);
         targetTerritory->getOwner()->removeTerritory(targetTerritory);
@@ -499,6 +535,8 @@ void Blockade  :: execute() {
 
         cout << "Blockade order executed" << endl;
         cout << targetTerritory->getTerritoryName() << " has no owner now." << endl;
+    } else {
+        cout << "Cannot execute invalid Blockade  order." << endl;
     }
 }
 
@@ -542,12 +580,15 @@ void Airlift::print(ostream &os) const {
 
 // method to valida an order
 bool Airlift  :: validate() {
+    cout << "inside validate airlift";
     for(Territory* territory: player->getTerritories()) {
         if (territory->getOwner()->getPlayerName() == startTerritory->getOwner()->getPlayerName() &&
             territory->getOwner()->getPlayerName() == targetTerritory->getOwner()->getPlayerName()) {
+            cout << "Airlift order is valid." << endl;
             return true;
         }
     }
+    cout << "Blockade order is invalid." << endl;
     return false;
 }
 
@@ -561,6 +602,8 @@ void Airlift  :: execute() {
         startTerritory->setArmyCount(startTerritory->getArmyCount() - this->nrArmies);
         cout << "Airlift order executed" << endl;
         cout << "The target territory has now: " << targetTerritory->getArmyCount() << endl;
+    } else {
+        cout << "Cannot execute invalid Airlift order." << endl;
     }
 }
 
@@ -598,9 +641,11 @@ void Negotiate::print(ostream &os) const {
 bool Negotiate  :: validate() {
     for(Territory* territory: player->getTerritories()) {
         if (territory->getOwner()->getPlayerName() == this->targetTerritory->getOwner()->getPlayerName()) {
+            cout << "Negotiate order is invalid." << endl;
             return false;
         }
     }
+    cout << "Negotiate order is valid." << endl;
     return true;
 }
 
@@ -608,16 +653,13 @@ bool Negotiate  :: validate() {
 void Negotiate  :: execute() {
     bool orderValid = this->validate();
     if (orderValid) {
-        // invalidate attack orders
-        OrdersList* ordersList = targetPlayer->getOrderList();
-        vector<Order*> targetPlayerOrders = ordersList->getOrders();
-        for(int i = 0; i < targetPlayerOrders.size(); i++) {
-            if (targetPlayerOrders[i]->getTargetPlayer()->getPlayerName() == this->getPlayer()->getPlayerName()) {
-                ordersList->remove(i);
-            }
-        }
+        player->addPlayerToNegotiatePlayersList(targetPlayer);
+        targetPlayer->addPlayerToNegotiatePlayersList(player);
         cout << "Negotiate order executed." << endl;
         cout << targetPlayer->getPlayerName() << " will not attack your territories during this turn." << endl;
+        cout << player->getPlayerName() << " will not attack " << targetPlayer->getPlayerName() << " territories this turn" << endl;
+    } else {
+        cout << "Cannot execute invalid Negotiate order." << endl;
     }
 }
 

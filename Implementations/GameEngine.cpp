@@ -274,6 +274,10 @@ void GameEngine::excuteOrderPhase() {
         }
         orders.clear();
     }
+    // resetting negotiating players
+    for(Player* playerrr: this->getPlayersList()) {
+        playerrr->getNegotiatePlayersList().clear();
+    }
 }
 
 void GameEngine::startupPhase() {

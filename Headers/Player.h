@@ -29,6 +29,8 @@ private:
     Hand* playerHand;
     int reinforcementPool = 0;
     bool newTerritoryConquered;
+    vector<Player* > negotiatePlayersList;
+
 public:
     Player() = default;                         //Default Constructor
     Player(string& name);
@@ -57,6 +59,21 @@ public:
     bool checkIfAlreadyExists(Territory*, vector<Territory*>);
     bool isNewTerritoryConquered() const;
     void setNewTerritoryConquered(bool newTerritoryConquered);
+    void addPlayerToNegotiatePlayersList(Player* player);
+    void resetNegotiatePlayersList();
+    void removePlayerFromNegotiatePlayersList(Player* player);
+
+    vector<Player *> getNegotiatePlayersList();
+
+    vector<Territory *> getTerritoriesToAttack();
+
+    void setTerritoriesToAttack(vector<Territory *> &territoriesToAttack);
+
+    vector<Territory *> getTerritoriesToDefend();
+
+    void setTerritoriesToDefend(vector<Territory *> &territoriesToDefend);
+
+    void setTerritories(vector<Territory *> territories);
 };
 
 
