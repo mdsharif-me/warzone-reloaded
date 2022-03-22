@@ -27,6 +27,7 @@ private:
     OrdersList* orderList;
     Hand* playerHand;
     int reinforcementPool = 0;
+    bool newTerritoryConquered;
 public:
     Player() = default;                         //Default Constructor
     Player(string& name);
@@ -53,6 +54,8 @@ public:
     void addTerritory(Territory* territory);
     void removeTerritory(Territory* territory);
     bool checkIfAlreadyExists(Territory*, vector<Territory*>);
+    bool isNewTerritoryConquered() const;
+    void setNewTerritoryConquered(bool newTerritoryConquered);
 };
 
 

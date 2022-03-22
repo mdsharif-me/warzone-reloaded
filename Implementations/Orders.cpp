@@ -343,59 +343,39 @@ void Advance  :: execute() {
             bool attackerKilledDefending = false;
             bool defenderKilledAttacker = false;
 
+            startTerritory->setArmyCount(startTerritory->getArmyCount() - attackerArmies);
 
-            std::default_random_engine generator;
-            std::uniform_int_distribution<int> distribution(1,100);
-            auto dice = std::bind ( distribution, generator );
-
-            int roll = dice();
+            random_device rd;
+            mt19937 gen(rd());
+            uniform_real_distribution<> dis(0, 1);
+            float randomNumberAttack = dis(gen);
             while (attackerArmies != 0 && defenderArmies != 0) {
-                if (roll > 40) {
+                // 60% killing 1 defending army
+                if (randomNumberAttack > 0.4){
                     defenderArmies -= 1;
                 }
-                if (roll > 30) {
+                // 70% killing 1 attacking army
+                if (randomNumberAttack > 0.3){
                     attackerArmies -= 1;
                 }
-                roll = dice();
+                randomNumberAttack = dis(gen);
             }
             targetTerritory->setArmyCount(defenderArmies);
 
             if (defenderArmies == 0) {
-                targetTerritory->setArmyCount(attackerArmies);
-                targetTerritory->getOwner()->setName(this->player->getPlayerName());
                 player->addTerritory(targetTerritory);
+                targetTerritory->setArmyCount(attackerArmies);
+                // set the flag that a new territory is conquered
+                player->setNewTerritoryConquered(true);
             }
 
 
-            /*for (int i = 0; i < this->nrArmies; i++) {
-                int roll = dice();
-
-                attackerKilledDefending = (roll < 60);
-                defenderKilledAttacker = (roll  < 70);
-
-                if (defenderKilledAttacker) {
-                    if(startTerritory->getArmyCount() != 0) {
-                        startTerritory->setArmyCount(startTerritory->getArmyCount() - 1);
-                    }
-                } else if (attackerKilledDefending) {
-                    if(targetTerritory->getArmyCount() != 0) {
-                        targetTerritory->setArmyCount(targetTerritory->getArmyCount() - 1);
-                    }
-                }
-                if (targetTerritory->getArmyCount() == 0) {
-                    targetTerritory->setPlayerName(startTerritory->getPlayerName());
-                    targetTerritory->setArmyCount(startTerritory->getArmyCount());
-                    startTerritory->setArmyCount(0);
-                }
-            }*/
         }
 
         cout << "Advance order executed" << endl;
         if (targetTerritory->getOwner()->getPlayerName() == this->player->getPlayerName()) {
             cout << "The territory" << targetTerritory->getTerritoryName() << " has been conquered" << endl;
         }
-        //TO DO
-        //receive a Card if at least one territory conquered.
     } else {
         cout << "Advance Order is invalid...ignoring...";
     }
@@ -406,7 +386,7 @@ void Advance  :: execute() {
  * @param os
  */
 void Advance::print(ostream &os) const {
-    cout << "Advance " << this->nrArmies << " to " << this->targetTerritory << endl;
+    cout << "Advance " << this->nrArmies << " to " << this->targetTerritory->getTerritoryName() << endl;
 }
 
 
@@ -464,7 +444,7 @@ void Bomb  :: execute() {
  * @param os
  */
 void Bomb::print(ostream &os) const {
-    cout << "Bomb " << this->targetTerritory << endl;
+    cout << "Bomb " << this->targetTerritory->getTerritoryName() << endl;
 }
 
 
@@ -580,6 +560,7 @@ void Airlift  :: execute() {
         //decrease number of armies in the source territory
         startTerritory->setArmyCount(startTerritory->getArmyCount() - this->nrArmies);
         cout << "Airlift order executed" << endl;
+        cout << "The target territory has now: " << targetTerritory->getArmyCount() << endl;
     }
 }
 
@@ -628,7 +609,15 @@ void Negotiate  :: execute() {
     bool orderValid = this->validate();
     if (orderValid) {
         // invalidate attack orders
-        cout << "Negotiate order executed" << endl;
+        OrdersList* ordersList = targetPlayer->getOrderList();
+        vector<Order*> targetPlayerOrders = ordersList->getOrders();
+        for(int i = 0; i < targetPlayerOrders.size(); i++) {
+            if (targetPlayerOrders[i]->getTargetPlayer()->getPlayerName() == this->getPlayer()->getPlayerName()) {
+                ordersList->remove(i);
+            }
+        }
+        cout << "Negotiate order executed." << endl;
+        cout << targetPlayer->getPlayerName() << " will not attack your territories during this turn." << endl;
     }
 }
 

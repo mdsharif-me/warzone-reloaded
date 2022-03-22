@@ -33,6 +33,8 @@ public:
     void addOwner(Player* player);
     void removeOwner();
     Player* getOwner();
+    bool isAllied(Player* player);
+    bool isEnemy(Player* player);
 
 private:
 	string territoryName;

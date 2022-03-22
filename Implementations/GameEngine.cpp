@@ -242,6 +242,7 @@ void GameEngine::reinforcementPhase() {
         (*i)->setReinforcementPool(totalArmySize);
     }
 }
+
 void GameEngine::issueOrdersPhase() {
 // 1. Player issue orders and place them in their order list through a call to issueOrder()
 // 2. This method is called in round-robin fashion across all players by the game engine.
