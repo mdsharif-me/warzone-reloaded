@@ -558,12 +558,33 @@ vector<Territory*> Player::get_friendly_neighbour(Player* p) {
     return friendly_neighbours;
 }
 void Player::addTerritory(Territory *territory) {
+    // if someone owns the territory, remove it from them
+    if (territory->getOwner() != nullptr){
+        territory->getOwner()->removeTerritory(territory);
+        territory->removeOwner();
+    }
+    // add this to this player
+    territory->addOwner(this);
     territories.push_back(territory);
 
 }
 void Player::removeTerritory(Territory *territory) {
-    std::remove(territories.begin(), territories.end(), territory);
+    // find the territory and remove it
+    for(int i = 0; i < territories.size(); i++){
+        if (territories[i] == territory){
+            territories.erase(territories.begin()+i);
+        }
+    }
+    //std::remove(territories.begin(), territories.end(), territory);
 
+}
+
+bool Player::isNewTerritoryConquered() const {
+    return newTerritoryConquered;
+}
+
+void Player::setNewTerritoryConquered(bool arg) {
+    Player::newTerritoryConquered = arg;
 }
 Player::Player(string &name) {
     this->name = name;
