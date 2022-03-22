@@ -10,6 +10,7 @@
 #include <string>
 #include "Orders.h"
 #include "Player.h"
+#include "Map.h"
 using namespace std;
 
 enum cardType {bomb,
@@ -20,6 +21,7 @@ enum cardType {bomb,
 class Hand;
 class Deck;
 class Player;
+class Territory;
 
 /**
  * Class declaration to manage cards

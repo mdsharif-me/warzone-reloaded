@@ -36,7 +36,7 @@ public:
     //stream insertion operator for Orders
     friend ostream& operator << (ostream &os, const Order &order);
 
-    //validate methods to be inherited by the Orders subclasses
+    virtual //validate methods to be inherited by the Orders subclasses
     bool validate();
 
     //execute methods to be inherited by the Orders subclasses
@@ -129,29 +129,21 @@ public:
  */
 class Deploy : public Order {
 public:
-
     //default constructor
     Deploy() = default;
-
     // constructor
     Deploy(Player* player, Territory* targetTerritory, int nrArmies);
-
     //copy constructor
     Deploy(const Deploy &deploy);
-
     // destructor
     ~Deploy();
-
     // assignment operator
     Deploy& operator = (const Deploy &deploy);
-
     //stream insertion operator
     friend ostream& operator << (ostream &ostream, const Order &order);
-
     bool validate();
     void execute() ;
     void print(std::ostream& os) const override;
-
 };
 
 /**
@@ -163,19 +155,14 @@ public:
     Advance() = default;
     // constructor
     Advance(Player* player, Territory* startTerritory, Territory* targetTerritory, int nrArmies);
-
     //copy constructor
     Advance(const Advance &advance);
-
     // destructor
     ~Advance() = default;
-
     // assignment operator
     Advance& operator = (const Advance &advance);
-
     //stream insertion operator
     //friend ostream& operator << (ostream &ostream, const Advance &advance);
-
     bool validate();
     void execute();
     void print(std::ostream& os) const override;

@@ -2,7 +2,7 @@
 #include <string>
 #include <iostream>
 #include "../Headers/Player.h"
-#include "../Headers/Cards.h"
+
 using namespace std;
 
 int main()
@@ -11,10 +11,10 @@ int main()
     vector<Territory*> territoriesToAttack;
 
     //Adding arbitrary list of territories that are to be attacked and defended.
-    territoriesToAttack.push_back(new Territory("Asia"));
-    territoriesToAttack.push_back(new Territory("NAmerica"));
-    territoriesToDefend.push_back(new Territory("SAmerica"));
-    territoriesToDefend.push_back(new Territory("Europe"));
+    territoriesToAttack.push_back(new Territory("China", "Asia"));
+    territoriesToAttack.push_back(new Territory("USA", "NAmerica"));
+    territoriesToDefend.push_back(new Territory("Brazil", "SAmerica"));
+    territoriesToDefend.push_back(new Territory("Germany", "Europe"));
 
     //Adding hand of cards owned by the player
     Hand * playerHand = new Hand();
@@ -26,8 +26,8 @@ int main()
     string playerName = "Deep";
     Player* player = new Player(playerName, territoriesToAttack, territoriesToDefend, playerHand);
     //Issuing orders using issueOrder() method
-    player ->issueOrder("Deploy");
-    player->issueOrder("Bomb");
+    //player ->issueOrder("Deploy");
+    //player->issueOrder("Bomb");
 
     //Printing Player's name
     cout << "Players name is: " << player->getPlayerName() <<endl;

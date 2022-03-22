@@ -9,7 +9,7 @@ using namespace std;
 
 int main() {
 
-    auto * order = new Order();
+    //auto * order = new Order();
     auto* deploy = new Deploy();
     auto* advance = new Advance();
     auto * bomb = new Bomb();
@@ -19,7 +19,7 @@ int main() {
 
     cout << "adding orders to orderList...\n";
     auto* ordersList = new OrdersList();
-    ordersList->add(order);
+    //ordersList->add(order);
     ordersList->add(deploy);
     ordersList->add(advance);
     ordersList->add(bomb);
@@ -68,11 +68,11 @@ int main() {
     airlift->execute();
     negotiate->execute();
 
-    for (auto & someOrder : ordersList->orders) {
+    for (auto & someOrder : ordersList->getOrders()) {
         delete someOrder;
     }
 
-    order = nullptr;
+    //order = nullptr;
     deploy = nullptr;
     advance = nullptr;
     bomb = nullptr;
