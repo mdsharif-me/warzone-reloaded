@@ -8,39 +8,46 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "../Headers/Orders.h"
-
+#include "Orders.h"
+#include "Player.h"
 using namespace std;
 
-//enum cardType {bomb, reinforcement, blockade, airlift, diplomacy};
+enum cardType {bomb,
+        reinforcement,
+        blockade,
+        airlift,
+        diplomacy};
 class Hand;
 class Deck;
+class Player;
 
 /**
  * Class declaration to manage cards
  */
 class Card {
 private:
-    std::string type;
+    //string type;
+    cardType* type;
 
 public:
     Card() = default;
-    Card(std::string type);
+    Card(string type);
     ~Card();
-    void play(const std::string& type, Player* player, Deck* deck);
+    void play(Player* player, Deck* deck, Territory* target);
+    void play(Player* player, Deck* deck, Territory* start, Territory* target, int army);
+    void play(Player* player, Deck* deck, Territory* target, int army);
+    void play(Player* player, Deck* deck, Player* target);
     Card& operator = (Card *card);
     friend ostream& operator << (ostream &os, const Card &card);
-    std::string getType() const;
-    void setType(const string&);
-
+    cardType* getType() const;
+    void setType(cardType*);
 };
 
 /**
  * Class declaration to manage player Hand
  */
 class Hand {
-    std::vector<Card *> handCards;
-
+    vector<Card *> handCards; //Cards in Hand
 
 public:
     Hand() = default;
@@ -52,7 +59,7 @@ public:
     void removeFromHand(int);
     void addToHand(Card* card);
     void print();
-
+    int findCard(string type);
 
 };
 
@@ -62,7 +69,7 @@ public:
  */
 class Deck {
 private:
-    std::vector<Card *> deckCards;
+    vector<Card *> deckCards;
 
 public:
     Deck() = default;
@@ -74,7 +81,6 @@ public:
     void removeFromDeck(int);
     void addToDeck(Card*);
     void print();
-
     vector<Card *> getDeckCards();
     void setDeckCards(const vector<Card *> &newDeckCards);
 

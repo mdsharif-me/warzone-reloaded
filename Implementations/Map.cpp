@@ -382,7 +382,6 @@ void Territory::addOwner(Player* player) {
 
 }
 
-
 //Default Constructor
 Continent::Continent() {};
 Continent::Continent(string name, int armies) {

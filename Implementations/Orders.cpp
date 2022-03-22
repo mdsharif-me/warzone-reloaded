@@ -410,7 +410,6 @@ void Advance::print(ostream &os) const {
 }
 
 
-
 /**
  * Class to implement Bomb
  */
@@ -434,7 +433,6 @@ Bomb& Bomb::operator=(const Bomb &bomb){
 
     return *this;
 }
-
 
 // method to validate an order
 bool Bomb  :: validate() {
@@ -607,7 +605,6 @@ Negotiate::Negotiate(const Negotiate &negotiate) : Order(negotiate){
 Negotiate& Negotiate::operator=(const Negotiate &negotiate){
     this->player = negotiate.player;
     this->targetPlayer = negotiate.targetPlayer;
-
     return *this;
 }
 

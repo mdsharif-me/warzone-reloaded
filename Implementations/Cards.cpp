@@ -12,25 +12,32 @@ class Player;
 class Bomb;
 
 
-enum cardType {bomb, reinforcement, blockade, airlift, diplomacy};
 cardType aType;
 
 //************************** * Card Class implementation * ***********************************************
-
 
 /**
  * Card class parameterized constructor
  * @param type
  */
-Card::Card(std::string type) {this->type = std::move(type);}
-
+Card::Card(string type){
+    if(type == "bomb")
+        this->type = new cardType(bomb);
+    else if(type == "reinforcement")
+        this->type = new cardType(reinforcement);
+    else if(type == "blockade")
+        this->type = new cardType(blockade);
+    else if(type == "airlift")
+        this->type = new cardType(airlift);
+    else if(type == "diplomacy")
+        this->type = new cardType(diplomacy);
+}
 /**
  * Card class destructor
  */
 Card::~Card() {
-    type.clear();
+    delete type;
 }
-
 /**
  * Assignment operator
  * @param card
@@ -45,13 +52,13 @@ Card &Card::operator=(Card *card) {
  * Accessor for card type
  * @return
  */
-std::string Card::getType() const {return type;}
+cardType* Card::getType() const {return type;}
 
 /**
  * Mutator for card type
  * @param newType
  */
-void Card::setType(const string & newType) {
+void Card::setType(cardType* newType) {
     this->type = newType;
 }
 
@@ -75,34 +82,72 @@ ostream &operator<<(ostream &ostream, const Card &card) {
  * @param hand
  * @param deck
  */
-void Card::play(const std::string &typeOfCard, Player *player, Deck* deck) {
-    string result;
-    if (type == to_string(bomb)) {
-        player->getOrderList()->add(new Bomb());
-        result = to_string(bomb);
-    } else if (type == to_string(reinforcement)) {
-        player->getOrderList()->add(new Deploy());
-    } else if (type == to_string(blockade)) {
-        player->getOrderList()->add(new Blockade());
-
-    } else if (type == to_string(airlift)) {
-        player->getOrderList()->add(new Airlift());
-
-    } else if (type == to_string(diplomacy)) {
-        player->getOrderList()->add(new Negotiate());
-
-    } else {
-        player->getOrderList()->add(nullptr);
+void Card::play(Player *player, Deck* deck, Territory* target) {
+    // Adding the played card as an order to player's list of orders
+    if (*this->type == bomb) {
+        player->getOrderList()->add(new Bomb(player, target));
+    } else if (*this->type == blockade) {
+        player->getOrderList()->add(new Blockade(player, target));
     }
-
-    Card* card;
+    // The card is then placed from the player's hand to the deck
     for (int i = 0; i < player->getPlayerHand()->getHandCards().size(); i++) {
-        if (player->getPlayerHand()->getHandCards().at(i)->type == result) {
-            card = player->getPlayerHand()->getHandCards().at(i);
+        if (player->getPlayerHand()->getHandCards().at(i)->type == this->type) {
+            //card = player->getPlayerHand()->getHandCards().at(i);
+            //add the card to the deck
+            deck->addToDeck(this);
             // remove the card from hand
             player->getPlayerHand()->removeFromHand(i);
+            break;
+        }
+    }
+}
+void Card::play(Player *player, Deck* deck, Territory* start, Territory* target, int army) {
+    // Adding the played card as an order to player's list of orders
+    if (*this->type == airlift) {
+        player->getOrderList()->add(new Airlift(player, start, target, army));
+    }
+    // The card is then placed from the player's hand to the deck
+    for (int i = 0; i < player->getPlayerHand()->getHandCards().size(); i++) {
+        if (player->getPlayerHand()->getHandCards().at(i)->type == this->type) {
+            //card = player->getPlayerHand()->getHandCards().at(i);
             //add the card to the deck
-            deck->addToDeck(card);
+            deck->addToDeck(this);
+            // remove the card from hand
+            player->getPlayerHand()->removeFromHand(i);
+            break;
+        }
+    }
+}
+void Card::play(Player *player, Deck* deck, Territory* target, int army) {
+    // Adding the played card as an order to player's list of orders
+    if (*this->type == reinforcement) {
+        player->getOrderList()->add(new Deploy(player, target, army));
+    }
+    // The card is then placed from the player's hand to the deck
+    for (int i = 0; i < player->getPlayerHand()->getHandCards().size(); i++) {
+        if (player->getPlayerHand()->getHandCards().at(i)->type == this->type) {
+            //card = player->getPlayerHand()->getHandCards().at(i);
+            //add the card to the deck
+            deck->addToDeck(this);
+            // remove the card from hand
+            player->getPlayerHand()->removeFromHand(i);
+            break;
+        }
+    }
+}
+void Card::play(Player *player, Deck* deck, Player* target) {
+    // Adding the played card as an order to player's list of orders
+    if (*type == diplomacy) {
+        player->getOrderList()->add(new Negotiate(player, target));
+    }
+    // The card is then placed from the player's hand to the deck
+    for (int i = 0; i < player->getPlayerHand()->getHandCards().size(); i++) {
+        if (player->getPlayerHand()->getHandCards().at(i)->type == this->type) {
+            //card = player->getPlayerHand()->getHandCards().at(i);
+            //add the card to the deck
+            deck->addToDeck(this);
+            // remove the card from hand
+            player->getPlayerHand()->removeFromHand(i);
             break;
         }
     }
@@ -115,7 +160,7 @@ void Card::play(const std::string &typeOfCard, Player *player, Deck* deck) {
  * Hand class parametrized constructor
  * @param hand
  */
-Hand::Hand(vector<Card *> hand) {this->handCards = std::move(hand);}
+Hand::Hand(vector<Card *> hand) {this->handCards = move(hand);}
 
 /**
  * Hand destructor
@@ -165,6 +210,29 @@ void Hand::print() {
         cout << *handCards[i] << endl;
     }
 }
+
+int Hand::findCard(string type) {
+    cardType* findingType;
+    if (type == "bomb") {
+        findingType = new cardType(bomb);
+    } else if (type == "reinforcement") {
+        findingType = new cardType(bomb);
+    } else if (type == "blockade") {
+        findingType = new cardType(bomb);
+    } else if (type == "airlift") {
+        findingType = new cardType(bomb);
+    } else if (type == "diplomacy") {
+        findingType = new cardType(bomb);
+    }
+    for(int i = 0; i < handCards.size(); i++){
+        if(handCards[i]->getType() == findingType){
+            delete findingType;
+            return i;
+        }
+    }
+    return -1;
+}
+
 
 //************************* * Deck Class Implementation * *******************************************
 
@@ -226,7 +294,7 @@ void Deck::removeFromDeck(int index) {
 void Deck::draw(Player* player) {
     int random = rand() % deckCards.size();
     if (random < 0 || random > deckCards.size()) {
-        throw std::invalid_argument("generated random number is our of vector bonds");
+        throw invalid_argument("generated random number is our of vector bonds");
     }
 
     Card* card = deckCards.at(random);

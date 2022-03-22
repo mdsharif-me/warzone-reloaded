@@ -30,7 +30,7 @@ public:
     //void executeOrderPhase(); //Assignment 2 Part 3
     void createPlayers();
     void reinforcementPhase(); //Assignment 2 Part 3
-    void issueOrdersPhase(vector<Player*>, vector<Territory*>); //Assingment 2 Part 3
+    void issueOrdersPhase(); //Assingment 2 Part 3
     void excuteOrderPhase(); //Assignment 2 Part 3
     vector<Player *> getPlayersList();
 

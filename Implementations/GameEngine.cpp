@@ -159,24 +159,38 @@ void GameEngine::createPlayers() {
 void GameEngine::mainGameLoop() {
 // 1. Round robin fashiion in the order setup in startup phase
 // 2. This loop shall continue until only one of the players owns all the terrotires in the map.
-// 3. Also checks if any player does not control at leasst one territory
+// 3. Also checks if any player does not control at least one territory
 // 4. if so the player is removed from the game.
+    int round = 0;
+    while (player_list.size() != 1){
+        this->reinforcementPhase();
+        // To remove player with zero territories.
+        for (int i = 0; i < player_list.size(); i++){
+            if(player_list[i]->getTerritories().size() == 0){
+                remove(player_list.begin(), player_list.end(), player_list[i]);
+            }
+        }
+        this->issueOrdersPhase();
+        this->excuteOrderPhase();
+        round++;
+    }
+    cout << player_list.front()->getPlayerName() << "wins!!" << endl;
 }
 void GameEngine::reinforcementPhase() {
     // 1. Players are given armies that depends on the number of terrtories.
     // 2. Bonus Armies: Only if the player owns the whole continent.
-    // 3. The minimal number of reinforcement armies per turn for any player is 33.
+    // 3. The minimal number of reinforcement armies per turn for any player is 3.
     // 4. The reinforcement armies should be placed in player's pool.
     int numOfArmies = 0;
     vector<Player*>::iterator i;
     for (i = this->player_list.begin(); i != this->player_list.end(); i++) {
-        // (# of territories owned divided by 3, rounded down
+        // # of territories owned divided by 3, rounded down
         numOfArmies = (*i)->getTerritories().size();
         numOfArmies = floor(numOfArmies / 3);
 
-        vector<Continent *> mapContinents = this->map->getContinents();  // get all continents for current map
+        vector<Continent *> mapContinents = this->map->getContinents(); // get all continents for current map
         vector<Territory *> playerTerritories = (*i)->getTerritories(); // get the user's territories
-        vector<string> playerTerritoriesName;                            // get the user's territories name
+        vector<string> playerTerritoriesName;                           // get the user's territories name
 
         // iterate through player's territories and add their name
         for (auto territory: playerTerritories) {
@@ -188,12 +202,12 @@ void GameEngine::reinforcementPhase() {
 
         // check for each continent if user owns all territories
         for (auto continent: mapContinents) {
-            vector<Territory *> mapTerritories = continent->getMembers();
-            int n = mapTerritories.size();
+            vector<Territory *> allTerritoriesInContinent = continent->getMembers();
+            int n = allTerritoriesInContinent.size();
             vector<string> continentTerritoriesName;
 
             // iterate through continent's territories and add their name
-            for (auto territory: mapTerritories) {
+            for (auto territory: allTerritoriesInContinent) {
                 continentTerritoriesName.push_back(territory->getTerritoryName());
             }
 
@@ -219,170 +233,20 @@ void GameEngine::reinforcementPhase() {
                 numOfArmies += continent->getControlBonus();
             }
         }
-
         // minimal number of reinforcement armies per turn for any player is 3.
         if (numOfArmies < 3) {
             numOfArmies = 3;
         }
-
         // add new army number to the user's pool
         int totalArmySize = (*i)->getReinforcementPool() + numOfArmies;
         (*i)->setReinforcementPool(totalArmySize);
     }
 }
-
-void GameEngine::issueOrdersPhase(vector<Player*> players, vector<Territory *>) {
-    std::string availableOrders[6] = {"Deploy", "Advance", "Bomb", "Airlift", "Blockade", "Negotiate"};
-    string choice;
-    string startTerritory;
-    string targetTerritory;
-    string targetPlayer;
-    int numberOfArmies;
-    bool isDeploy;
-    bool isAdvance;
-    bool isBomb;
-    bool isAirlift;
-    bool isBlockade;
-    bool isNegotiate;
-
-    Territory* start = nullptr;
-    Territory* target = nullptr;
-    Player* targetPlayerObj = nullptr;
-
-    for(Player* player: this->getPlayersList()) {
-        cout << player->getPlayerName() << endl;
-        cout << "Please choose a start territory from the list:" << endl;
-        for(Territory* territory: player->getTerritories()) {
-            cout << territory->getTerritoryName() << " , ";
-        }
-
-        while (start == nullptr) {
-            cout << "Start territory: ";
-            cin >> startTerritory;
-            for(Territory* territory: player->getTerritories()) {
-                if(territory->getTerritoryName() == startTerritory) {
-                    start = territory;
-                    break;
-                }
-            }
-        }
-
-
-        while (true) {
-            cout << "Please enter the desired order from the list bellow:" << endl;
-            for(std::string order: availableOrders) {
-                cout << order << ", ";
-            }
-            cout << endl;
-            cout << "Order: ";
-
-            cin >> choice;
-            for(std::string order: availableOrders) {
-                if (choice == order) {
-                    break;
-                }
-            }
-            break;
-        }
-
-        isDeploy = choice == availableOrders[0];
-        if (isDeploy) {
-
-            while (target == nullptr) {
-                cout << "Target territory: " << endl;
-                cin >> targetTerritory;
-                for(Territory* territory: start->getAdjTerritories()) {
-                    if(territory->getTerritoryName() == targetTerritory) {
-                        target = territory;
-                        break;
-                    }
-                }
-            }
-
-            do {
-                cout << "Number of Armies (max " << player->getReinforcementPool() << "): " << endl;
-                cin >> numberOfArmies;
-                if (numberOfArmies < player->getReinforcementPool()) {
-                    player->issueOrder(availableOrders[0], target, numberOfArmies);
-                }
-            } while (numberOfArmies > player->getReinforcementPool());
-        }
-
-        isBomb = choice == availableOrders[2];
-        isBlockade = choice == availableOrders[4];
-        if (isBomb || isBlockade) {
-            do {
-                cout << "Target territory: " << endl;
-                cin >> targetTerritory;
-                for(Territory* territory: start->getAdjTerritories()) {
-                    if (territory->getTerritoryName() == targetTerritory) {
-                        target = territory;
-                        break;
-                    }
-                }
-            } while (target == nullptr);
-
-            if (isBomb) {
-                player->issueOrder(availableOrders[2], target);
-            } else if (isBlockade) {
-                player->issueOrder(availableOrders[4], target);
-            }
-
-        }
-
-        isAdvance = choice == availableOrders[1];
-        isAirlift = choice == availableOrders[3];
-        if (isAdvance || isAirlift) {
-            do {
-                cout << "Target territory: " << endl;
-                cin >> targetTerritory;
-                for(Territory* territory: start->getAdjTerritories()) {
-                    if (territory->getTerritoryName() == targetTerritory) {
-                        target = territory;
-                        break;
-                    }
-                }
-            } while (target == nullptr);
-
-            do {
-                cout << "Number of Armies (max " << start->getArmyCount()  << "): " << endl;
-                cin >> numberOfArmies;
-                if (numberOfArmies < player->getReinforcementPool()) {
-                    player->issueOrder(availableOrders[0], target, numberOfArmies);
-                }
-            } while (numberOfArmies > start->getArmyCount() );
-
-            if (isAdvance ) {
-                player->issueOrder(availableOrders[1], start, target, numberOfArmies);
-            }
-            if (isAirlift) {
-                player->issueOrder(availableOrders[3], start, target, numberOfArmies);
-            }
-
-        }
-
-
-        isNegotiate = choice == availableOrders[5];
-        if(isNegotiate) {
-            do {
-                cout << "Please choose a target player from the list:" << endl;
-                for(Player* player1: this->getPlayersList()) {
-                    cout << player1->getPlayerName() << ", ";
-                }
-                cout << endl;
-                cout << "Target Player: " << endl;
-                cin >> targetPlayer;
-
-                for(Player* player2: this->getPlayersList()) {
-                    if(player2->getPlayerName() == targetPlayer) {
-                        targetPlayerObj = player;
-                        break;
-                    }
-                }
-            } while (targetPlayerObj == nullptr);
-
-            player->issueOrder(availableOrders[5], targetPlayerObj);
-        }
+void GameEngine::issueOrdersPhase() {
+// 1. Player issue orders and place them in their order list through a call to issueOrder()
+// 2. This method is called in round-robin fashion across all players by the game engine.
+    for(auto player : player_list){
+        player->issueOrder(deck, player_list);
     }
 }
 
@@ -396,21 +260,19 @@ void GameEngine::excuteOrderPhase() {
     // 6. This means you for loop all the deplot order from each player first.
     // 7. Once all the order for all player are executed return back to the reinforcementPhase.
     for(Player* player: this->getPlayersList()) {
-        OrdersList* ordersList = player->getOrderList();
-        vector<Order* > orders = ordersList->getOrders();
+        vector<Order* > orders = player->getOrderList()->getOrders();
         for(Order* order: orders) {
             if (typeid(order) == typeid(Deploy)) {
                 order->execute();
             }
         }
-
         for(Order* order: orders) {
             if (typeid(order) != typeid(Deploy)) {
                 order->execute();
             }
         }
+        orders.clear();
     }
-    reinforcementPhase();
 }
 
 void GameEngine::startupPhase() {
