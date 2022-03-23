@@ -280,6 +280,11 @@ void GameEngine::excuteOrderPhase() {
                 order->execute();
                 player->getOrderList()->removeOrder(order);
         }
+        if (player->isNewTerritoryConquered()) {
+            deck->draw(player);
+            player->setNewTerritoryConquered(false);
+            cout << player->getPlayerName() << " got a new card" << endl;
+        }
     }
 
     // resetting negotiating players

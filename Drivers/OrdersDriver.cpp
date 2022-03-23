@@ -79,9 +79,10 @@ int main() {
     auto* enemyOrdersList = new OrdersList();
 
 
-    auto * playerDeploy0 = new Deploy(player, playerTerritories[0], 1);
-    auto * playerDeploy1 = new Deploy(player, playerTerritories[1], 1);
-    auto * playerDeploy2 = new Deploy(player, playerTerritories[2], 1);
+
+    auto * playerDeploy0 = new Deploy(player, playerTerritories[0], 2);
+    auto * playerDeploy1 = new Deploy(player, playerTerritories[1], 2);
+    auto * playerDeploy2 = new Deploy(player, playerTerritories[2], 2);
     auto * enemyDeploy0 = new Deploy(enemyPlayer, enemyTerritories[0], 1);
     auto * enemyDeploy1 = new Deploy(enemyPlayer, enemyTerritories[1], 1);
     auto * enemyDeploy2 = new Deploy(enemyPlayer, enemyTerritories[2], 1);
@@ -89,16 +90,15 @@ int main() {
     playerOrdersList->add(playerDeploy0);
     playerOrdersList->add(playerDeploy1);
     playerOrdersList->add(playerDeploy2);
-    player->setOrderList(playerOrdersList);
 
     enemyOrdersList->add(enemyDeploy0);
     enemyOrdersList->add(enemyDeploy1);
     enemyOrdersList->add(enemyDeploy2);
+
+    player->setOrderList(playerOrdersList);
     enemyPlayer->setOrderList(enemyOrdersList);
 
-    //auto* playerAdvance0 = new Advance(player, playerTerritories[0], enemyTerritories[0], 1);
-
-    vector<Territory *> adjacentTerritory = playerTerritories[2]->getAdjTerritories();
+    /*vector<Territory *> adjacentTerritory = playerTerritories[2]->getAdjTerritories();
 
     cout << "Start Territory " << playerTerritories[2]->getTerritoryName() << endl;
     //cout << "Territory to attack " << enemyTerritories[2]->getTerritoryName() << endl;
@@ -116,13 +116,19 @@ int main() {
     for(Territory* terr: enemyTerritories) {
         cout << terr->getTerritoryName() << endl;
     }
-    cout << "--------------------------end." << endl;
+    cout << "--------------------------end." << endl;*/
 
-
+    auto* playerNegotiate = new Negotiate(player, enemyPlayer);
     auto* playerAdvance1 = new Advance(player, playerTerritories[2], enemyTerritories[0], 1);
+    auto* playerBomb = new Bomb(player, enemyTerritories[0]);
+    auto* playerAirlift = new Airlift(player, playerTerritories[0], playerTerritories[1], 1);
+    auto* playerBlockade = new Blockade(player, playerTerritories[1]);
 
-    //playerOrdersList->add(playerAdvance0);
+    playerOrdersList->add(playerNegotiate);
     playerOrdersList->add(playerAdvance1);
+    playerOrdersList->add(playerBomb);
+    playerOrdersList->add(playerAirlift);
+    playerOrdersList->add(playerBlockade);
 
     for(Player* gamePlayer: players) {
         for (auto order: gamePlayer->getOrderList()->getOrders()) {
