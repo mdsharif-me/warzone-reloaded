@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include "../Headers/Orders.h"
+#include "../Headers/LogObserver.h"
 #include <vector>
 #include <random>
 #include <functional>
@@ -20,8 +21,8 @@ class Player;
  *
  */
 
-// constructor implementation
-Order::Order() = default;
+// constructor implementa
+  
 
 // copy constructor implementation
 Order::Order(const Order &order) {
@@ -58,7 +59,7 @@ bool Order::validate() {
 }
 
 void::Order::execute() {
-
+  notify(this);
 }
 
 void Order::print(ostream &os) const {
@@ -188,6 +189,8 @@ ostream &operator<<(ostream &ostream, const OrdersList &ordersList) {
  */
 void OrdersList::add(Order* order) {
     orders.push_back(order);
+    
+    super.update(order);
 }
 
 /**
@@ -677,4 +680,3 @@ void Negotiate  :: execute() {
         cout << "Cannot execute invalid Negotiate order." << endl;
     }
 }
-

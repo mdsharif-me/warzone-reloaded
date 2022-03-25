@@ -10,6 +10,7 @@
 #include <string>
 #include "Map.h"
 #include "Player.h"
+#include "LogObserver.h"
 
 using namespace std;
 
@@ -19,7 +20,7 @@ class Player;
 /**
  * Class declaration Orders
  */
-class Order{
+class Order:   public ILoggable, public Observer, public Subject{
 public:
     // default constructor
     Order();
