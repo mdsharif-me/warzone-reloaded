@@ -21,7 +21,7 @@ class Player;
  *
  */
 
-// constructor implementa
+// constructor implementation
   
 
 // copy constructor implementation
