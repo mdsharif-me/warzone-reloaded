@@ -30,7 +30,6 @@ public:
     virtual bool validate();                                       //validate methods to be inherited by the Orders subclasses
     virtual void execute() = 0;                                    //execute methods to be inherited by the Orders subclasses
     virtual void print(std::ostream& os) const;                    // stream assignment operator
-
     void stringToLog();
 
 
