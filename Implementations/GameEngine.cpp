@@ -1,4 +1,5 @@
 #include <iostream>
+#include <random>
 #include <string>
 #include <cmath>
 #include <algorithm>
@@ -6,8 +7,10 @@
 using namespace std;
 
 //class
-GameEngine::GameEngine(){
-    this->state=state[0];
+GameEngine::GameEngine(vector<Player*> players_list, Map* map, Deck* deck){
+    this->player_list = players_list;
+    this->map = map;
+    this->deck = deck;
 }
 
 vector<Player *> GameEngine::getPlayersList() {
@@ -157,14 +160,18 @@ void GameEngine::createPlayers() {
 
 
 void GameEngine::mainGameLoop() {
-// 1. Round robin fashiion in the order setup in startup phase
+// 1. Round robin fashion in the order setup in startup phase
 // 2. This loop shall continue until only one of the players owns all the terrotires in the map.
 // 3. Also checks if any player does not control at least one territory
 // 4. if so the player is removed from the game.
-    int round = 0;
+    int round = 1;
     while (player_list.size() != 1){
-        cout << "Reinforcement Phase begins:" << endl;
+        cout << "----------------------------------------------------------------------------" << endl;
+        cout << "Round " << round << " has Began" << endl;
+        cout << "============================================================================" << endl;
+        cout << "Reinforcement Phase beginning..." << endl;
         this->reinforcementPhase();
+        cout << "End of Reinforcement Phase..." << endl;
         // To remove player with zero territories.
         for (int i = 0; i < player_list.size(); i++){
             if(player_list[i]->getTerritories().size() == 0){
@@ -172,9 +179,9 @@ void GameEngine::mainGameLoop() {
                 remove(player_list.begin(), player_list.end(), player_list[i]);
             }
         }
-        cout << "Issuing Order Phase begins:" << endl;
+        cout << "Issuing Order Phase begins...." << endl;
         this->issueOrdersPhase();
-        cout << "Executing Order Phase begins:" << endl;
+        cout << "Executing Order Phase begins...." << endl;
         this->excuteOrderPhase();
         round++;
     }
@@ -246,15 +253,17 @@ void GameEngine::reinforcementPhase() {
         (*i)->setReinforcementPool(totalArmySize);
     }
 }
-
 void GameEngine::issueOrdersPhase() {
 // 1. Player issue orders and place them in their order list through a call to issueOrder()
 // 2. This method is called in round-robin fashion across all players by the game engine.
     for(auto player : player_list){
+        cout << "----------------------------------------------------------------------------" << endl;
+        cout << player->getPlayerName() << " TURN!!!!!" << endl;
+        cout << "============================================================================" << endl;
         player->issueOrder(deck, player_list);
     }
-}
 
+}
 void GameEngine::excuteOrderPhase() {
     // 1. Once all the players have signified in the same turn that they are not issuing one more order, the game engine goes to executionPhase()
     // 2. How the orders executed:- New method called nextOrder() should be made.
@@ -293,20 +302,43 @@ void GameEngine::excuteOrderPhase() {
     }
 }
 
-GameEngine::GameEngine(const string state) {
-
-}
 
 void GameEngine::startupPhase() {
+    // For loadmap <filename>
+    // For validatemap
+    // for addplayer command
+    // For gamestart command
+    cout << "startup" << endl;
+    int number = map->getTerritories().size()/player_list.size();
+    int counter = 0;
+    int territoryIndex = 0;
+    for(int i = 0; i < player_list.size(); i++){
+        while(counter < number) {
+            player_list[i]->addTerritory(map->getTerritories()[territoryIndex]);
+            map->getTerritories()[territoryIndex]->addOwner(player_list[i]);
+            territoryIndex++;
+            counter++;
+        }
+        counter = 0;
+    }
+    while (map->getTerritories().size() % territoryIndex != 0){
+        if(counter == player_list.size()){
+            counter = 0;
+        }
+        else{
+            player_list[counter]->addTerritory(map->getTerritories()[territoryIndex]);
+            territoryIndex++;
+            counter++;
+        }
+    }
+    shuffle(player_list.begin(), player_list.end(), std::mt19937(std::random_device()()));
 
-}
-
-const string &GameEngine::getState() const {
-    return state;
-}
-
-void GameEngine::setState(const string &state) {
-    GameEngine::state = state;
+    for(auto player: player_list){
+        player->setReinforcementPool(50);
+        deck->draw(player);
+        deck->draw(player);
+    }
+    mainGameLoop();
 }
 
 Map *GameEngine::getMap() const {
@@ -315,14 +347,6 @@ Map *GameEngine::getMap() const {
 
 void GameEngine::setMap(Map *map) {
     GameEngine::map = map;
-}
-
-MapLoader *GameEngine::getMapLoader() const {
-    return map_loader;
-}
-
-void GameEngine::setMapLoader(MapLoader *mapLoader) {
-    map_loader = mapLoader;
 }
 
 const vector<Player *> &GameEngine::getPlayerList() const {
@@ -339,6 +363,15 @@ Deck *GameEngine::getDeck() const {
 
 void GameEngine::setDeck(Deck *deck) {
     GameEngine::deck = deck;
+}
+
+GameEngine::~GameEngine() {
+    delete deck;
+    delete map;
+    for(auto player: player_list){
+        delete player;
+    }
+    player_list.clear();
 }
 
 

@@ -85,8 +85,8 @@ public:
     int visitContinentNeighbours(Territory* territory, string continent, int visited);
     void resetVisitedTerritories();
     bool checkIfValidContinent();
-    int getContinentIndex(Continent* continent);
-    void addEdgeIndex(int t1, int t2);
+    int getContinentIndex(Continent* continent);  //Mark for deletion
+    void addEdgeIndex(int t1, int t2);  // Mark for deletion
 
 private:
 	int territoriesCount;

@@ -4,6 +4,11 @@
 #include "../Headers/Player.h"
 using namespace std;
 
+
+Player::Player() {
+    this->playerHand = new Hand();
+    this->orderList = new OrdersList();
+}
 Player::Player(string& name, vector<Territory*> ta, vector<Territory*> td, Hand * c)
 {
     this->name = name;
@@ -37,6 +42,7 @@ Player::~Player()
     }
     territoriesToDefend.clear();
     delete orderList;
+    delete playerHand;
     orderList = nullptr;
 }
 vector<Territory*> Player::toDefend()
@@ -65,8 +71,7 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const strin
     cout << "The following are enemy territories, decide priority of the territories to be attacked:" << endl;
     vector<Territory*> enemyTerritories = get_neighbour_territories(this);
     for(int i = 1; i <= enemyTerritories.size(); i++){
-        cout << i  << ": "<< this->getTerritories()[i-1]->getTerritoryName() << "Army count: " <<
-        this->getTerritories()[i-1]->getArmyCount() << endl;
+        cout << i  << ": "<< this->getTerritories()[i-1]->getTerritoryName() << endl;
     }
     cout <<"Select the order of priority by writing the number (type 0 to stop)" << endl;
     do{
@@ -116,35 +121,37 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const strin
     while(this->getTerritories().size() != this->territoriesToDefend.size());
 
     // Deployment Ordering
-    cout << this->getPlayerName() << endl;
     cout << "Territories to Defend in priority. " << endl;
     cout << "Please deploy Army to each territory:" << endl;
+    int tempArmy;
     do{
-        if(reinforcementPool==0) {
+        tempArmy = reinforcementPool;
+        if(tempArmy==0) {
             cout << "No more armies to deploy!";
             break;
         }
         cout << "Be sure to deploy all your armies to be able to issue other orders" << endl;
         for(Territory* territory: this->toDefend()) {
-            cout << "Available number of Deployable Army: " << this->reinforcementPool << endl;
-            cout << territory->getTerritoryName() << ":";
+            cout << "Available number of Deployable Army: " << tempArmy << endl;
+            cout << territory->getTerritoryName() << ":" << endl;
             int numberOfArmies; cin >> numberOfArmies;
-            if (numberOfArmies <= this->reinforcementPool){
-                int index = this->playerHand->findCard("reinforcement");
+            if (numberOfArmies <= tempArmy) {
+                // int index = this->playerHand->findCard("reinforcement");
                 // playing the card from hand
-                if(index != this->playerHand->getHandCards().size())
-                    playerHand->getHandCards()[index]->play(this, deck, territory, numberOfArmies);
-                    //auto* deploy = new Deploy(this, territory, numberOfArmies);
-                    //orderList->add(deploy);
-                else
-                    cout << "You do not have any reinforcement cards!" << endl;
+                //if(index != this->playerHand->getHandCards().size())
+                //    playerHand->getHandCards()[index]->play(this, deck, territory, numberOfArmies);
+                Deploy *deploy = new Deploy(this, territory, numberOfArmies);
+                orderList->add(deploy);
+                tempArmy = tempArmy - numberOfArmies;
+                //else
+                    //cout << "You do not have any reinforcement cards!" << endl;
             }
             else{
                 cout << "Sorry you do not have enough Army to Deploy" << endl;
             }
         }
     }
-    while (reinforcementPool!=0);
+    while (tempArmy!=0);
     cout << "Deployment Order is complete, now other orders can be issued" << endl;
     // Other orders
     cout << "Available Orders: Advance, Bomb, Airlift, Blockade, Negotiate" << endl;
@@ -158,7 +165,7 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const strin
         else if (orderString == "Advance") {
             cout << "Select the source territories number from the following territories" << endl;
             for (int i = 0; i < this->toDefend().size(); i++) {
-                cout << i << ": " << this->toDefend()[i] << endl;
+                cout << i << ": " << this->toDefend()[i]->getTerritoryName() << endl;
             }
             int sourceIndex;
             cin >> sourceIndex;
@@ -167,15 +174,15 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const strin
                 adjacentTerritories = this->toDefend()[sourceIndex]->getAdjTerritories();
                 cout << "Select the adjacent territories number to which the army should be moved to." << endl;
                 for (int i = 0; i < adjacentTerritories.size(); i++) {
-                    cout << i << ": " << adjacentTerritories[i] << endl;
+                    cout << i << ": " << adjacentTerritories[i]->getTerritoryName() << endl;
                 }
                 int targetIndex;
                 cin >> targetIndex;
                 if (targetIndex < adjacentTerritories.size() && targetIndex >= 0) {
-                    cout << "Enter number of armies:" << endl;
+                    cout << "Enter number of armies (" << this->toDefend()[sourceIndex]->getArmyCount() << "):" << endl;
                     int armynum;
                     cin >> armynum;
-                    if (armynum <= this->toDefend()[sourceIndex]->getArmyCount() && armynum >= 0) {
+                    if (armynum >= 0) {
                        //Advance does not require a card.
                        auto *advance = new Advance(this, this->toDefend()[sourceIndex],
                                                     adjacentTerritories[targetIndex], armynum);
@@ -190,7 +197,7 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const strin
         else if (orderString == "Bomb") {
             cout << "Select the target territories number from the following territories" << endl;
             for (int i = 0; i < this->toAttack().size(); i++) {
-                cout << i << ": " << this->toAttack()[i] << endl;
+                cout << i << ": " << this->toAttack()[i]->getTerritoryName() << endl;
             }
             int indexToBomb;
             cin >> indexToBomb;
@@ -211,7 +218,7 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const strin
         else if(orderString == "Airlift"){
             cout << "Select the source and target territories number from the following territories" << endl;
             for (int i = 0; i < this->toDefend().size(); i++) {
-                cout << i << ": " << this->toDefend()[i] << endl;
+                cout << i << ": " << this->toDefend()[i]->getTerritoryName() << endl;
             }
             int indexToAirliftFrom;
             cout << "From: " << endl;
@@ -222,9 +229,8 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const strin
             int armyNo;
             cout << "Number of army " << endl;
             cin >> armyNo;
-            if (indexToAirliftFrom < this->toDefend().size() && indexToAirliftFrom >= 0
-                && indexToAirliftTo < this->toDefend().size() && indexToAirliftTo >= 0 &&
-                armyNo <= this->toDefend()[indexToAirliftFrom]->getArmyCount() && armyNo >= 0) {
+            if (indexToAirliftFrom < this->toDefend().size() && indexToAirliftFrom >= 0 &&
+            indexToAirliftTo < this->toDefend().size() && indexToAirliftTo >= 0 && armyNo >= 0) {
                 int index = this->playerHand->findCard("airlift");
                 // playing the card from hand
                 if(index != -1)
@@ -243,7 +249,7 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const strin
         else if(orderString == "Blockade") {
             cout << "Select the target territories number from the following territories" << endl;
             for (int i = 0; i < this->toDefend().size(); i++) {
-                cout << i << ": " << this->toDefend()[i] << endl;
+                cout << i << ": " << this->toDefend()[i]->getTerritoryName() << endl;
             }
             int indexToBlockade;
             cin >> indexToBlockade;
@@ -265,7 +271,7 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const strin
             cout << "Select the target Player number from the following Players" << endl;
             for (int i = 0; i < players_list.size(); i++) {
                 if(this != players_list[i]) {
-                    cout << i << ": " << players_list[i] << endl;
+                    cout << i << ": " << players_list[i]->getPlayerName() << endl;
                 }
             }
             int indexToPlayer;
@@ -462,3 +468,4 @@ bool Player::checkIfAlreadyExists(Territory* territory, vector<Territory *> terr
     }
     return false;
 }
+
