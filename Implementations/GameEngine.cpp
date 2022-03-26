@@ -157,14 +157,18 @@ void GameEngine::createPlayers() {
 
 
 void GameEngine::mainGameLoop() {
-// 1. Round robin fashiion in the order setup in startup phase
+// 1. Round robin fashion in the order setup in startup phase
 // 2. This loop shall continue until only one of the players owns all the terrotires in the map.
 // 3. Also checks if any player does not control at least one territory
 // 4. if so the player is removed from the game.
-    int round = 0;
+    int round = 1;
     while (player_list.size() != 1){
-        cout << "Reinforcement Phase begins:" << endl;
+        cout << "----------------------------------------------------------------------------" << endl;
+        cout << "Round " << round << " has Began" << endl;
+        cout << "============================================================================" << endl;
+        cout << "Reinforcement Phase beginning..." << endl;
         this->reinforcementPhase();
+        cout << "End of Reinforcement Phase..." << endl;
         // To remove player with zero territories.
         for (int i = 0; i < player_list.size(); i++){
             if(player_list[i]->getTerritories().size() == 0){
@@ -172,9 +176,9 @@ void GameEngine::mainGameLoop() {
                 remove(player_list.begin(), player_list.end(), player_list[i]);
             }
         }
-        cout << "Issuing Order Phase begins:" << endl;
+        cout << "Issuing Order Phase begins...." << endl;
         this->issueOrdersPhase();
-        cout << "Executing Order Phase begins:" << endl;
+        cout << "Executing Order Phase begins...." << endl;
         this->excuteOrderPhase();
         round++;
     }
@@ -251,8 +255,12 @@ void GameEngine::issueOrdersPhase() {
 // 1. Player issue orders and place them in their order list through a call to issueOrder()
 // 2. This method is called in round-robin fashion across all players by the game engine.
     for(auto player : player_list){
+        cout << "----------------------------------------------------------------------------" << endl;
+        cout << player->getPlayerName() << " TURN!!!!!" << endl;
+        cout << "============================================================================" << endl;
         player->issueOrder(deck, player_list);
     }
+
 }
 
 void GameEngine::excuteOrderPhase() {

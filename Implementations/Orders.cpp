@@ -291,8 +291,6 @@ Deploy& Deploy::operator=(const Deploy &deploy) {
 
     return *this;
 }
-
-
 void Deploy::print(std::ostream &os) const {
     cout << "Deploy " << this->nrArmies << " to " << this->targetTerritory << endl;
 }

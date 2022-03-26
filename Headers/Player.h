@@ -32,7 +32,7 @@ private:
     vector<Player* > negotiatePlayersList;
 
 public:
-    Player() = default;                         //Default Constructor
+    Player();                                    //Default Constructor
     Player(string& name);
     Player(string& name, vector<Territory*> ta, vector<Territory*> td, Hand* c);
     Player(const Player&);                      //Copy Constructor
@@ -62,17 +62,11 @@ public:
     void addPlayerToNegotiatePlayersList(Player* player);
     void resetNegotiatePlayersList();
     void removePlayerFromNegotiatePlayersList(Player* player);
-
     vector<Player *> getNegotiatePlayersList();
-
     vector<Territory *> getTerritoriesToAttack();
-
     void setTerritoriesToAttack(vector<Territory *> &territoriesToAttack);
-
     vector<Territory *> getTerritoriesToDefend();
-
     void setTerritoriesToDefend(vector<Territory *> &territoriesToDefend);
-
     void setTerritories(vector<Territory *> territories);
 };
 
