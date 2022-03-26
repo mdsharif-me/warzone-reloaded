@@ -1,3 +1,14 @@
+Order issued: Deploy
+Order issued: Deploy
+Order issued: Deploy
+Order issued: Deploy
+Order issued: Deploy
+Order issued: Deploy
+Order issued: Negotiate
+Order issued: Advance
+Order issued: Bomb
+Order issued: Airlift
+Order issued: Blockade
 Order executed: Deploy
 Order executed: Deploy
 Order executed: Deploy

@@ -69,6 +69,9 @@ void Subject::Notify(ILoggable* iLoggable) {
         } else if (dynamic_cast<const Negotiate*>(iLoggable) != nullptr) {
             message = "Order executed: Negotiate";
 
+        } else if (dynamic_cast<const OrdersList*>(iLoggable) != nullptr) {
+            message = this->getMessage();
+
         }
 
 

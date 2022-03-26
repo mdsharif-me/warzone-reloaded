@@ -102,7 +102,7 @@ public:
  * Class declaration Orders List
  */
 
-class OrdersList {
+class OrdersList: virtual public ILoggable, public Subject {
 private:
     vector<Order*> orders;
 
@@ -126,6 +126,7 @@ public:
     void move(int from, int to);
     vector<Order*> getOrders();
     void removeOrder(Order* order);
+    void stringToLog();
 
 };
 

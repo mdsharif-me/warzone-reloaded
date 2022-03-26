@@ -195,6 +195,31 @@ ostream &operator<<(ostream &ostream, const OrdersList &ordersList) {
  */
 void OrdersList::add(Order* order) {
     orders.push_back(order);
+    std::string message = "";
+    if (dynamic_cast<const Deploy*>(order) != nullptr) {
+        message = "Order issued: Deploy";
+    } else if (dynamic_cast<const Advance*>(order) != nullptr) {
+        message = "Order issued: Advance";
+
+    } else if (dynamic_cast<const Bomb*>(order) != nullptr) {
+        message = "Order issued: Bomb";
+
+    } else if (dynamic_cast<const Airlift*>(order) != nullptr) {
+        message = "Order issued: Airlift";
+
+    } else if (dynamic_cast<const Blockade*>(order) != nullptr) {
+        message = "Order issued: Blockade";
+
+    } else if (dynamic_cast<const Negotiate*>(order) != nullptr) {
+        message = "Order issued: Negotiate";
+
+    }
+    Subject subject;
+    LogObserver* logObserver = new LogObserver(subject);
+    subject.setMessage(message);
+    subject.Notify(this);
+    delete logObserver;
+    logObserver = nullptr;
     
     //super.update(order);
 }
@@ -231,6 +256,8 @@ void OrdersList::removeOrder(Order* order) {
     }
 
 }
+
+void OrdersList::stringToLog() {}
 
 
 
