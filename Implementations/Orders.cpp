@@ -392,7 +392,8 @@ bool Advance::validate() {
 
     // check if territory is adjacent
     for(Territory* territory: startTerritory->getAdjTerritories()) {
-        if (territory->getTerritoryName() == targetTerritory->getTerritoryName()) {
+        if (territory->getTerritoryName() == targetTerritory->getTerritoryName() &&
+        nrArmies <= startTerritory->getArmyCount()) {
             cout << "Advance order is valid." << endl;
             return true;
         }

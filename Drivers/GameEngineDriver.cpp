@@ -60,36 +60,6 @@ int main() {
             cout << "\nError: Map file \"" << mapFileList[i] << "\" is invalid.\n\n";
         }
     }
-    GameEngine* g = new GameEngine();
-    //g->createPlayers();
-    //g->startupPhase();
-    vector<Territory*> playerTerritories;
-    vector<Territory*> enemyTerritories;
-    int numberOfArmies;
-
-    auto* player = new Player();
-    auto* enemyPlayer = new Player();
-    player->setName("Mike");
-    enemyPlayer->setName("Enemy");
-
-    vector<Territory *> allTerritories = m->getTerritories();
-    playerTerritories.reserve(3);
-    for(int i = 0; i < 3; i++) {
-        playerTerritories.push_back(allTerritories[i]);
-    }
-    enemyTerritories.reserve(3);
-    for(int i = 3; i < 6; i++) {
-        enemyTerritories.push_back(allTerritories[i]);
-    }
-    for(int i = 0; i < 3; i++) {
-        playerTerritories[i]->addOwner(player);
-        enemyTerritories[i]->addOwner(enemyPlayer);
-    }
-
-    player->setTerritories(playerTerritories);
-    player->setReinforcementPool(50); // should be done in part 2
-    enemyPlayer->setTerritories(enemyTerritories);
-    enemyPlayer->setReinforcementPool(50); // part2
     Deck* deck = new Deck();
     deck->addToDeck(new Card("deploy"));
     deck->addToDeck(new Card("reinforcement"));
@@ -107,9 +77,19 @@ int main() {
     deck->addToDeck(new Card("airlift"));
     deck->addToDeck(new Card("diplomacy"));
 
+
+    auto* player = new Player();
+    auto* enemyPlayer = new Player();
+    auto* enemyPlayer2 = new Player;
+    enemyPlayer2->setName("Deep");
+    player->setName("Mike");
+    enemyPlayer->setName("Enemy");
     vector<Player* > players;
     players.push_back(player);
     players.push_back(enemyPlayer);
+    players.push_back(enemyPlayer2);
+    GameEngine* g = new GameEngine(players, m, deck);
+    g->startupPhase();
     for(int i = 0; i < players.size();i++){
         players[i]->getPlayerHand()->addToHand(new Card("deploy"));
         players[i]->getPlayerHand()->addToHand(new Card("reinforcement"));
@@ -117,14 +97,12 @@ int main() {
         players[i]->getPlayerHand()->addToHand(new Card("airlift"));
         players[i]->getPlayerHand()->addToHand(new Card("diplomacy"));
     }
-    g->setPlayerList(players);
-    g->setDeck(deck);
-    g->setMap(m);
+
     cout << "Loading Main Game loop...." << endl;
     g->mainGameLoop();
-
     delete player;
     delete enemyPlayer;
+    delete enemyPlayer2;
     return 0;
 }
 
