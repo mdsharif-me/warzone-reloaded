@@ -50,11 +50,8 @@ ostream &operator<<(ostream &os, const Order &order) {
 
 bool Order::validate() {
     return true;
-
 }
 
-void::Order::execute() {
-}
 
 void Order::print(ostream &os) const {
     cout << "Order" << endl;
