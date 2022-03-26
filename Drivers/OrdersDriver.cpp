@@ -98,7 +98,7 @@ int main() {
     player->setOrderList(playerOrdersList);
     enemyPlayer->setOrderList(enemyOrdersList);
 
-    /*vector<Territory *> adjacentTerritory = playerTerritories[2]->getAdjTerritories();
+    vector<Territory *> adjacentTerritory = playerTerritories[2]->getAdjTerritories();
 
     cout << "Start Territory " << playerTerritories[2]->getTerritoryName() << endl;
     //cout << "Territory to attack " << enemyTerritories[2]->getTerritoryName() << endl;
@@ -116,7 +116,7 @@ int main() {
     for(Territory* terr: enemyTerritories) {
         cout << terr->getTerritoryName() << endl;
     }
-    cout << "--------------------------end." << endl;*/
+    cout << "--------------------------end." << endl;
 
     auto* playerNegotiate = new Negotiate(player, enemyPlayer);
     auto* playerAdvance1 = new Advance(player, playerTerritories[2], enemyTerritories[0], 1);

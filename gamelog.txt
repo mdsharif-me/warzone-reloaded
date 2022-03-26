@@ -1,0 +1,9 @@
+Order executed: Deploy
+Order executed: Deploy
+Order executed: Deploy
+Order executed: Deploy
+Order executed: Deploy
+Order executed: Deploy
+Order executed: Negotiate
+Order executed: Airlift
+Order executed: Blockade

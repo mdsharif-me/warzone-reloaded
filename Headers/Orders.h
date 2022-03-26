@@ -10,6 +10,7 @@
 #include <string>
 #include "Map.h"
 #include "Player.h"
+#include "LogObserver.h"
 
 using namespace std;
 
@@ -19,7 +20,7 @@ class Player;
 /**
  * Class declaration Orders
  */
-class Order{
+class Order: virtual public ILoggable, public Subject {
 public:
     // default constructor
     Order();
@@ -44,6 +45,9 @@ public:
 
     // stream assignment operator
     virtual void print(std::ostream& os) const;
+
+    void stringToLog();
+
 
 protected:
     Player* player{};
