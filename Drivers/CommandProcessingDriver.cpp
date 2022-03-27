@@ -7,7 +7,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    CommandProcessor* c;
+    CommandProcessor* c = new CommandProcessor;
     if(argc == 1) {
         cout << "Enter your command in the command line arguement" << endl;
     }
@@ -24,6 +24,7 @@ int main(int argc, char* argv[]) {
         }
     }
     c->getCommand();
+    bool result = c->validate("loadmap.txt", "start");
     return 0;
 }
 

@@ -15,6 +15,26 @@ string Command::getEffect() {
 }
 void Command::saveEffect(const string& effect) {
     this->effect = effect;
+    Subject* subject = new Subject;
+    LogObserver* logObserver = new LogObserver(subject);
+    subject->setMessage("Command's effect: " + this->getEffect());
+    subject->Notify(this);
+    delete logObserver;
+    delete subject;
+    logObserver = nullptr;
+    subject = nullptr;
+}
+
+void Command::stringToLog(const string &message) {
+    ofstream myFile;
+    myFile.open("../gamelog.txt", ios::app);
+    if (myFile.is_open()) {
+        myFile << message;
+        myFile << "\n";
+        myFile.close();
+    } else {
+        cout << "Unable to open the file" << endl;
+    }
 }
 
 /**
@@ -30,6 +50,14 @@ Command* CommandProcessor::readCommand() {
 Command* CommandProcessor::saveCommand(const string& command) {
     Command* c = new Command(command);
 	commandsList.push_back(c);
+    Subject* subject = new Subject;
+    LogObserver* logObserver = new LogObserver(subject);
+    subject->setMessage("Command: " + command);
+    subject->Notify(this);
+    delete logObserver;
+    delete subject;
+    logObserver = nullptr;
+    subject = nullptr;
     return c;
 }
 Command* CommandProcessor::getCommand() {
@@ -54,6 +82,18 @@ bool CommandProcessor::validate(const string& command,const string& currentState
 		}
 	}
 	return false;
+}
+
+void CommandProcessor::stringToLog(const string &message) {
+    ofstream myFile;
+    myFile.open("../gamelog.txt", ios::app);
+    if (myFile.is_open()) {
+        myFile << message;
+        myFile << "\n";
+        myFile.close();
+    } else {
+        cout << "Unable to open the file" << endl;
+    }
 }
 
 

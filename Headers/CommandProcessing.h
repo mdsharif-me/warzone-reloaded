@@ -6,16 +6,18 @@ Last updated: 22 Feb, 2022
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include "../Headers/LogObserver.h"
 
 using namespace std;
 
 
 /* This class holds/saves the commands */
-class Command {
+class Command: virtual public ILoggable, public Subject{
 public:
 	Command(const string& command);
     string getCommand();
     string getEffect();
+    void stringToLog(const std::string& message) override;
 private:
 	void saveEffect(const string& effect);
 	string command;
@@ -36,12 +38,13 @@ private:
 };
 
 /* This class reads commands from console */
-class CommandProcessor {
+class CommandProcessor: virtual public ILoggable, public Subject{
 public:
 	CommandProcessor() = default;
 	Command* getCommand();
     Command* saveCommand(const string& command);
     bool validate(const string& command, const string& currentState);
+    void stringToLog(const std::string& message) override;
 private:
 	virtual Command* readCommand();
     string commands[6];
