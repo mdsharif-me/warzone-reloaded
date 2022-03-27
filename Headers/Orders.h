@@ -22,16 +22,31 @@ class Player;
  */
 class Order: virtual public ILoggable, public Subject {
 public:
-    Order();                                                       // default constructor
-    Order(const Order &order);                                     //copy constructor
-    ~Order();                                                      //destructor
-    Order& operator=(const Order &order);                          //assignment operator
-    friend ostream& operator << (ostream &os, const Order &order); //stream insertion operator for Orders
-    virtual bool validate();                                       //validate methods to be inherited by the Orders subclasses
-    virtual void execute() = 0;                                    //execute methods to be inherited by the Orders subclasses
-    virtual void print(std::ostream& os) const;                    // stream assignment operator
-    void stringToLog();
+    // default constructor
+    Order();
 
+    //copy constructor
+    Order(const Order &order);
+
+    //destructor
+    ~Order();
+
+    //assignment operator
+    Order& operator=(const Order &order);
+
+    //stream insertion operator for Orders
+    friend ostream& operator << (ostream &os, const Order &order);
+
+    virtual //validate methods to be inherited by the Orders subclasses
+    bool validate();
+
+    //execute methods to be inherited by the Orders subclasses
+    virtual void execute() = 0;
+
+    // stream assignment operator
+    virtual void print(std::ostream& os) const;
+
+    void stringToLog(const std::string& message) override;
 
 protected:
     Player* player{};
@@ -46,22 +61,39 @@ protected:
 
 public:
     Territory *getTerritory() const;
+
     void setTerritory(Territory *territory);
+
     Territory *getStartTerritory() const;
+
     void setStartTerritory(Territory *startTerritory);
+
     Territory *getTargetTerritory() const;
+
     void setTargetTerritory(Territory *targetTerritory);
+
     Player *getPlayer() const;
+
     void setPlayer(Player *player);
+
     Player *getTargetPlayer() const;
+
     void setTargetPlayer(Player *targetPlayer);
+
     const vector<Territory *> &getTerritories() const;
+
     void setTerritories(const vector<Territory *> &territories);
+
     int getNrArmies() const;
+
     void setNrArmies(int nrArmies);
+
     int getNrArmiesToAttack() const;
+
     void setNrArmiesToAttack(int nrArmiesToAttack);
+
     int getNrArmiesToDefend() const;
+
     void setNrArmiesToDefend(int nrArmiesToDefend);
 };
 
@@ -72,19 +104,29 @@ public:
 class OrdersList: virtual public ILoggable, public Subject {
 private:
     vector<Order*> orders;
+
 public:
-    OrdersList() = default;                     //default constructor
-    OrdersList(const vector<Order *> &orders);  //constructor
-    OrdersList(const OrdersList &orderList);    //copy constructor
-    ~OrdersList();                              //destructor
-    OrdersList& operator = (OrdersList *orderList); // assignment operator
-    friend ostream& operator << (ostream &ostream, const OrdersList &orderList); // stream insertion operator
+
+    //default constructor
+    OrdersList() = default;
+
+    //constructor
+    OrdersList(const vector<Order *> &orders);
+    //copy constructor
+    OrdersList(const OrdersList &orderList);
+    //destructor
+    ~OrdersList();
+    // assignment operator
+    OrdersList& operator = (OrdersList *orderList);
+    // stream insertion operator
+    friend ostream& operator << (ostream &ostream, const OrdersList &orderList);
     void add(Order* order);
     void remove(int index);
     void move(int from, int to);
     vector<Order*> getOrders();
     void removeOrder(Order* order);
-    void stringToLog();
+    void stringToLog(const std::string& message) override;
+
 };
 
 /**
@@ -92,12 +134,18 @@ public:
  */
 class Deploy : public Order {
 public:
-    Deploy() = default;  //default constructor
-    Deploy(Player* player, Territory* targetTerritory, int nrArmies);     // constructor
-    Deploy(const Deploy &deploy);   //copy constructor
-    ~Deploy();   // destructor
-    Deploy& operator = (const Deploy &deploy);    // assignment operator
-    friend ostream& operator << (ostream &ostream, const Order &order);   //stream insertion operator
+    //default constructor
+    Deploy() = default;
+    // constructor
+    Deploy(Player* player, Territory* targetTerritory, int nrArmies);
+    //copy constructor
+    Deploy(const Deploy &deploy);
+    // destructor
+    ~Deploy();
+    // assignment operator
+    Deploy& operator = (const Deploy &deploy);
+    //stream insertion operator
+    friend ostream& operator << (ostream &ostream, const Order &order);
     bool validate();
     void execute() ;
     void print(std::ostream& os) const override;
@@ -108,12 +156,18 @@ public:
  */
 class Advance : public Order {
 public:
-    Advance() = default;  // default constructor
-    Advance(Player* player, Territory* startTerritory, Territory* targetTerritory, int nrArmies); // constructor
-    Advance(const Advance &advance); //copy constructor
-    ~Advance() = default;  // destructor
-    Advance& operator = (const Advance &advance);  // assignment operator
-    //friend ostream& operator << (ostream &ostream, const Advance &advance);  //stream insertion operator
+    // default constructor
+    Advance() = default;
+    // constructor
+    Advance(Player* player, Territory* startTerritory, Territory* targetTerritory, int nrArmies);
+    //copy constructor
+    Advance(const Advance &advance);
+    // destructor
+    ~Advance() = default;
+    // assignment operator
+    Advance& operator = (const Advance &advance);
+    //stream insertion operator
+    //friend ostream& operator << (ostream &ostream, const Advance &advance);
     bool validate();
     void execute();
     void print(std::ostream& os) const override;
@@ -125,13 +179,24 @@ public:
  */
 class Bomb : public Order {
 public:
-    Bomb() = default; // default constructor
-    Bomb(Player* player, Territory* target);  // constructor
-    Bomb(const Bomb &bomb); //copy constructor
-    ~Bomb(); // destructor
-    Bomb& operator = (const Bomb &bomb); // assignment operator
+    // default constructor
+    Bomb() = default;
+
+    // constructor
+    Bomb(Player* player, Territory* target);
+
+    //copy constructor
+    Bomb(const Bomb &bomb);
+
+    // destructor
+    ~Bomb();
+
+    // assignment operator
+    Bomb& operator = (const Bomb &bomb);
+
     //stream insertion operator
     //friend ostream& operator << (ostream &ostream, const Bomb &bomb);
+
     bool validate();
     void execute();
     void print(std::ostream& os) const override;
@@ -142,12 +207,24 @@ public:
  */
 class Blockade : public Order {
 public:
-    Blockade() = default;  // default constructor
-    Blockade(Player* player, Territory* target);    // constructor
-    Blockade(const Blockade &blockade); //copy constructor
-    ~Blockade();     // destructor
-    Blockade& operator = (const Blockade &blockade);   // assignment operator
-    //friend ostream& operator << (ostream &ostream, const Blockade &blockade); //stream insertion operator
+    // default constructor
+    Blockade() = default;
+
+    // constructor
+    Blockade(Player* player, Territory* target);
+
+    //copy constructor
+    Blockade(const Blockade &blockade);
+
+    // destructor
+    ~Blockade();
+
+    // assignment operator
+    Blockade& operator = (const Blockade &blockade);
+
+    //stream insertion operator
+    //friend ostream& operator << (ostream &ostream, const Blockade &blockade);
+
     bool validate();
     void execute();
     void print(std::ostream& os) const override;
@@ -159,11 +236,21 @@ public:
 class Airlift : public Order {
 public:
     Airlift() = default;
-    Airlift(Player* player, Territory* startTerritory, Territory *targetTerritory, int nrArmies); // constructor
-    Airlift(const Airlift &airlift);   //copy constructor
-    ~Airlift();  // destructor
-    Airlift& operator = (const Airlift &airlift);// assignment operator
-    //friend ostream& operator << (ostream &ostream, const Airlift &airlift); //stream insertion operator
+    // constructor
+    Airlift(Player* player, Territory* startTerritory, Territory *targetTerritory, int nrArmies);
+
+    //copy constructor
+    Airlift(const Airlift &airlift);
+
+    // destructor
+    ~Airlift();
+
+    // assignment operator
+    Airlift& operator = (const Airlift &airlift);
+
+    //stream insertion operator
+    //friend ostream& operator << (ostream &ostream, const Airlift &airlift);
+
     bool validate();
     void execute();
     void print(std::ostream& os) const override;
@@ -174,15 +261,28 @@ public:
  */
 class Negotiate : public Order {
 public:
-    Negotiate() = default; //default constructor
-    Negotiate(Player* player, Player* targetPlayer);   // constructor implementation
-    Negotiate(const Negotiate &negotiate);    //copy constructor
-    ~Negotiate();     // destructor
-    Negotiate& operator = (const Negotiate &negotiate);     // assignment operator
-    //friend ostream& operator << (ostream &ostream, const Negotiate &negotiate);     //stream insertion operator
+    //default constructor
+    Negotiate() = default;
+
+    // constructor implementation
+    Negotiate(Player* player, Player* targetPlayer);
+
+    //copy constructor
+    Negotiate(const Negotiate &negotiate);
+
+    // destructor
+    ~Negotiate();
+
+    // assignment operator
+    Negotiate& operator = (const Negotiate &negotiate);
+
+    //stream insertion operator
+    //friend ostream& operator << (ostream &ostream, const Negotiate &negotiate);
+
     bool validate();
     void execute();
     void print(std::ostream& os) const override;
 };
+
 
 #endif //COMP345_ORDERS_H

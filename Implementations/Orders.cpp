@@ -129,10 +129,18 @@ void Order::setNrArmiesToDefend(int nrArmiesToDefend) {
     Order::nrArmiesToDefend = nrArmiesToDefend;
 }
 
-void Order::stringToLog() {
-    cout << "inside string to log of order class" << endl;
+void Order::stringToLog(const std::string& message) {
+        ofstream myFile;
+        myFile.open("../gamelog.txt", ios::app);
+        if (myFile.is_open()) {
+            myFile << message;
+            myFile << "\n";
+            myFile.close();
+        } else {
+            cout << "Unable to open the file" << endl;
+        }
+    }
 
-}
 
 /*void Order::stringToLog() {
 
@@ -211,14 +219,13 @@ void OrdersList::add(Order* order) {
         message = "Order issued: Negotiate";
 
     }
-    Subject subject;
+    Subject* subject = new Subject;
     LogObserver* logObserver = new LogObserver(subject);
-    subject.setMessage(message);
-    subject.Notify(this);
+    subject->setMessage(message);
+    subject->Notify(this);
     delete logObserver;
+    delete subject;
     logObserver = nullptr;
-    
-    //super.update(order);
 }
 
 /**
@@ -254,7 +261,17 @@ void OrdersList::removeOrder(Order* order) {
 
 }
 
-void OrdersList::stringToLog() {}
+void OrdersList::stringToLog(const std::string& message) {
+    ofstream myFile;
+    myFile.open("../gamelog.txt", ios::app);
+    if (myFile.is_open()) {
+        myFile << message;
+        myFile << "\n";
+        myFile.close();
+    } else {
+        cout << "Unable to open the file" << endl;
+    }
+}
 
 
 
@@ -319,18 +336,20 @@ void Deploy::execute() {
         targetTerritory->setArmyCount(targetTerritory->getArmyCount() + this->nrArmies);
         cout << player->getPlayerName() << " has executed Deploy order." << endl;
         cout << nrArmies << " troops have been deployed to " << targetTerritory->getTerritoryName() << endl;
-        Subject subject;
+        Subject* subject = new Subject;
         LogObserver* logObserver = new LogObserver(subject);
-        subject.setMessage("Order Executed: Deploy");
-        subject.Notify(this);
+        subject->setMessage("Order Executed: Deploy");
+        subject->Notify(this);
         delete logObserver;
+        delete subject;
         logObserver = nullptr;
+        subject = nullptr;
     } else {
         cout << "Cannot execute invalid Deploy order." << endl;
     }
 }
 
-void stringToLog() {}
+
 
 
 
@@ -448,12 +467,14 @@ void Advance  :: execute() {
         }
 
         cout << "Advance order executed" << endl;
-        Subject subject;
+        Subject* subject = new Subject;
         LogObserver* logObserver = new LogObserver(subject);
-        subject.setMessage("Order Executed: Advance");
-        subject.Notify(this);
+        subject->setMessage("Order Executed: Advance");
+        subject->Notify(this);
         delete logObserver;
+        delete subject;
         logObserver = nullptr;
+        subject = nullptr;
         if (targetTerritory->getOwner()->getPlayerName() == this->player->getPlayerName()) {
             cout << "The territory" << targetTerritory->getTerritoryName() << " has been conquered" << endl;
         }
@@ -471,6 +492,8 @@ void Advance  :: execute() {
 void Advance::print(ostream &os) const {
     cout << "Advance " << this->nrArmies << " to " << this->targetTerritory->getTerritoryName() << endl;
 }
+
+
 
 
 
@@ -536,12 +559,14 @@ void Bomb  :: execute() {
     if (orderValid) {
         targetTerritory->setArmyCount(targetTerritory->getArmyCount() / 2);
         cout << "Bomb order executed" << endl;
-        Subject subject;
+        Subject* subject = new Subject;
         LogObserver* logObserver = new LogObserver(subject);
-        subject.setMessage("Order Executed: Bomb");
-        subject.Notify(this);
+        subject->setMessage("Order Executed: Bomb");
+        subject->Notify(this);
         delete logObserver;
+        delete subject;
         logObserver = nullptr;
+        subject = nullptr;
     } else {
         cout << "Cannot execute invalid Bomb order." << endl;
     }
@@ -608,12 +633,14 @@ void Blockade  :: execute() {
 
         cout << "Blockade order executed" << endl;
         cout << targetTerritory->getTerritoryName() << " has no owner now and has " << targetTerritory->getArmyCount() << " armies." << endl;
-        Subject subject;
+        Subject* subject = new Subject;
         LogObserver* logObserver = new LogObserver(subject);
-        subject.setMessage("Order Executed: Blockade");
-        subject.Notify(this);
+        subject->setMessage("Order Executed: Blockade");
+        subject->Notify(this);
         delete logObserver;
+        delete subject;
         logObserver = nullptr;
+        subject = nullptr;
     } else {
         cout << "Cannot execute invalid Blockade  order." << endl;
     }
@@ -682,12 +709,14 @@ void Airlift  :: execute() {
         cout << "Airlifted " << this->nrArmies <<" armies" << " from " << this->startTerritory->getTerritoryName() << " to " << this->targetTerritory->getTerritoryName() << endl;
         cout << "The target territory has now: " << targetTerritory->getArmyCount() << " armies and start territory has now " << startTerritory->getArmyCount() << " armies."  << endl;
 
-        Subject subject;
+        Subject* subject = new Subject;
         LogObserver* logObserver = new LogObserver(subject);
-        subject.setMessage("Order Executed: Airlift");
-        subject.Notify(this);
+        subject->setMessage("Order Executed: Airlift");
+        subject->Notify(this);
         delete logObserver;
+        delete subject;
         logObserver = nullptr;
+        subject = nullptr;
     } else {
         cout << "Cannot execute invalid Airlift order." << endl;
     }
@@ -743,12 +772,14 @@ void Negotiate  :: execute() {
         cout << targetPlayer->getPlayerName() << " will not attack " << player->getPlayerName() << " territories during this turn." << endl;
         cout << player->getPlayerName() << " will not attack " << targetPlayer->getPlayerName() << " territories this turn" << endl;
 
-        Subject subject;
+        Subject* subject = new Subject;
         LogObserver* logObserver = new LogObserver(subject);
-        subject.setMessage("Order Executed: Negotiate");
-        subject.Notify(this);
+        subject->setMessage("Order Executed: Negotiate");
+        subject->Notify(this);
         delete logObserver;
+        delete subject;
         logObserver = nullptr;
+        subject = nullptr;
 
     } else {
         cout << "Cannot execute invalid Negotiate order." << endl;

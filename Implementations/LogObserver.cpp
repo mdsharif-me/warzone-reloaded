@@ -50,32 +50,8 @@ void Subject::Detach(LogObserver *observer) {
  * Method to Notify all Observers
  */
 void Subject::Notify(ILoggable* iLoggable) {
-    std::string message = "";
     for(LogObserver* logObserver: list_observer) {
-        if (dynamic_cast<const Deploy*>(iLoggable) != nullptr) {
-            message = "Order executed: Deploy";
-        } else if (dynamic_cast<const Advance*>(iLoggable) != nullptr) {
-            message = "Order executed: Advance";
-
-        } else if (dynamic_cast<const Bomb*>(iLoggable) != nullptr) {
-            message = "Order executed: Bomb";
-
-        } else if (dynamic_cast<const Airlift*>(iLoggable) != nullptr) {
-            message = "Order executed: Airlift";
-
-        } else if (dynamic_cast<const Blockade*>(iLoggable) != nullptr) {
-            message = "Order executed: Blockade";
-
-        } else if (dynamic_cast<const Negotiate*>(iLoggable) != nullptr) {
-            message = "Order executed: Negotiate";
-
-        } else if (dynamic_cast<const OrdersList*>(iLoggable) != nullptr) {
-            message = this->getMessage();
-
-        }
-
-
-        logObserver->Update(message);
+        logObserver->Update(iLoggable);
     }
 }
 
@@ -114,7 +90,7 @@ void Subject::setMessage(const std::string &message_) {
  * LogObserver parametrized constructor
  * @param subject
  */
-LogObserver::LogObserver(Subject &subject) : subject(subject) {
+LogObserver::LogObserver(Subject* subject) : subject(*subject) {
     message_from_subject = "";
     name_of_observer = "";
     this->subject.Attach(this);
@@ -132,10 +108,9 @@ LogObserver::~LogObserver() {
  * Method to update the message of LogObserver
  * @param message_from_subject
  */
-void LogObserver::Update(const std::string& message_) {
-    message_from_subject = message_;
-    stringToLog();
-    //PrintInfo();
+void LogObserver::Update(ILoggable* iLoggable) {
+    message_from_subject = this->getSubject().getMessage();
+    iLoggable->stringToLog(this->getMessageFromSubject());
 }
 
 /**
@@ -152,18 +127,6 @@ void LogObserver::PrintInfo() {
     std::cout << "a new message is available";
 }
 
-
-void LogObserver::stringToLog() {
-    ofstream myFile;
-    myFile.open("../gamelog.txt", ios::app);
-    if (myFile.is_open()) {
-        myFile << this->getMessageFromSubject();
-        myFile << "\n";
-        myFile.close();
-    } else {
-        cout << "Unable to open the file" << endl;
-    }
-}
 
 /**
  * Getter for NameOfObserver

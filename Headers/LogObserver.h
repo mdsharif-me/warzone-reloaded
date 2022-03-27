@@ -19,13 +19,10 @@ class LogObserver;
  */
 
 class ILoggable {
-private:
-    std::string message_to_output;
-
 public:
     ILoggable() = default;
     ~ILoggable() = default;
-    virtual void stringToLog() = 0;
+    virtual void stringToLog(const std::string& message) = 0;
 };
 
 
@@ -34,31 +31,32 @@ public:
  */
 class Observer {
 public:
-    virtual ~Observer()= default;
-    virtual void Update(const std::string& message_) = 0; // the parameter should be a Iloggable
+    virtual ~Observer()= default;;
+    virtual void Update(ILoggable* iLoggable) = 0;
 };
 
 
 /**
  * Log Observer Class definition
  */
-class LogObserver: virtual public ILoggable, public Observer{
+class LogObserver: public Observer{
 private:
     std::string message_from_subject;
     Subject &subject;
     std::string name_of_observer;
+
+
 public:
-    LogObserver(Subject &subject);
+    LogObserver(Subject* subject);
     ~LogObserver() override;
-    void Update(const std::string& message_) override;
+    void Update(ILoggable* iLoggable) override;
     void RemoveObserverFromTheList();
     void PrintInfo();
-    void stringToLog() override;
-    [[nodiscard]] const std::string &getNameOfObserver() const;                    // GETTER
+    const std::string &getNameOfObserver() const;                         // GETTER
     void setNameOfObserver(const string &nameOfObserver);                          // SETTER
-    [[nodiscard]] const std::string &getMessageFromSubject() const;                // GETTER
+    const std::string &getMessageFromSubject() const;                     // GETTER
     void setMessageFromSubject(const string &messageFromSubject);                  // SETTER
-    [[nodiscard]] Subject &getSubject() const;                                     // GETTER
+    Subject &getSubject() const;                                     // GETTER
     void setSubject(Subject &subject);                                             // SETTER
 
 };
@@ -80,8 +78,8 @@ public:
 
     [[nodiscard]] const vector<LogObserver *> &getListObserver() const;   // GETTER
     void setListObserver(const vector<LogObserver *> &listObserver);      // SETTER
-    [[nodiscard]] const std::string &getMessage() const;                  // GETTER
-    void setMessage(const std::string &message);                          // SETTER
+    [[nodiscard]] const std::string &getMessage() const;                    // GETTER
+    void setMessage(const std::string &message);                            // SETTER
 };
 
 #endif //COMP345_LOGOBSERVER_H
