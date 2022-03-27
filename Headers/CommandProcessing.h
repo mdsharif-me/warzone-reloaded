@@ -13,11 +13,11 @@ using namespace std;
 /* This class holds/saves the commands */
 class Command {
 public:
-	Command(string command);
+	Command(const string& command);
     string getCommand();
     string getEffect();
 private:
-	void saveEffect(string effect);
+	void saveEffect(const string& effect);
 	string command;
 	string effect;
 };
@@ -26,9 +26,9 @@ class FileLineReader{
 public:
     FileLineReader() = default;
     ~FileLineReader();
-    FileLineReader(string filePath);
+    FileLineReader(const string& filePath);
     string readLineFromFile();
-    void setFilePath(string filePath);
+    void setFilePath(const string& filePath);
 
 private:
     string filePath;
@@ -40,8 +40,8 @@ class CommandProcessor {
 public:
 	CommandProcessor() = default;
 	Command* getCommand();
-    Command* saveCommand(string command);
-    bool validate(string command, string currentState);
+    Command* saveCommand(const string& command);
+    bool validate(const string& command, const string& currentState);
 private:
 	virtual Command* readCommand();
     string commands[6];
@@ -52,7 +52,7 @@ private:
 class FileCommandProcessorAdapter: public CommandProcessor{
 public:
     FileCommandProcessorAdapter() = default;
-    FileCommandProcessorAdapter(string filePath);
+    FileCommandProcessorAdapter(const string& filePath);
     Command* readCommand();
     ~FileCommandProcessorAdapter();
 private:

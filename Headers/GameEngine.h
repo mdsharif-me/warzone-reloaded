@@ -11,13 +11,13 @@ public:
     GameEngine() = default;
     GameEngine(vector<Player*> players_list, Map* map, Deck* deck);
     ~GameEngine();
-    string loadMap(CommandProcessor*, string);
-    string validateMap(CommandProcessor*, string);
-    string win(CommandProcessor*, string);
-    string quit(CommandProcessor*, string);
-    string startGame(CommandProcessor*, string);
-    string addPlayers(CommandProcessor*, string);
-    string replay(CommandProcessor*, string);
+    string loadMap(CommandProcessor*);
+    string validateMap(CommandProcessor*);
+    string win(CommandProcessor*);
+    string quit(CommandProcessor*);
+    string startGame(CommandProcessor*);
+    string addPlayers(CommandProcessor*);
+    string replay(CommandProcessor*);
     void startupPhase(CommandProcessor* cp); //Assignment 2 Part 2
     void mainGameLoop(); //Assignment 2 Part 3
     void reinforcementPhase(); //Assignment 2 Part 3

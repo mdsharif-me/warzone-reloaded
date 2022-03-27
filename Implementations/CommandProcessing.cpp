@@ -4,7 +4,7 @@
  *  Command class Implementation
  *
  */
-Command::Command(string command) {
+Command::Command(const string& command) {
 	this->command = command;
 }
 string Command::getCommand() {
@@ -13,7 +13,7 @@ string Command::getCommand() {
 string Command::getEffect() {
     return this->effect;
 }
-void Command::saveEffect(string effect) {
+void Command::saveEffect(const string& effect) {
     this->effect = effect;
 }
 
@@ -24,10 +24,10 @@ void Command::saveEffect(string effect) {
 Command* CommandProcessor::readCommand() {
 	string userInput;
 	cout << "\nType a command: ";
-	cin >> userInput;
+	getline(cin, userInput);
     return this->saveCommand(userInput);
 }
-Command* CommandProcessor::saveCommand(string command) {
+Command* CommandProcessor::saveCommand(const string& command) {
     Command* c = new Command(command);
 	commandsList.push_back(c);
     return c;
@@ -36,19 +36,21 @@ Command* CommandProcessor::getCommand() {
     return readCommand();
 }
 // Check if a command is valid, and if it's allowed in the current state
-bool CommandProcessor::validate(string command, string currentState) {
+bool CommandProcessor::validate(const string& command,const string& currentState) {
 	string validCommands[6] = { "loadmap", "validatemap", "addplayer", "gamestart", "replay", "quit" };
 	string gameStates[5] = { "start", "maploaded", "mapvalidated", "playersadded", "win" };
 	int validIn[6][2] = { {0, 1},{1, 1},{2, 3},{3, 3},{4, 4},{4, 4} };
-
 	for (int i = 0; i < 6; i++) {
 		// if the command is one of the valid commands...
-		if (!command.compare(validCommands[i])) {
+		if (command.find(validCommands[i]) != string::npos) {
 			// if the command allowed in current state...
 			if (!currentState.compare(gameStates[validIn[i][0]]) || !currentState.compare(gameStates[validIn[i][1]])) {
+                cout << "COMMAND VALIDATION: true" << endl;
 				return true;
-			}
-			else { return false; }
+			}else {
+                cout << "COMMAND VALIDATION: false" << endl;
+                return false;
+            }
 		}
 	}
 	return false;
@@ -63,12 +65,14 @@ Command* FileCommandProcessorAdapter::readCommand() {
     string command = this->flr->readLineFromFile();
     if (command == "No command found in the file") {
         cout << command << endl;
-    } else {
-        this->saveCommand(command);
+        return nullptr;
+    }
+    else {
+        return this->saveCommand(command);
     }
 }
 
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(string filePath) {
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(const string& filePath) {
     flr = new FileLineReader(filePath);
 }
 
@@ -81,7 +85,7 @@ FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
  *
  */
 
-FileLineReader::FileLineReader(string filePath) {
+FileLineReader::FileLineReader(const string& filePath) {
     this->myFile.open(filePath);
     if(myFile.is_open()){
         cout << "Successfully opened command file!" << endl;
@@ -106,6 +110,6 @@ FileLineReader::~FileLineReader() {
 }
 
 
-void FileLineReader::setFilePath(string filePath) {
+void FileLineReader::setFilePath(const string& filePath) {
     this->filePath = filePath;
 }
