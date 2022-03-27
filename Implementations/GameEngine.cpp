@@ -12,16 +12,14 @@ GameEngine::GameEngine(vector<Player*> players_list, Map* map, Deck* deck){
     this->map = map;
     this->deck = deck;
 }
-
 vector<Player *> GameEngine::getPlayersList() {
     return player_list;
 }
-
 //commands
 string states[]= {"start","maploaded","mapvalidated","playersadded","assignreinforcement",
                   "issueorders","executeorders","win"};
 //functions
-string GameEngine::loadMap(string currentPhase){
+string GameEngine::loadMap(CommandProcessor* c,string currentPhase){
     if (currentPhase == states[0]|| currentPhase == states[1]){
         cout<< "Map loaded"; // success msg
         return states[1]; // new currentPhase return
@@ -32,7 +30,7 @@ string GameEngine::loadMap(string currentPhase){
     }
 }
 //functions
-string GameEngine::validateMap(string currentPhase){
+string GameEngine::validateMap(CommandProcessor* c, string currentPhase){
     if (currentPhase==states[1]){
         cout<< "map validated";
         return states[2];
@@ -43,7 +41,7 @@ string GameEngine::validateMap(string currentPhase){
     }
 }
 //functions
-string GameEngine::addPlayer(string currentPhase){
+string GameEngine::addPlayers(CommandProcessor* c, string currentPhase){
     if (currentPhase == states[2]||currentPhase == states[3]){
         cout<< "players added";
         return states[3];
@@ -54,65 +52,7 @@ string GameEngine::addPlayer(string currentPhase){
     }
 }
 //functions
-string GameEngine::assignCountries(string currentPhase){
-    if (currentPhase == states[3]||currentPhase == states[6]){
-        cout<< "assign reinforcement";
-        return states[4];
-    }
-    else {
-        cout<<"Error: This command is not available at this stage.";
-        return currentPhase;
-    }
-}
-//functions
-string GameEngine::issueOrder(string currentPhase){
-    if (currentPhase == states[4]|| currentPhase == states[5]){
-        cout<< "issue orders";
-        return states[5];
-    }
-    else {
-        cout<<"Error: This command is not available at this stage";
-        return currentPhase;
-    }
-}
-//functions
-string GameEngine::endIssueOrders(string currentPhase){
-    if (currentPhase == states[5]||currentPhase == states[6]){
-        cout<< "execute orders";
-        return states[6];
-    }
-    else {
-        cout<<"Error: This command is not available at this stage";
-        return currentPhase;
-    }
-}
-
-//functions
-string GameEngine::execOrder(string currentPhase){
-    if (currentPhase == states[6] ){
-        cout<< "execute orders";
-        return states[6];
-    }
-    else {
-        cout<<"Error: This command is not available at this stage";
-        return currentPhase;
-    }
-}
-
-//functions
-string GameEngine::endExecOrders(string currentPhase){
-    if (currentPhase == states[6] ){
-        cout<< "execute orders";
-        return states[4];
-    }
-    else {
-        cout<<"Error: This command is not available at this stage";
-        return currentPhase;
-    }
-}
-
-//functions
-string GameEngine::win(string currentPhase){
+string GameEngine::win(CommandProcessor* c, string currentPhase){
     if (currentPhase == states[6]){
         cout<< "win";
         return states[7];
@@ -123,8 +63,7 @@ string GameEngine::win(string currentPhase){
     }
 }
 
-//functions
-string GameEngine::end(string currentPhase){
+string GameEngine::quit(CommandProcessor* c, string currentPhase){
     if (currentPhase == states[7]){
         cout<< "The end";
         return "exit";
@@ -135,8 +74,7 @@ string GameEngine::end(string currentPhase){
     }
 }
 
-//functions
-string GameEngine::play(string currentPhase){
+string GameEngine::startGame(CommandProcessor* c, string currentPhase){
     if (currentPhase == states[7]){
         cout<< "Play again";
         return states[0];
@@ -147,18 +85,9 @@ string GameEngine::play(string currentPhase){
     }
 }
 
-void GameEngine::createPlayers() {
-    cout << "Enter number of Player:" << endl;
-    int numOfPlayers; cin >> numOfPlayers;
-    for(int i = 0; i < numOfPlayers; i++){
-        cout << "Player " << i << "name: " << endl;
-        string name; cin >> name;
-        this->player_list.push_back(new Player(name));
-        //TODO: Part2
-    }
+string GameEngine::replay(CommandProcessor * c, string currentPhase) {
+    return "";
 }
-
-
 void GameEngine::mainGameLoop() {
 // 1. Round robin fashion in the order setup in startup phase
 // 2. This loop shall continue until only one of the players owns all the terrotires in the map.
@@ -301,12 +230,38 @@ void GameEngine::excuteOrderPhase() {
         playerrr->getNegotiatePlayersList().clear();
     }
 }
-
-
-void GameEngine::startupPhase() {
+void GameEngine::startupPhase(CommandProcessor* cp) {
     // For loadmap <filename>
+    state = "start";
+    while (state != "end"){}
+    while (state != "maploaded") {
+        cout << "Available maps: canada.map, europass.map" << endl;
+        cout << "Write the command to loadmap" << endl;
+        Command *command = cp->getCommand();
+        MapLoader mapLoader(command->getCommand());
+        if (mapLoader.extract() && cp->validate(command->getCommand(), state)) {
+            this->map = mapLoader.createMap();
+            state = "maploaded";
+        } else {
+            cout << "COMMAND FAIL: LoadMap failed" << endl;
+        }
+    }
     // For validatemap
+    cout << "Enter the next command to validate the map" << endl;
+    Command* command = cp->getCommand();
+    if (cp->validate(command->getCommand(), state)) {
+        if (map->mapValidate()) {
+            cout << "\nSuccess: Map \"" << command->getCommand() << "\" has been built.\n\n";
+            state = "mapvalidated";
+        } else {
+            cout << "\nError: Map file \"" << command->getCommand() << "\" is invalid.\n\n";
+            exit(0);
+        }
+    }
     // for addplayer command
+    cout << "Add a new Player to the game (type end to continue with the current players" << endl;
+    createPlayers();
+    state = "playersadded";
     // For gamestart command
     cout << "startup" << endl;
     int number = map->getTerritories().size()/player_list.size();
