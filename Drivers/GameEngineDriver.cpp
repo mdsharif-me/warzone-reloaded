@@ -3,7 +3,27 @@
 #include "../Headers/GameEngine.h"
 using namespace std;
 
-int main() {
+int main(int argc, char* argv[]) {
+    cout << "------------------\n";
+    cout << "| WARZONE v1.0 |\n";
+    cout << "------------------\n";
+    cout << "\nYOU ARE AT THE START PHASE.\n" << endl;
+    CommandProcessor* c;
+    if(argc == 1) {
+        cout << "Enter your command in the command line argument" << endl;
+    }
+    else if(argc == 2){
+        string command = argv[1];
+        if(command == "-console")
+            c = new CommandProcessor();
+    }
+    else if(argc == 3) {
+        string command = argv[1];
+        if (command == "-file") {
+            string fileName = argv[2];
+            c = new FileCommandProcessorAdapter(fileName);
+        }
+    }
     /*string currentState="start";
     string input;
     cout << "Game has started\n";
@@ -43,23 +63,13 @@ int main() {
     }
     delete g;
      */
-    int numberOfPlayers = 0;
+    GameEngine* g = new GameEngine();
+    g->startupPhase(c);
+
     vector<Player*> tempPlayers;
     vector<string> mapFileList = { "../Maps/canada.map"};
     // Check the map files and build maps
-    Map* m;
-    for (int i = 0; i < mapFileList.size(); i++) {
-        MapLoader map(mapFileList[i]);
-        if(map.extract()) {
-            m = map.createMap();
-            if (m->mapValidate()) {
-                cout << "\nSuccess: Map \"" << mapFileList[i] << "\" has been built.\n\n";
-            }
-        }
-        else {
-            cout << "\nError: Map file \"" << mapFileList[i] << "\" is invalid.\n\n";
-        }
-    }
+
     Deck* deck = new Deck();
     deck->addToDeck(new Card("deploy"));
     deck->addToDeck(new Card("reinforcement"));
@@ -88,8 +98,7 @@ int main() {
     players.push_back(player);
     players.push_back(enemyPlayer);
     players.push_back(enemyPlayer2);
-    GameEngine* g = new GameEngine(players, m, deck);
-    g->startupPhase();
+
     for(int i = 0; i < players.size();i++){
         players[i]->getPlayerHand()->addToHand(new Card("deploy"));
         players[i]->getPlayerHand()->addToHand(new Card("reinforcement"));

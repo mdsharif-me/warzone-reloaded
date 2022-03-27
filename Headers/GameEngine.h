@@ -4,26 +4,22 @@
 #include "Map.h"
 #include "Player.h"
 #include "Cards.h"
+#include "CommandProcessing.h"
 using namespace std;
 class GameEngine{
 public:
     GameEngine() = default;
     GameEngine(vector<Player*> players_list, Map* map, Deck* deck);
     ~GameEngine();
-    string loadMap(string currentPhase);
-    string validateMap(string currentPhase);
-    string addPlayer(string currentPhase);
-    string assignCountries(string currentPhase);
-    string issueOrder(string currentPhase);
-    string endIssueOrders(string currentPhase);
-    string endExecOrders(string currentPhase);
-    string win(string currentPhase);
-    string execOrder(string currentPhase);
-    string end(string currentPhase);
-    string play(string currentPhase);
-    void startupPhase(); //Assignment 2 Part 2
+    string loadMap(CommandProcessor*, string);
+    string validateMap(CommandProcessor*, string);
+    string win(CommandProcessor*, string);
+    string quit(CommandProcessor*, string);
+    string startGame(CommandProcessor*, string);
+    string addPlayers(CommandProcessor*, string);
+    string replay(CommandProcessor*, string);
+    void startupPhase(CommandProcessor* cp); //Assignment 2 Part 2
     void mainGameLoop(); //Assignment 2 Part 3
-    void createPlayers();
     void reinforcementPhase(); //Assignment 2 Part 3
     void issueOrdersPhase(); //Assingment 2 Part 3
     void excuteOrderPhase(); //Assignment 2 Part 3
@@ -38,7 +34,7 @@ private:
     Map* map;									//initialized Map for the game
     vector<Player*> player_list;				//initialized Player Array for the gamePlayer array
     Deck* deck;
-
+    string state;
 };
 
 #endif // GAMEENGINE_H_INCLUDED

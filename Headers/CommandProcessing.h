@@ -9,7 +9,6 @@ Last updated: 22 Feb, 2022
 
 using namespace std;
 
-string commands[6]; // the commands in the game
 
 /* This class holds/saves the commands */
 class Command {
@@ -22,20 +21,6 @@ private:
 	string command;
 	string effect;
 };
-
-/* This class reads commands from console */
-class CommandProcessor {
-public:
-	CommandProcessor() = default;
-	Command* getCommand();
-    void saveCommand(string command);
-private:
-	virtual void readCommand();
-	bool validate(string command, string currentState);
-	string command;
-	vector<Command*> commandsList;
-};
-
 
 class FileLineReader{
 public:
@@ -50,13 +35,25 @@ private:
     ifstream myFile;
 };
 
-using namespace std;
+/* This class reads commands from console */
+class CommandProcessor {
+public:
+	CommandProcessor() = default;
+	Command* getCommand();
+    Command* saveCommand(string command);
+    bool validate(string command, string currentState);
+private:
+	virtual Command* readCommand();
+    string commands[6];
+    string command;
+	vector<Command*> commandsList;
+};
 
 class FileCommandProcessorAdapter: public CommandProcessor{
 public:
     FileCommandProcessorAdapter() = default;
     FileCommandProcessorAdapter(string filePath);
-    void readCommand() override;
+    Command* readCommand();
     ~FileCommandProcessorAdapter();
 private:
     FileLineReader* flr;

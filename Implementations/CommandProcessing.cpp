@@ -21,17 +21,19 @@ void Command::saveEffect(string effect) {
  *  CommandProcessor class Implementation
  *
  */
-void CommandProcessor::readCommand() {
+Command* CommandProcessor::readCommand() {
 	string userInput;
 	cout << "\nType a command: ";
 	cin >> userInput;
-	this->saveCommand(userInput);
+    return this->saveCommand(userInput);
 }
-void CommandProcessor::saveCommand(string command) {
-	commandsList.push_back(new Command(command));
+Command* CommandProcessor::saveCommand(string command) {
+    Command* c = new Command(command);
+	commandsList.push_back(c);
+    return c;
 }
 Command* CommandProcessor::getCommand() {
-    readCommand();
+    return readCommand();
 }
 // Check if a command is valid, and if it's allowed in the current state
 bool CommandProcessor::validate(string command, string currentState) {
@@ -40,9 +42,9 @@ bool CommandProcessor::validate(string command, string currentState) {
 	int validIn[6][2] = { {0, 1},{1, 1},{2, 3},{3, 3},{4, 4},{4, 4} };
 
 	for (int i = 0; i < 6; i++) {
-		// if the command is one of the valid commands..
+		// if the command is one of the valid commands...
 		if (!command.compare(validCommands[i])) {
-			// if the command allowed in current state..
+			// if the command allowed in current state...
 			if (!currentState.compare(gameStates[validIn[i][0]]) || !currentState.compare(gameStates[validIn[i][1]])) {
 				return true;
 			}
@@ -57,7 +59,7 @@ bool CommandProcessor::validate(string command, string currentState) {
  *  FileComandProcessorAdapter class Implementation
  *
  */
-void FileCommandProcessorAdapter::readCommand() {
+Command* FileCommandProcessorAdapter::readCommand() {
     string command = this->flr->readLineFromFile();
     if (command == "No command found in the file") {
         cout << command << endl;
@@ -85,7 +87,7 @@ FileLineReader::FileLineReader(string filePath) {
         cout << "Successfully opened command file!" << endl;
     }
     else{
-        cout << "failed to open command file" << endl;
+        cout << "Failed to open command file" << endl;
     }
 }
 
