@@ -395,7 +395,6 @@ bool Advance::validate() {
         cout << "Advance order is invalid." << endl;
         return false;
     }
-
     if (!player->getNegotiatePlayersList().empty()) {
         for(Player* searchedPlayer: player->getNegotiatePlayersList()) {
             if (searchedPlayer->getPlayerName() == this->targetPlayer->getPlayerName()) {
@@ -404,8 +403,6 @@ bool Advance::validate() {
             }
         }
     }
-
-
     // check if territory is adjacent
     for(Territory* territory: startTerritory->getAdjTerritories()) {
         if (territory->getTerritoryName() == targetTerritory->getTerritoryName() &&
@@ -414,7 +411,6 @@ bool Advance::validate() {
             return true;
         }
     }
-
     cout << "Advance order is invalid." << endl;
     return false;
 }
@@ -476,6 +472,7 @@ void Advance  :: execute() {
         logObserver = nullptr;
         subject = nullptr;
         if (targetTerritory->getOwner()->getPlayerName() == this->player->getPlayerName()) {
+            cout << this->player->getPlayerName() << " has conquered an enemy territory." << endl;
             cout << "The territory" << targetTerritory->getTerritoryName() << " has been conquered" << endl;
         }
     } else {

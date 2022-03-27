@@ -11,22 +11,14 @@ public:
     GameEngine() = default;
     GameEngine(vector<Player*> players_list, Map* map, Deck* deck);
     ~GameEngine();
-    string loadMap(CommandProcessor*);
-    string validateMap(CommandProcessor*);
-    string win(CommandProcessor*);
-    string quit(CommandProcessor*);
-    string startGame(CommandProcessor*);
-    string addPlayers(CommandProcessor*);
-    string replay(CommandProcessor*);
     void startupPhase(CommandProcessor* cp); //Assignment 2 Part 2
     void mainGameLoop(); //Assignment 2 Part 3
     void reinforcementPhase(); //Assignment 2 Part 3
     void issueOrdersPhase(); //Assingment 2 Part 3
-    void excuteOrderPhase(); //Assignment 2 Part 3
+    void executeOrderPhase(); //Assignment 2 Part 3
     vector<Player *> getPlayersList();
     Map *getMap() const;
     void setMap(Map *map);
-    const vector<Player *> &getPlayerList() const;
     void setPlayerList(const vector<Player *> &playerList);
     Deck *getDeck() const;
     void setDeck(Deck *deck);

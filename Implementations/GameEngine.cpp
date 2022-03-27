@@ -15,14 +15,6 @@ GameEngine::GameEngine(vector<Player*> players_list, Map* map, Deck* deck){
 vector<Player *> GameEngine::getPlayersList() {
     return player_list;
 }
-//commands
-string states[]= {"start","maploaded","mapvalidated","playersadded","assignreinforcement",
-                  "issueorders","executeorders","win"};
-//functions
-
-
-
-
 void GameEngine::mainGameLoop() {
 // 1. Round robin fashion in the order setup in startup phase
 // 2. This loop shall continue until only one of the players owns all the terrotires in the map.
@@ -46,7 +38,7 @@ void GameEngine::mainGameLoop() {
         cout << "Issuing Order Phase begins...." << endl;
         this->issueOrdersPhase();
         cout << "Executing Order Phase begins...." << endl;
-        this->excuteOrderPhase();
+        this->executeOrderPhase();
         round++;
     }
     cout << player_list.front()->getPlayerName() << "wins!!" << endl;
@@ -127,9 +119,8 @@ void GameEngine::issueOrdersPhase() {
         cout << "============================================================================" << endl;
         player->issueOrder(deck, player_list);
     }
-
 }
-void GameEngine::excuteOrderPhase() {
+void GameEngine::executeOrderPhase() {
     // 1. Once all the players have signified in the same turn that they are not issuing one more order, the game engine goes to executionPhase()
     // 2. How the orders executed:- New method called nextOrder() should be made.
     // 3. nextOrder() returns the next order in the OrderList.
@@ -167,16 +158,56 @@ void GameEngine::excuteOrderPhase() {
     }
 }
 void GameEngine::startupPhase(CommandProcessor* cp) {
+    state = "start";
+    Command* command;
     do{
-        state = "start";
-        Command* command = cp->getCommand();
+        command = cp->getCommand();
         if(command->getCommand() == "quit"){
             if(cp->validate(command->getCommand(),state)) {
-                // TODO: clear method
                 break;
             }
             else{
                 cout << "COMMAND FAIL: quit failed" << endl;
+            }
+        }
+        else if(command->getCommand().find("loadmap") != string::npos){
+            string path = command->getCommand().substr(8);
+            MapLoader mapLoader(path);
+            if (mapLoader.extract() && cp->validate(command->getCommand(), state)) {
+                this->map = mapLoader.createMap();
+                cout << "CHANGE STATE TO: maploaded" << endl;
+                state = "maploaded";
+            } else {
+                cout << "COMMAND FAIL: LoadMap failed" << endl;
+            }
+        }
+        else if(command->getCommand() == "validatemap"){
+            if (cp->validate(command->getCommand(), state)) {
+                if (map->mapValidate()) {
+                    cout << "\nSuccess: Map \"" << command->getCommand() << "\" has been built.\n\n";
+                    cout << "CHANGE STATE TO: mapvalidated" << endl;
+                    state = "mapvalidated";
+                } else {
+                    cout << "\nError: Map file \"" << command->getCommand() << "\" is invalid.\n\n";
+                    exit(0);
+                }
+            }
+            else{
+                cout << "COMMAND FAIL: validatemap failed" << endl;
+            }
+        }
+        else if(command->getCommand().find("addplayer") != string::npos){
+            if (cp->validate(command->getCommand(), state)) {
+                string playerName = command->getCommand().substr(10);
+                player_list.push_back(new Player(playerName));
+                cout << "PLAYER ADDED: " << playerName << endl;
+                if(player_list.size() >= 2) {
+                    cout << "CHANGE STATE TO: playersadded" << endl;
+                    state = "playersadded";
+                }
+            }
+            else{
+                cout << "COMMAND FAIL: addplayer failed" << endl;
             }
         }
         else if(command->getCommand() == "replay"){
@@ -190,6 +221,13 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
         else if(command->getCommand() == "gamestart") {
             if (cp->validate(command->getCommand(), state)) {
                 cout << "GAME STARTING!!" << endl;
+                for(int i = 0; i < player_list.size();i++){
+                    player_list[i]->getPlayerHand()->addToHand(new Card("deploy"));
+                    player_list[i]->getPlayerHand()->addToHand(new Card("reinforcement"));
+                    player_list[i]->getPlayerHand()->addToHand(new Card("blockade"));
+                    player_list[i]->getPlayerHand()->addToHand(new Card("airlift"));
+                    player_list[i]->getPlayerHand()->addToHand(new Card("diplomacy"));
+                }
                 int number = map->getTerritories().size() / player_list.size();
                 int counter = 0;
                 int territoryIndex = 0;
@@ -223,48 +261,11 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
                 cout << "COMMAND FAIL: gamestart failed" << endl;
             }
         }
-        else if(command->getCommand() == "validatemap"){
-            if (cp->validate(command->getCommand(), state)) {
-                if (map->mapValidate()) {
-                    cout << "\nSuccess: Map \"" << command->getCommand() << "\" has been built.\n\n";
-                    state = "mapvalidated";
-                } else {
-                    cout << "\nError: Map file \"" << command->getCommand() << "\" is invalid.\n\n";
-                    exit(0);
-                }
-            }
-            else{
-                cout << "COMMAND FAIL: validatemap failed" << endl;
-            }
-        }
-        else if(command->getCommand().find("addplayer") != string::npos){
-            if (cp->validate(command->getCommand(), state)) {
-                string playerName = command->getCommand().substr(10);
-                player_list.push_back(new Player(playerName));
-                if(player_list.size() >= 2) {
-                    state = "playersadded";
-                }
-            }
-            else{
-                cout << "COMMAND FAIL: addplayer failed" << endl;
-            }
-        }
-        else if(command->getCommand().find("loadmap") != string::npos){
-            string path = command->getCommand().substr(8);
-            MapLoader mapLoader(path);
-            if (mapLoader.extract() && cp->validate(command->getCommand(), state)) {
-                this->map = mapLoader.createMap();
-                cout << "CHANGE STATE: TO maploaded" << endl;
-                state = "maploaded";
-            } else {
-                cout << "COMMAND FAIL: LoadMap failed" << endl;
-            }
-        }
         else{
             cout << "COMMAND FAIL: incorrect command" << endl;
         }
     }
-    while(cp->getCommand()->getCommand() != "quit");
+    while(command->getCommand() != "quit");
 }
 
 Map *GameEngine::getMap() const {
@@ -274,20 +275,15 @@ Map *GameEngine::getMap() const {
 void GameEngine::setMap(Map *map) {
     GameEngine::map = map;
 }
-
-
 void GameEngine::setPlayerList(const vector<Player *> &playerList) {
     player_list = playerList;
 }
-
 Deck *GameEngine::getDeck() const {
     return deck;
 }
-
 void GameEngine::setDeck(Deck *deck) {
     GameEngine::deck = deck;
 }
-
 GameEngine::~GameEngine() {
     delete deck;
     delete map;

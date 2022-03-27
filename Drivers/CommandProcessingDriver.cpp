@@ -24,7 +24,6 @@ int main(int argc, char* argv[]) {
         }
     }
     c->getCommand();
-    bool result = c->validate("loadmap.txt", "start");
     return 0;
 }
 

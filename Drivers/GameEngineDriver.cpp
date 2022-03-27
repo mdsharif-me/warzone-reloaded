@@ -8,6 +8,7 @@ int main(int argc, char* argv[]) {
     cout << "| WARZONE v1.0 |\n";
     cout << "------------------\n";
     cout << "\nYOU ARE AT THE START PHASE.\n" << endl;
+    //../Maps/canada.map
     CommandProcessor* c;
     if(argc == 1) {
         cout << "Enter your command in the command line argument" << endl;
@@ -28,11 +29,6 @@ int main(int argc, char* argv[]) {
         }
     }
     GameEngine* g = new GameEngine();
-    g->startupPhase(c);
-    //vector<Player*> tempPlayers;
-    //vector<string> mapFileList = { "../Maps/canada.map"};
-    // Check the map files and build maps
-
     Deck* deck = new Deck();
     deck->addToDeck(new Card("deploy"));
     deck->addToDeck(new Card("reinforcement"));
@@ -49,29 +45,11 @@ int main(int argc, char* argv[]) {
     deck->addToDeck(new Card("blockade"));
     deck->addToDeck(new Card("airlift"));
     deck->addToDeck(new Card("diplomacy"));
+    g->setDeck(deck);
+    g->startupPhase(c);
 
 
-    //auto* player = new Player();
-    //auto* enemyPlayer = new Player();
-    //auto* enemyPlayer2 = new Player;
-    //enemyPlayer2->setName("Deep");
-    //player->setName("Mike");
-    //enemyPlayer->setName("Enemy");
-    //vector<Player* > players;
-    //players.push_back(player);
-    //players.push_back(enemyPlayer);
-    //players.push_back(enemyPlayer2);
-
-    for(int i = 0; i < g->getPlayersList().size();i++){
-        g->getPlayersList()[i]->getPlayerHand()->addToHand(new Card("deploy"));
-        g->getPlayersList()[i]->getPlayerHand()->addToHand(new Card("reinforcement"));
-        g->getPlayersList()[i]->getPlayerHand()->addToHand(new Card("blockade"));
-        g->getPlayersList()[i]->getPlayerHand()->addToHand(new Card("airlift"));
-        g->getPlayersList()[i]->getPlayerHand()->addToHand(new Card("diplomacy"));
-    }
-    //delete player;
-    //delete enemyPlayer;
-    //delete enemyPlayer2;
+    //g->mainGameLoop();
     return 0;
 }
 
