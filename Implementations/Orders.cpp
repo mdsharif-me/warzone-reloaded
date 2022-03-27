@@ -50,11 +50,8 @@ ostream &operator<<(ostream &os, const Order &order) {
 
 bool Order::validate() {
     return true;
-
 }
 
-void::Order::execute() {
-}
 
 void Order::print(ostream &os) const {
     cout << "Order" << endl;
@@ -309,8 +306,6 @@ Deploy& Deploy::operator=(const Deploy &deploy) {
 
     return *this;
 }
-
-
 void Deploy::print(std::ostream &os) const {
     cout << "Deploy " << this->nrArmies << " to " << this->targetTerritory << endl;
 }
@@ -412,7 +407,8 @@ bool Advance::validate() {
 
     // check if territory is adjacent
     for(Territory* territory: startTerritory->getAdjTerritories()) {
-        if (territory->getTerritoryName() == targetTerritory->getTerritoryName()) {
+        if (territory->getTerritoryName() == targetTerritory->getTerritoryName() &&
+        nrArmies <= startTerritory->getArmyCount()) {
             cout << "Advance order is valid." << endl;
             return true;
         }

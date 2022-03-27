@@ -47,7 +47,7 @@ int main() {
     vector<Player*> tempPlayers;
     vector<string> mapFileList = { "../Maps/canada.map"};
     // Check the map files and build maps
-    Map * m;
+    Map* m;
     for (int i = 0; i < mapFileList.size(); i++) {
         MapLoader map(mapFileList[i]);
         if(map.extract()) {
@@ -60,55 +60,49 @@ int main() {
             cout << "\nError: Map file \"" << mapFileList[i] << "\" is invalid.\n\n";
         }
     }
-    GameEngine* g = new GameEngine();
-    //g->createPlayers();
-    //g->startupPhase();
-    vector<Territory*> playerTerritories;
-    vector<Territory*> playertoDefend;
-    vector<Territory*> playertoAttack;
-    vector<Territory*> enemyTerritories;
-    vector<Territory*> enemytoDefend;
-    vector<Territory*> enemytoAttack;
-    int numberOfArmies;
+    Deck* deck = new Deck();
+    deck->addToDeck(new Card("deploy"));
+    deck->addToDeck(new Card("reinforcement"));
+    deck->addToDeck(new Card("blockade"));
+    deck->addToDeck(new Card("airlift"));
+    deck->addToDeck(new Card("diplomacy"));
+    deck->addToDeck(new Card("deploy"));
+    deck->addToDeck(new Card("reinforcement"));
+    deck->addToDeck(new Card("blockade"));
+    deck->addToDeck(new Card("airlift"));
+    deck->addToDeck(new Card("diplomacy"));
+    deck->addToDeck(new Card("deploy"));
+    deck->addToDeck(new Card("reinforcement"));
+    deck->addToDeck(new Card("blockade"));
+    deck->addToDeck(new Card("airlift"));
+    deck->addToDeck(new Card("diplomacy"));
 
 
     auto* player = new Player();
-    auto * enemyPlayer = new Player();
+    auto* enemyPlayer = new Player();
+    auto* enemyPlayer2 = new Player;
+    enemyPlayer2->setName("Deep");
     player->setName("Mike");
     enemyPlayer->setName("Enemy");
-
-    vector<Territory *> allTerritories = m->getTerritories();
-    playerTerritories.reserve(3);
-    for(int i = 0; i < 3; i++) {
-        playerTerritories.push_back(allTerritories[i]);
-        allTerritories[i]->setArmyCount(3);
-    }
-
-    enemyTerritories.reserve(3);
-    for(int i = 3; i < 6; i++) {
-        enemyTerritories.push_back(allTerritories[i]);
-        allTerritories[i]->setArmyCount(3);
-    }
-
-    for(int i = 0; i < 3; i++) {
-        playerTerritories[i]->addOwner(player);
-        enemyTerritories[i]->addOwner(enemyPlayer);
-    }
-
-    player->setTerritories(playerTerritories);
-    player->setReinforcementPool(50); // should be done in part 2
-    enemyPlayer->setTerritories(enemyTerritories);
-    enemyPlayer->setReinforcementPool(50); // part2
-
-    Deck* deck = new Deck();
     vector<Player* > players;
     players.push_back(player);
     players.push_back(enemyPlayer);
-    g->setPlayerList(players);
-    g->setDeck(deck);
-    g->setMap(m);
-    cout << "Main Game loop:" << endl;
+    players.push_back(enemyPlayer2);
+    GameEngine* g = new GameEngine(players, m, deck);
+    g->startupPhase();
+    for(int i = 0; i < players.size();i++){
+        players[i]->getPlayerHand()->addToHand(new Card("deploy"));
+        players[i]->getPlayerHand()->addToHand(new Card("reinforcement"));
+        players[i]->getPlayerHand()->addToHand(new Card("blockade"));
+        players[i]->getPlayerHand()->addToHand(new Card("airlift"));
+        players[i]->getPlayerHand()->addToHand(new Card("diplomacy"));
+    }
+
+    cout << "Loading Main Game loop...." << endl;
     g->mainGameLoop();
+    delete player;
+    delete enemyPlayer;
+    delete enemyPlayer2;
     return 0;
 }
 
