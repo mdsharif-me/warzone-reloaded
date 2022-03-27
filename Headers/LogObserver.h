@@ -19,13 +19,10 @@ class LogObserver;
  */
 
 class ILoggable {
-private:
-    std::string message_to_output;
-
 public:
     ILoggable() = default;
     ~ILoggable() = default;
-    virtual void stringToLog(std::string& message) = 0;
+    virtual void stringToLog(const std::string& message) = 0;
 };
 
 
@@ -35,7 +32,7 @@ public:
 class Observer {
 public:
     virtual ~Observer()= default;;
-    virtual void Update(ILoggable* iLoggable, std::string& message_) = 0;
+    virtual void Update(ILoggable* iLoggable) = 0;
 };
 
 
@@ -52,14 +49,14 @@ private:
 public:
     LogObserver(Subject* subject);
     ~LogObserver() override;
-    void Update(ILoggable* iLoggable, std::string& message_) override;
+    void Update(ILoggable* iLoggable) override;
     void RemoveObserverFromTheList();
     void PrintInfo();
-    [[nodiscard]] const std::string &getNameOfObserver() const;                         // GETTER
+    const std::string &getNameOfObserver() const;                         // GETTER
     void setNameOfObserver(const string &nameOfObserver);                          // SETTER
-    [[nodiscard]] const std::string &getMessageFromSubject() const;                     // GETTER
+    const std::string &getMessageFromSubject() const;                     // GETTER
     void setMessageFromSubject(const string &messageFromSubject);                  // SETTER
-    [[nodiscard]] Subject &getSubject() const;                                     // GETTER
+    Subject &getSubject() const;                                     // GETTER
     void setSubject(Subject &subject);                                             // SETTER
 
 };
