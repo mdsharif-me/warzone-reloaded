@@ -46,8 +46,7 @@ public:
     // stream assignment operator
     virtual void print(std::ostream& os) const;
 
-    void stringToLog();
-
+    void stringToLog(std::string& message) override;
 
 protected:
     Player* player{};
@@ -126,7 +125,7 @@ public:
     void move(int from, int to);
     vector<Order*> getOrders();
     void removeOrder(Order* order);
-    void stringToLog();
+    void stringToLog(std::string& message) override;
 
 };
 

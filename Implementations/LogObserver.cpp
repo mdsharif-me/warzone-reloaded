@@ -75,7 +75,7 @@ void Subject::Notify(ILoggable* iLoggable) {
         }
 
 
-        logObserver->Update(message);
+        logObserver->Update(iLoggable, message);
     }
 }
 
@@ -114,7 +114,7 @@ void Subject::setMessage(const std::string &message_) {
  * LogObserver parametrized constructor
  * @param subject
  */
-LogObserver::LogObserver(Subject &subject) : subject(subject) {
+LogObserver::LogObserver(Subject* subject) : subject(*subject) {
     message_from_subject = "";
     name_of_observer = "";
     this->subject.Attach(this);
@@ -132,9 +132,9 @@ LogObserver::~LogObserver() {
  * Method to update the message of LogObserver
  * @param message_from_subject
  */
-void LogObserver::Update(const std::string& message_) {
+void LogObserver::Update(ILoggable* iLoggable, std::string& message_) {
     message_from_subject = message_;
-    stringToLog();
+    iLoggable->stringToLog(message_);
     //PrintInfo();
 }
 
@@ -152,18 +152,6 @@ void LogObserver::PrintInfo() {
     std::cout << "a new message is available";
 }
 
-
-void LogObserver::stringToLog() {
-    ofstream myFile;
-    myFile.open("../gamelog.txt", ios::app);
-    if (myFile.is_open()) {
-        myFile << this->getMessageFromSubject();
-        myFile << "\n";
-        myFile.close();
-    } else {
-        cout << "Unable to open the file" << endl;
-    }
-}
 
 /**
  * Getter for NameOfObserver
