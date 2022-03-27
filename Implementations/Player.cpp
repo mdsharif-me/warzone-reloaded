@@ -18,7 +18,11 @@ Player::Player(string& name, vector<Territory*> ta, vector<Territory*> td, Hand 
     this->orderList = new OrdersList();
     this->newTerritoryConquered = false;
 }
-//Shallow copy
+Player::Player(string &name) {
+    this->name = name;
+    this->playerHand = new Hand();
+    this->orderList = new OrdersList();
+}
 Player::Player(const Player& p)
 {
     this->name = p.name;
@@ -44,6 +48,7 @@ Player::~Player()
     delete orderList;
     delete playerHand;
     orderList = nullptr;
+    playerHand = nullptr;
 }
 vector<Territory*> Player::toDefend()
 {
@@ -56,7 +61,6 @@ vector<Territory*> Player::toAttack()
 vector<Territory *> Player::getTerritories() {
     return territories;
 }
-
 void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const string& orderName, Player* targetPlayer) {
     // 1. The decision-marking code must be implemented within this method.
     // 1. Finding neighbouring territories that can be attacked. (toAttack() method)
@@ -456,10 +460,6 @@ void Player::setTerritories(vector<Territory *> terr) {
 
 }
 
-
-Player::Player(string &name) {
-    this->name = name;
-}
 bool Player::checkIfAlreadyExists(Territory* territory, vector<Territory *> territories) {
     for(auto t:territories){
         if(t->getTerritoryName()==territory->getTerritoryName()) {
