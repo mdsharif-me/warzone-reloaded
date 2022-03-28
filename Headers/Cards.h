@@ -43,6 +43,7 @@ public:
     friend ostream& operator << (ostream &os, const Card &card);
     cardType* getType() const;
     void setType(cardType*);
+    string printType(cardType* ct);
 };
 
 /**
