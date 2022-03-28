@@ -1,3 +1,5 @@
-loadmap ../Map/canada.map
+loadmap ../Maps/canada.map
 validatemap
 addplayer deep
+addplayer meercha
+gamestart

@@ -331,7 +331,7 @@ int Player::getReinforcementPool() {
     return reinforcementPool;
 }
 void Player::setReinforcementPool(int nrArmies) {
-    reinforcementPool += nrArmies;
+    reinforcementPool = nrArmies;
 }
 void Player::setName(const string &newName) {
     this->name = newName;
