@@ -6,7 +6,6 @@
 #include "../Headers/GameEngine.h"
 using namespace std;
 
-//class
 GameEngine::GameEngine(vector<Player*> players_list, Map* map, Deck* deck){
     this->player_list = players_list;
     this->map = map;
@@ -42,7 +41,7 @@ void GameEngine::mainGameLoop() {
         round++;
     }
     cout << player_list.front()->getPlayerName() << "wins!!" << endl;
-    state = "win";
+    transition("win");
 }
 void GameEngine::reinforcementPhase() {
     // 1. Players are given armies that depends on the number of terrtories.
@@ -153,12 +152,12 @@ void GameEngine::executeOrderPhase() {
     }
 
     // resetting negotiating players
-    for(Player* playerrr: this->getPlayersList()) {
-        playerrr->getNegotiatePlayersList().clear();
+    for(Player* player: this->getPlayersList()) {
+        player->getNegotiatePlayersList().clear();
     }
 }
 void GameEngine::startupPhase(CommandProcessor* cp) {
-    state = "start";
+    transition("start");
     Command* command;
     do{
         command = cp->getCommand();
@@ -176,7 +175,7 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
             if (mapLoader.extract() && cp->validate(command->getCommand(), state)) {
                 this->map = mapLoader.createMap();
                 cout << "CHANGE STATE TO: maploaded" << endl;
-                state = "maploaded";
+                transition("maploaded");
             } else {
                 cout << "COMMAND FAIL: LoadMap failed" << endl;
             }
@@ -186,7 +185,7 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
                 if (map->mapValidate()) {
                     cout << "\nSuccess: Map \"" << command->getCommand() << "\" has been built.\n\n";
                     cout << "CHANGE STATE TO: mapvalidated" << endl;
-                    state = "mapvalidated";
+                    transition("mapvalidated");
                 } else {
                     cout << "\nError: Map file \"" << command->getCommand() << "\" is invalid.\n\n";
                     exit(0);
@@ -201,9 +200,12 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
                 string playerName = command->getCommand().substr(10);
                 player_list.push_back(new Player(playerName));
                 cout << "PLAYER ADDED: " << playerName << endl;
-                if(player_list.size() >= 2) {
+                if(player_list.size() >= 2 && player_list.size() <= 6) {
                     cout << "CHANGE STATE TO: playersadded" << endl;
-                    state = "playersadded";
+                    transition("playersadded");
+                }
+                if(player_list.size() == 6){
+                    cout << "MAX PLAYER LIST REACHED : Cannot add more players";
                 }
             }
             else{
@@ -212,7 +214,7 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
         }
         else if(command->getCommand() == "replay"){
             if(cp->validate(command->getCommand(),state)) {
-                //TODO: clear method
+                clear();
             }
             else{
                 cout << "COMMAND FAIL: replay failed" << endl;
@@ -267,11 +269,9 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
     }
     while(command->getCommand() != "quit");
 }
-
 Map *GameEngine::getMap() const {
     return map;
 }
-
 void GameEngine::setMap(Map *map) {
     GameEngine::map = map;
 }
@@ -291,6 +291,64 @@ GameEngine::~GameEngine() {
         delete player;
     }
     player_list.clear();
+}
+void GameEngine::clear() {
+    delete deck;
+    delete map;
+    for(auto player: player_list){
+        delete player;
+    }
+    player_list.clear();
+    transition("start");
+}
+GameEngine &GameEngine::operator=(const GameEngine &gameEngine) {
+    this->player_list = gameEngine.player_list;
+    this->map = gameEngine.map;
+    this->state = gameEngine.state;
+    this->deck = gameEngine.deck;
+}
+ostream &operator<<(ostream &os, const GameEngine &gameEngine) {
+    os << "The player list: " << endl;
+    for (auto* player: gameEngine.player_list) {
+        os << player->getName() << endl;
+    }
+    if(gameEngine.map != nullptr)
+        os << "Map: True" << endl;
+    os << "Current state: " << gameEngine.state << endl;
+    if(gameEngine.deck != nullptr)
+        os << "Deck : True"<< endl;
+}
+GameEngine::GameEngine(const GameEngine & gameEngine) {
+    this->player_list = gameEngine.player_list;
+    this->map = gameEngine.map;
+    this->state = gameEngine.state;
+    this->deck = gameEngine.deck;
+}
+
+void GameEngine::setState(const string& state_) {
+    this->state = state_;
+}
+
+string GameEngine::getState() {
+    return this->state;
+}
+void GameEngine::stringToLog(const string &message) {
+    ofstream myFile;
+    myFile.open("../gamelog.txt", ios::app);
+    if (myFile.is_open()) {
+        myFile << message;
+        myFile << "\n";
+        myFile.close();
+    } else {
+        cout << "Unable to open the file" << endl;
+    }
+}
+void GameEngine::transition(const string& state_) {
+    this->setState(state_);
+    Subject* subject = new Subject();
+    subject->setMessage("Game Engine new state: " + this->getState());
+    LogObserver* logObserver = new LogObserver(subject);
+    subject->Notify(this);
 }
 
 

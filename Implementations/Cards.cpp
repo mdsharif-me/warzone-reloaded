@@ -12,8 +12,6 @@ class Player;
 class Bomb;
 
 
-cardType aType;
-
 //************************** * Card Class implementation * ***********************************************
 
 /**
@@ -152,7 +150,6 @@ void Card::play(Player *player, Deck* deck, Player* target) {
         }
     }
 }
-
 
 //************************** * Hand Class implementation * ***********************************************
 
@@ -296,9 +293,9 @@ void Deck::draw(Player* player) {
     if (random < 0 || random > deckCards.size()) {
         throw invalid_argument("generated random number is our of vector bonds");
     }
-
     Card* card = deckCards.at(random);
     this->removeFromDeck(random);
+    cout << "CARD PICKED BY: "<< player->getPlayerName() << endl;
     player->getPlayerHand()->addToHand(card);
 }
 
