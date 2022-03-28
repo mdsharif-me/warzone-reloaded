@@ -37,6 +37,22 @@ void Command::stringToLog(const string &message) {
     }
 }
 
+Command::Command(const Command& c) {
+    this->command = c.command;
+    this->effect = c.effect;
+}
+
+Command &Command::operator=(const Command &command) {
+    this->command = command.command;
+    this->effect = command.effect;
+    return *this;
+}
+
+ostream &operator<<(ostream &os, const Command &command) {
+    os << "Command Name: " << command.command << endl;
+    return os;
+}
+
 /**
  *  CommandProcessor class Implementation
  *
@@ -73,16 +89,17 @@ bool CommandProcessor::validate(const string& command,const string& currentState
 		if (command.find(validCommands[i]) != string::npos) {
 			// if the command allowed in current state...
 			if (!currentState.compare(gameStates[validIn[i][0]]) || !currentState.compare(gameStates[validIn[i][1]])) {
-                cout << "COMMAND VALIDATION: true" << endl;
+                cout << "COMMAND VALIDATION: true, STATE: " << currentState << endl;
 				return true;
 			}else {
-                cout << "COMMAND VALIDATION: false" << endl;
+                cout << "COMMAND VALIDATION: false, STATE: " << currentState << endl;
                 return false;
             }
 		}
 	}
 	return false;
 }
+
 
 void CommandProcessor::stringToLog(const string &message) {
     ofstream myFile;
@@ -94,6 +111,26 @@ void CommandProcessor::stringToLog(const string &message) {
     } else {
         cout << "Unable to open the file" << endl;
     }
+}
+
+vector<Command *> CommandProcessor::getCommandList() {
+    return this->commandsList;
+}
+
+CommandProcessor::CommandProcessor(CommandProcessor& cp) {
+    this->commandsList = cp.commandsList;
+}
+
+CommandProcessor &CommandProcessor::operator=(const CommandProcessor &commandProcessor) {
+    this->commandsList = commandProcessor.commandsList;
+    return *this;
+}
+
+ostream &operator<<(ostream &os, const CommandProcessor &commandProcessor) {
+    for(auto c: commandProcessor.commandsList) {
+        os << "Command name: " << c->getCommand() << endl;
+    }
+    return os;
 }
 
 
@@ -118,6 +155,20 @@ FileCommandProcessorAdapter::FileCommandProcessorAdapter(const string& filePath)
 
 FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
     delete flr;
+}
+
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(const FileCommandProcessorAdapter& fAdapter) {
+    this->flr = fAdapter.flr;
+}
+
+FileCommandProcessorAdapter &FileCommandProcessorAdapter::operator=(const FileCommandProcessorAdapter &f) {
+    this->flr = f.flr;
+    return *this;
+}
+
+ostream &operator<<(ostream &os, const FileCommandProcessorAdapter &f) {
+    os << "File Reader for: " << f.flr;
+    return os;
 }
 
 /**
@@ -152,4 +203,18 @@ FileLineReader::~FileLineReader() {
 
 void FileLineReader::setFilePath(const string& filePath) {
     this->filePath = filePath;
+}
+
+FileLineReader::FileLineReader(const FileLineReader& f) {
+    this->filePath = f.filePath;
+}
+
+FileLineReader &FileLineReader::operator=(const FileLineReader &fileLineReader) {
+    this->filePath = fileLineReader.filePath;
+    return *this;
+}
+
+ostream &operator<<(ostream &os, const FileLineReader &fileLineReader) {
+    os << "The file path: " << fileLineReader.filePath;
+    return os;
 }
