@@ -3,11 +3,69 @@
 //
 
 #include "../Headers/CommandProcessing.h"
+#include "../Headers/Orders.h"
+#include "../Headers/GameEngine.h"
 #include <string>
+
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    CommandProcessor* c;
+
+   /* auto* c1 = new Command("loadmap");
+    if (dynamic_cast<ILoggable*>(c1) != nullptr)
+    {
+        std::cout << "C1 is a subclass of ILoggable" << std::endl;
+    }
+    if (dynamic_cast<Subject*>(c1) != nullptr)
+    {
+        std::cout << "C1 is a subclass of Subject" << std::endl;
+    }
+
+    auto* cp1 = new CommandProcessor;
+    if (dynamic_cast<ILoggable*>(cp1) != nullptr)
+    {
+        std::cout << "CP1 is a subclass of ILoggable" << std::endl;
+    }
+    if (dynamic_cast<Subject*>(cp1) != nullptr)
+    {
+        std::cout << "CP1 is a subclass of Subject" << std::endl;
+    }
+
+    auto* o1 = new Deploy();
+    if (dynamic_cast<ILoggable*>(o1) != nullptr)
+    {
+        std::cout << "O1 is a subclass of ILoggable" << std::endl;
+    }
+    if (dynamic_cast<Subject*>(o1) != nullptr)
+    {
+        std::cout << "O1 is a subclass of Subject" << std::endl;
+    }
+
+    auto* ol1 = new OrdersList();
+    if (dynamic_cast<ILoggable*>(ol1) != nullptr)
+    {
+        std::cout << "OL1 is a subclass of ILoggable" << std::endl;
+    }
+    if (dynamic_cast<Subject*>(o1) != nullptr)
+    {
+        std::cout << "OL1 is a subclass of Subject" << std::endl;
+    }*/
+
+    /*auto* ge1 = new GameEngine();
+    if (dynamic_cast<ILoggable*>(ge1) != nullptr)
+    {
+        std::cout << "OL1 is a subclass of ILoggable" << std::endl;
+    }
+    if (dynamic_cast<Subject*>(o1) != nullptr)
+    {
+        std::cout << "OL1 is a subclass of Subject" << std::endl;
+    }*/
+
+    Command* command1 = new Command("loadmap");
+    command1->saveEffect("maploaded");
+
+
+    /*CommandProcessor* c = new CommandProcessor;
     if(argc == 1) {
         cout << "Enter your command in the command line arguement" << endl;
     }
@@ -23,19 +81,7 @@ int main(int argc, char* argv[]) {
             c = new FileCommandProcessorAdapter(fileName);
         }
     }
-    for(int i = 0; i < 3;i++) {
-        c->getCommand();
-    }
-    cout << "The list of commands in the command processor:" << endl;
-    for(auto command: c->getCommandList()){
-        cout << command->getCommand() << endl;
-        c->validate(command->getCommand(), "start");
-        c->validate(command->getCommand(), "maploaded");
-        c->validate(command->getCommand(), "mapvalidated");
-        c->validate(command->getCommand(), "playersadded");
-        c->validate(command->getCommand(), "win");
-    }
-
+    c->getCommand();*/
     return 0;
 }
 
