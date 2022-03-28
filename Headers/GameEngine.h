@@ -37,7 +37,4 @@ private:
     Deck* deck;
     string state;
 };
-
 #endif // GAMEENGINE_H_INCLUDED
-
-

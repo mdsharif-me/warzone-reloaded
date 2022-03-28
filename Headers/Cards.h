@@ -13,11 +13,11 @@
 #include "Map.h"
 using namespace std;
 
-enum cardType {bomb,
-        reinforcement,
-        blockade,
-        airlift,
-        diplomacy};
+enum cardType {bomb = 1,
+        reinforcement = 2,
+        blockade = 3,
+        airlift = 4,
+        diplomacy = 5} ;
 class Hand;
 class Deck;
 class Player;
@@ -43,7 +43,6 @@ public:
     friend ostream& operator << (ostream &os, const Card &card);
     cardType* getType() const;
     void setType(cardType*);
-    string printType(cardType* ct);
 };
 
 /**
