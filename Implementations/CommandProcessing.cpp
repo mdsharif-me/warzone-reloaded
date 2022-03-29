@@ -140,6 +140,7 @@ ostream &operator<<(ostream &os, const CommandProcessor &commandProcessor) {
  */
 Command* FileCommandProcessorAdapter::readCommand() {
     string command = this->flr->readLineFromFile();
+    cout<< command << endl;
     if (command == "No command found in the file") {
         cout << command << endl;
         return nullptr;

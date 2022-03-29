@@ -54,7 +54,7 @@ void GameEngine::reinforcementPhase() {
         // # of territories owned divided by 3, rounded down
         numOfArmies = (*i)->getTerritories().size();
         numOfArmies = floor(numOfArmies / 3);
-
+        cout << (*i)->getPlayerName() << " given " << numOfArmies << " for the territory they own." << endl;
         vector<Continent *> mapContinents = this->map->getContinents(); // get all continents for current map
         vector<Territory *> playerTerritories = (*i)->getTerritories(); // get the user's territories
         vector<string> playerTerritoriesName;                           // get the user's territories name
@@ -97,6 +97,7 @@ void GameEngine::reinforcementPhase() {
             // if the set difference has no element
             // means the player owns the continent
             if ((st - v.begin()) == 0) {
+                cout << "BONUS ARMY for :" << continent->getName() << " = " << continent->getControlBonus() << endl;
                 numOfArmies += continent->getControlBonus();
             }
         }
@@ -106,6 +107,7 @@ void GameEngine::reinforcementPhase() {
         }
         // add new army number to the user's pool
         int totalArmySize = (*i)->getReinforcementPool() + numOfArmies;
+        cout << "TOTAL BONUS ARMY OF: " << totalArmySize << " [TO: " << (*i)->getPlayerName() << "]"<< endl;
         (*i)->setReinforcementPool(totalArmySize);
     }
 }

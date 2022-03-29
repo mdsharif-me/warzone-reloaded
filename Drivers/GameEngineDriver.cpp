@@ -23,8 +23,8 @@ int main(int argc, char* argv[]) {
     else if(argc == 3) {
         string command = argv[1];
         if (command == "-file") {
-            cout << "USER SELECTED -file " << command << endl;
             string fileName = argv[2];
+            cout << "USER SELECTED -file " << fileName << endl;
             c = new FileCommandProcessorAdapter(fileName);
         }
     }
