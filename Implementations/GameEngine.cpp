@@ -308,17 +308,25 @@ GameEngine &GameEngine::operator=(const GameEngine &gameEngine) {
     this->map = gameEngine.map;
     this->state = gameEngine.state;
     this->deck = gameEngine.deck;
+    return *this;
 }
 ostream &operator<<(ostream &os, const GameEngine &gameEngine) {
     os << "The player list: " << endl;
     for (auto* player: gameEngine.player_list) {
         os << player->getName() << endl;
     }
-    if(gameEngine.map != nullptr)
+    if(gameEngine.map != nullptr) {
         os << "Map: True" << endl;
+    } else {
+        os << "Map: False" << endl;
+    }
     os << "Current state: " << gameEngine.state << endl;
-    if(gameEngine.deck != nullptr)
+    if(gameEngine.deck != nullptr) {
         os << "Deck : True"<< endl;
+    } else {
+        os << "Deck: False" << endl;
+    }
+    return os;
 }
 GameEngine::GameEngine(const GameEngine & gameEngine) {
     this->player_list = gameEngine.player_list;

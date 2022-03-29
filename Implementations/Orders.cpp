@@ -17,7 +17,7 @@ class Player;
  */
 
 // constructor implementation
-  
+
 
 // copy constructor implementation
 Order::Order(const Order &order) {
@@ -29,6 +29,7 @@ Order::Order(const Order &order) {
     this->nrArmies = order.nrArmies;
     this->nrArmiesToAttack = order.nrArmiesToAttack;
     this->nrArmiesToDefend = order.nrArmiesToDefend;
+    this->territories = order.territories;
 }
 
 //destructor implementation
@@ -146,7 +147,6 @@ void Order::stringToLog(const std::string& message) {
 
 }*/
 
-Order::Order() = default;
 
 
 
@@ -334,7 +334,7 @@ void Deploy::execute() {
     if(validOrder) {
         player->setReinforcementPool(player->getReinforcementPool() - nrArmies);
         targetTerritory->setArmyCount(targetTerritory->getArmyCount() + this->nrArmies);
-        cout << player->getPlayerName() << " has executed Deploy order." << endl;
+        cout << "<<" << player->getPlayerName() << ">> has executed Deploy order." << endl;
         cout << nrArmies << " troops have been deployed to " << targetTerritory->getTerritoryName() << endl;
         Subject* subject = new Subject;
         LogObserver* logObserver = new LogObserver(subject);
@@ -472,8 +472,12 @@ void Advance  :: execute() {
         logObserver = nullptr;
         subject = nullptr;
         if (targetTerritory->getOwner()->getPlayerName() == this->player->getPlayerName()) {
-            cout << this->player->getPlayerName() << " has conquered an enemy territory." << endl;
-            cout << "The territory" << targetTerritory->getTerritoryName() << " has been conquered" << endl;
+            cout << "<" << this->player->getPlayerName() <<">>" << " has conquered " << this->getTargetTerritory()->getTerritoryName() << endl;
+            cout << "The territory " << targetTerritory->getTerritoryName() << " has new owner: <<" << this->getTargetTerritory()->getOwner()->getPlayerName() << ">>" << endl;
+        }
+        if (player->isNewTerritoryConquered()) {
+            cout << "At least one territory has been conquered by <<" << this->player->getPlayerName() << ">> during this turn." << endl;
+            cout << "A random card will be given to <<" << this->player->getPlayerName() << ">> at the end of this turn." << endl;
         }
     } else {
         cout << "Cannot execute invalid Advance order." << endl;
@@ -539,12 +543,15 @@ bool Bomb  :: validate() {
 
     }
     // check if territory is adjacent
-    for(Territory* territory: startTerritory->getAdjTerritories()) {
-        if (territory->getTerritoryName() == targetTerritory->getTerritoryName()) {
-            cout << "Bomb order is valid." << endl;
-            return true;
+    for(Territory* territory: player->getTerritories()) {
+        for(Territory* adjacentTerritory: territory->getAdjTerritories()) {
+            if (adjacentTerritory->getTerritoryName() == targetTerritory->getTerritoryName()) {
+                cout << "Bomb order is valid." << endl;
+                return true;
+            }
         }
     }
+
 
     cout << "Bomb order is invalid" << endl;
     return false;
@@ -556,6 +563,7 @@ void Bomb  :: execute() {
     if (orderValid) {
         targetTerritory->setArmyCount(targetTerritory->getArmyCount() / 2);
         cout << "Bomb order executed" << endl;
+        cout << this->getTargetTerritory()->getTerritoryName() << " reduced in half its armies and has now " << this->getTargetTerritory()->getArmyCount() << " armies." << endl;
         Subject* subject = new Subject;
         LogObserver* logObserver = new LogObserver(subject);
         subject->setMessage("Order Executed: Bomb");
@@ -629,7 +637,7 @@ void Blockade  :: execute() {
         targetTerritory->removeOwner();
 
         cout << "Blockade order executed" << endl;
-        cout << targetTerritory->getTerritoryName() << " has no owner now and has " << targetTerritory->getArmyCount() << " armies." << endl;
+        cout << targetTerritory->getTerritoryName() << " belongs to Neutral Player now, doubles its armies and has now " << targetTerritory->getArmyCount() << " armies." << endl;
         Subject* subject = new Subject;
         LogObserver* logObserver = new LogObserver(subject);
         subject->setMessage("Order Executed: Blockade");
@@ -703,8 +711,8 @@ void Airlift  :: execute() {
         //decrease number of armies in the source territory
         startTerritory->setArmyCount(startTerritory->getArmyCount() - this->nrArmies);
         cout << "Airlift order executed" << endl;
-        cout << "Airlifted " << this->nrArmies <<" armies" << " from " << this->startTerritory->getTerritoryName() << " to " << this->targetTerritory->getTerritoryName() << endl;
-        cout << "The target territory has now: " << targetTerritory->getArmyCount() << " armies and start territory has now " << startTerritory->getArmyCount() << " armies."  << endl;
+        cout << "<<" << this->player->getPlayerName() << ">>" << " Airlifted " << this->nrArmies <<" armies" << " from " << this->startTerritory->getTerritoryName() << " to " << this->targetTerritory->getTerritoryName() << endl;
+        cout << this->targetTerritory->getTerritoryName() << " has now " << targetTerritory->getArmyCount() << " armies and " << startTerritory->getTerritoryName() << " has now " << startTerritory->getArmyCount() << " armies."  << endl;
 
         Subject* subject = new Subject;
         LogObserver* logObserver = new LogObserver(subject);

@@ -38,7 +38,6 @@ int main(int argc, char* argv[]) {
         c->validate(command->getCommand(), "playersadded");
         c->validate(command->getCommand(), "win");
     }
-
     return 0;
 
 }
