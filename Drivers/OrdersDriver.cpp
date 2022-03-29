@@ -47,8 +47,8 @@ int main() {
 
     auto* player = new Player();
     auto * enemyPlayer = new Player();
-    player->setName("Mike");
-    enemyPlayer->setName("Enemy");
+    player->setName("player");
+    enemyPlayer->setName("enemy");
 
     vector<Territory *> allTerritories = m->getTerritories();
     playerTerritories.reserve(3);
@@ -77,8 +77,6 @@ int main() {
 
     auto* playerOrdersList = new OrdersList();
     auto* enemyOrdersList = new OrdersList();
-
-
 
     auto * playerDeploy0 = new Deploy(player, playerTerritories[0], 2);
     auto * playerDeploy1 = new Deploy(player, playerTerritories[1], 2);
@@ -118,13 +116,14 @@ int main() {
     }
     cout << "--------------------------end." << endl;
 
+
     auto* playerNegotiate = new Negotiate(player, enemyPlayer);
     auto* playerAdvance1 = new Advance(player, playerTerritories[2], enemyTerritories[0], 1);
     auto* playerBomb = new Bomb(player, enemyTerritories[0]);
     auto* playerAirlift = new Airlift(player, playerTerritories[0], playerTerritories[1], 1);
     auto* playerBlockade = new Blockade(player, playerTerritories[1]);
 
-    playerOrdersList->add(playerNegotiate);
+    //playerOrdersList->add(playerNegotiate);
     playerOrdersList->add(playerAdvance1);
     playerOrdersList->add(playerBomb);
     playerOrdersList->add(playerAirlift);
@@ -146,98 +145,6 @@ int main() {
     }
 
 
-    /*bool result = deploy->validate();
-    cout << result;*/
-
-
-    /*auto* playerTerritory = new Territory("playerTerritory", "Continent", 10);
-    auto* targetTerritory = new Territory("targetTerritory", "Continent", 10);
-    vector<Territory *> playerTerritories;
-    vector<Territory *> targetTerritories;
-
-    playerTerritories.push_back(playerTerritory);
-    targetTerritories.push_back(targetTerritory);
-
-    auto* player = new Player();
-    player->setTerritories(playerTerritories);
-
-    auto* targetPlayer = new Player();
-    targetPlayer->setTerritories(targetTerritories);
-
-    playerTerritory->addOwner(player);
-    targetTerritory->addOwner(targetPlayer);
-
-
-    //auto* deploy = new Deploy(player, playerTerritory, 5);
-    player->issueOrder("Deploy", playerTerritory, 5);*/
-
-
-    /*auto* advance = new Advance();
-    auto * bomb = new Bomb();
-    auto * blockade = new Blockade();
-    auto* airlift = new Airlift();
-    auto * negotiate = new Negotiate();
-
-    cout << "adding orders to orderList...\n";
-    auto* ordersList = new OrdersList();
-    ordersList->add(deploy);
-    ordersList->add(advance);
-    ordersList->add(bomb);
-    ordersList->add(blockade);
-    ordersList->add(airlift);
-    ordersList->add(negotiate);
-
-    cout << "displaying orders...\n";
-    cout << *ordersList;
-
-    //move first order from index 0 to index 2
-    cout << "moving order at index 0 to index 2\n";
-    ordersList->move(0, 2);
-
-    cout << "displaying changes\n";
-    cout << *ordersList << endl;
-
-    //move first order from index 1 to index 3
-    cout << "moving order at index 1 to index 3\n";
-    ordersList->move(1, 3);
-    cout << "displaying changes\n";
-    cout << *ordersList << endl;
-
-
-    // remove the order at position 0
-    cout << "removing order at index 0...\n";
-    ordersList->remove(0);
-    cout << "displaying changes\n";
-    cout << *ordersList;
-
-    // remove the order at position 3
-    cout << "removing order at index 3...\n";
-    ordersList->remove(3);
-    cout << "displaying changes\n";
-    cout << *ordersList;
-
-    cout << "validating negotiate order...\n";
-    if (negotiate->validate() == true) {}
-    cout << "order Negotiate is validated\n\n";
-
-    cout << "executing orders...\n";
-    deploy->execute();
-    advance->execute();
-    bomb->execute();
-    blockade->execute();
-    airlift->execute();
-    negotiate->execute();
-
-    for (auto & someOrder : ordersList->getOrders()) {
-        delete someOrder;
-    }
-
-    deploy = nullptr;
-    advance = nullptr;
-    bomb = nullptr;
-    airlift = nullptr;
-    negotiate = nullptr;
-    ordersList = nullptr;*/
 
 
     return 0;

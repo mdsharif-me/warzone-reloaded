@@ -23,7 +23,7 @@ class Player;
 class Order: virtual public ILoggable, public Subject {
 public:
     // default constructor
-    Order();
+    Order() = default;
 
     //copy constructor
     Order(const Order &order);
