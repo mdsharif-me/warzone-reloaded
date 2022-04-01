@@ -7,30 +7,56 @@ using namespace std;
 
 
 PlayerStrategy::PlayerStrategy(Player *p) {
-
+    this->player = p;
+}
+PlayerStrategy::PlayerStrategy(const PlayerStrategy &copy){
+    this->player = copy.player;
+}
+void PlayerStrategy::setPlayer(Player *p) {
+    this->player = p;
+}
+Player *PlayerStrategy::getPlayer() {
+    return this->player;
+}
+PlayerStrategy::~PlayerStrategy() {
+    delete this->player;
+}
+PlayerStrategy& PlayerStrategy::operator=(const PlayerStrategy &ps) {
+    this->player = ps.player;
+    return *this;
+}
+ostream &operator<<(ostream &os, PlayerStrategy &ps)
+{
+    os << "player strategy: " << ps.getPlayer()->getPlayerName() << endl;
+    return os;
 }
 
+/**
+ * Implementation of Human class
+ */
+Human::Human(Player *player) : PlayerStrategy(player) {}
+Human::Human(const Human &h) : PlayerStrategy(h) {}
+Human::~Human() {}
 void Human::issueOrder() {
 
 }
+vector<Territory*> Human::toAttack() {
 
-void Human::toAttack() {
+}
+vector<Territory*> Human::toDefend() {
 
 }
 
-void Human::toDefend() {
-
-}
 
 void Aggressive::issueOrder() {
 
 }
 
-void Aggressive::toAttack() {
+vector<Territory*> Aggressive::toAttack() {
 
 }
 
-void Aggressive::toDefend() {
+vector<Territory*> Aggressive::toDefend() {
 
 }
 
@@ -38,11 +64,11 @@ void Benevolent::issueOrder() {
 
 }
 
-void Benevolent::toAttack() {
+vector<Territory*> Benevolent::toAttack() {
 
 }
 
-void Benevolent::toDefend() {
+vector<Territory*> Benevolent::toDefend() {
 
 }
 
@@ -50,11 +76,11 @@ void Neutral::issueOrder() {
 
 }
 
-void Neutral::toAttack() {
+vector<Territory*> Neutral::toAttack() {
 
 }
 
-void Neutral::toDefect() {
+vector<Territory*> Neutral::toDefect() {
 
 }
 
@@ -62,11 +88,11 @@ void Cheater::issueOrder() {
 
 }
 
-void Cheater::toAttack() {
+vector<Territory*> Cheater::toAttack() {
 
 }
 
-void Cheater::toDefect() {
+vector<Territory*> Cheater::toDefect() {
 
 }
 
