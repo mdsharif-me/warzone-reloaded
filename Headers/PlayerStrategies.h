@@ -16,9 +16,14 @@ private:
 public:
     PlayerStrategy() = default;
     PlayerStrategy(Player* p);
+    PlayerStrategy(const PlayerStrategy& ps);
+    PlayerStrategy& operator=(const PlayerStrategy &ps);
+    virtual ~PlayerStrategy();
+    void setPlayer(Player* p);
+    Player* getPlayer();
     virtual void issueOrder() = 0;
-    virtual void toAttack() = 0;
-    virtual void toDefend() = 0;
+    virtual vector<Territory*> toAttack() = 0;
+    virtual vector<Territory*> toDefend() = 0;
 };
 
 
@@ -27,9 +32,14 @@ public:
  */
 class Human: public PlayerStrategy{
 public:
+    Human(Player *player);
+    Human(const Human& h);
+    ~Human();
+    Human& operator=(const Human& h); // assignment operator
+    friend ostream& operator<<(ostream& os, const Human& h); // output stream
     void issueOrder();
-    void toAttack();
-    void toDefend();
+    vector<Territory*> toAttack();
+    vector<Territory*> toDefend();
 };
 
 /**
@@ -37,9 +47,14 @@ public:
  */
 class Aggressive: public PlayerStrategy{
 public:
+    Aggressive(Player* player);
+    Aggressive(const Aggressive& aggressive);
+    ~Aggressive();
+    Aggressive& operator=(const Aggressive& aggressive);
+    friend ostream& operator<< (ostream os, const Aggressive& aggressive);
     void issueOrder();
-    void toAttack();
-    void toDefend();
+    vector<Territory*> toAttack();
+    vector<Territory*> toDefend();
 };
 
 
@@ -48,9 +63,14 @@ public:
  */
 class Benevolent: public PlayerStrategy{
 public:
+    Benevolent(Player* player);
+    Benevolent(const Benevolent& benevolent);
+    ~Benevolent();
+    Benevolent& operator=(const Benevolent& benevolent);
+    friend ostream& operator<< (ostream os, const Benevolent& benevolent);
     void issueOrder();
-    void toAttack();
-    void toDefend();
+    vector<Territory*> toAttack();
+    vector<Territory*> toDefend();
 };
 
 /**
@@ -58,11 +78,14 @@ public:
  */
 class Neutral: public PlayerStrategy {
 public:
+    Neutral(Player* player);
+    Neutral(const Neutral& neutral);
+    ~Neutral();
+    Neutral& operator=(const Neutral& neutral);
+    friend ostream& operator<< (ostream os, const Neutral& neutral);
     void issueOrder();
-
-    void toAttack();
-
-    void toDefect();
+    vector<Territory*> toAttack();
+    vector<Territory*> toDefect();
 };
 
 /**
@@ -70,10 +93,13 @@ public:
  */
 class Cheater: public PlayerStrategy {
 public:
+    Cheater(Player* player);
+    Cheater(const Cheater& cheater);
+    ~Cheater();
+    Cheater& operator=(const Cheater& cheater);
+    friend ostream& operator<< (ostream os, const Cheater& cheater);
     void issueOrder();
-
-    void toAttack();
-
-    void toDefect();
+    vector<Territory*> toAttack();
+    vector<Territory*> toDefect();
 };
 #endif //WARZONE_RELOADED_PLAYERSTRATEGIES_H
