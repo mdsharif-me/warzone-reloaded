@@ -5,12 +5,12 @@
 #ifndef COMP345_PLAYER_H
 #define COMP345_PLAYER_H
 
-#include <iostream>
 #include <vector>
 #include <iostream>
 #include "Orders.h"
 #include "Map.h"
 #include "Cards.h"
+#include "PlayerStrategies.h"
 using namespace std;
 
 class Order;
@@ -18,6 +18,7 @@ class OrdersList;
 class Hand;
 class Territory;
 class Deck;
+class PlayerStrategy;
 
 class Player {
 private:
@@ -29,7 +30,9 @@ private:
     Hand* playerHand;
     int reinforcementPool = 0;
     bool newTerritoryConquered;
+    bool playerWasAttacked;
     vector<Player* > negotiatePlayersList;
+    PlayerStrategy* playerStrategy;
 
 public:
     Player();                                    //Default Constructor
@@ -38,6 +41,10 @@ public:
     Player(const Player&);                      //Copy Constructor
     ~Player();                                  //Destructor
     string getPlayerName();                     //Accessor
+    void setPlayerWasAttacked(bool wasAttacked);
+    bool isPlayerWasAttacked();
+    PlayerStrategy *getPlayerStrategy() const;
+    void setPlayerStrategy(PlayerStrategy *playerStrategy);
     vector<Territory *> toDefend();             //Accessor
     vector<Territory *> toAttack();             //Accessor
     vector<Territory *> getTerritories();       //Accessor

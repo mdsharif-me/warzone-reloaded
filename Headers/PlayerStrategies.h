@@ -24,6 +24,7 @@ public:
     virtual void issueOrder() = 0;
     virtual vector<Territory*> toAttack() = 0;
     virtual vector<Territory*> toDefend() = 0;
+    bool isStartOfGame();
 };
 
 
@@ -85,7 +86,7 @@ public:
     friend ostream& operator<< (ostream os, const Neutral& neutral);
     void issueOrder();
     vector<Territory*> toAttack();
-    vector<Territory*> toDefect();
+    vector<Territory*> toDefend();
 };
 
 /**

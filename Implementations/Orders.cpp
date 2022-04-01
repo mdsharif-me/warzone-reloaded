@@ -453,6 +453,7 @@ void Advance  :: execute() {
             targetTerritory->setArmyCount(defenderArmies);
 
             if (defenderArmies == 0) {
+                targetTerritory->getOwner()->setPlayerWasAttacked(true);
                 player->addTerritory(targetTerritory);
                 targetTerritory->setArmyCount(attackerArmies);
                 // set the flag that a new territory is conquered
