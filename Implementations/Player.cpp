@@ -22,6 +22,8 @@ Player::Player(string &name) {
     this->name = name;
     this->playerHand = new Hand();
     this->orderList = new OrdersList();
+    this->newTerritoryConquered = false;
+    this->playerWasAttacked = false;
 }
 Player::Player(const Player& p)
 {
@@ -453,5 +455,21 @@ bool Player::checkIfAlreadyExists(Territory* territory, vector<Territory *> terr
         }
     }
     return false;
+}
+
+PlayerStrategy *Player::getPlayerStrategy() const {
+    return playerStrategy;
+}
+
+void Player::setPlayerStrategy(PlayerStrategy *playerStrategy) {
+    Player::playerStrategy = playerStrategy;
+}
+
+void Player::setPlayerWasAttacked(bool wasAttacked) {
+    this->playerWasAttacked = wasAttacked;
+}
+
+bool Player::isPlayerWasAttacked() {
+    return this->playerWasAttacked;
 }
 
