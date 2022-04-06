@@ -28,8 +28,8 @@ class Territory;
  */
 class Card {
 private:
-    //string type;
-    cardType* type;
+    string type;
+    //cardType* type;
 
 public:
     Card() = default;
@@ -41,8 +41,8 @@ public:
     void play(Player* player, Deck* deck, Player* target);
     Card& operator = (Card *card);
     friend ostream& operator << (ostream &os, const Card &card);
-    cardType* getType() const;
-    void setType(cardType*);
+    string getType() const;
+    void setType(std::string& type);
 };
 
 /**
@@ -61,7 +61,7 @@ public:
     void removeFromHand(int);
     void addToHand(Card* card);
     void print();
-    int findCard(string type);
+    int findCard(string& type);
 
 };
 

@@ -5,6 +5,12 @@
 #ifndef WARZONE_RELOADED_PLAYERSTRATEGIES_H
 #define WARZONE_RELOADED_PLAYERSTRATEGIES_H
 #include "Player.h"
+
+#include "../Headers/Orders.h"
+#include "../Headers/Player.h"
+#include "../Headers/Cards.h"
+#include "../Headers/Map.h"
+#include <iostream>
 using namespace std;
 
 /**
@@ -18,13 +24,14 @@ public:
     PlayerStrategy(Player* p);
     PlayerStrategy(const PlayerStrategy& ps);
     PlayerStrategy& operator=(const PlayerStrategy &ps);
-    virtual ~PlayerStrategy();
+    void ~PlayerStrategy();
     void setPlayer(Player* p);
-    Player* getPlayer();
+    Player * getPlayer() const;
     virtual void issueOrder() = 0;
     virtual vector<Territory*> toAttack() = 0;
     virtual vector<Territory*> toDefend() = 0;
     bool isStartOfGame();
+
 };
 
 
@@ -68,7 +75,7 @@ public:
     Benevolent(const Benevolent& benevolent);
     ~Benevolent();
     Benevolent& operator=(const Benevolent& benevolent);
-    friend ostream& operator<< (ostream os, const Benevolent& benevolent);
+    friend ostream& operator<< (ostream& os, const Benevolent& benevolent);
     void issueOrder();
     vector<Territory*> toAttack();
     vector<Territory*> toDefend();
@@ -83,7 +90,7 @@ public:
     Neutral(const Neutral& neutral);
     ~Neutral();
     Neutral& operator=(const Neutral& neutral);
-    friend ostream& operator<< (ostream os, const Neutral& neutral);
+    friend ostream& operator<< (ostream& os, const Neutral& neutral);
     void issueOrder();
     vector<Territory*> toAttack();
     vector<Territory*> toDefend();
@@ -98,7 +105,7 @@ public:
     Cheater(const Cheater& cheater);
     ~Cheater();
     Cheater& operator=(const Cheater& cheater);
-    friend ostream& operator<< (ostream os, const Cheater& cheater);
+    friend ostream& operator<< (ostream& os, const Cheater& cheater);
     void issueOrder();
     vector<Territory*> toAttack();
     vector<Territory*> toDefect();

@@ -23,6 +23,8 @@ public:
     ~Territory();
 	Territory(string territoryName, string continentName, int armyCount);
 	Territory(string territoryName, string continentName);
+    Territory(const Territory& territory); // copy constructor
+    Territory& operator=(const Territory& territory); // assignment operator
     string getTerritoryName();
 	string getContinentName();
 	int getArmyCount();
@@ -38,6 +40,9 @@ public:
     Player* getOwner();
     bool isAllied(Player* player);
     bool isEnemy(Player* player);
+    //bool operator<(const Territory& other) const;
+    //bool operator>(const Territory& other) const;
+
 
 private:
 	string territoryName;
