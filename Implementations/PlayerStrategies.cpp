@@ -181,7 +181,7 @@ void Benevolent::issueOrder() {
 
                 do {
                     numberOfArmies = rand() % startTerritory->getArmyCount();
-                    if (numberOfArmies >= 0) {
+                    if (numberOfArmies >= 0 && numberOfArmies <= startTerritory->getArmyCount()) {
                         break;
                     }
                 } while (true);
