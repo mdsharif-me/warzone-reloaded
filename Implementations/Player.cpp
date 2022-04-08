@@ -52,18 +52,18 @@ Player::~Player()
     orderList = nullptr;
     playerHand = nullptr;
 }
-vector<Territory*> Player::toDefend()
+void Player::toDefend()
 {
-    return territoriesToDefend;
+    playerStrategy->toDefend();
 }
-vector<Territory*> Player::toAttack()
+void Player::toAttack()
 {
-    return territoriesToAttack;
+    playerStrategy->toAttack();
 }
 vector<Territory *> Player::getTerritories() {
     return territories;
 }
-void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const string& orderName, Player* targetPlayer) {
+void Player::issueOrder(Deck* deck, vector<Player*> players_list){
     // 1. The decision-marking code must be implemented within this method.
     // 1. Finding neighbouring territories that can be attacked. (toAttack() method)
     // 2. Finding which from your own territories that can be defended. (toDefend() method)
@@ -76,7 +76,10 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){ //const strin
     // ToAttack()
     // ToDefend()
     // Deployment Ordering
-    playerStrategy->issueOrder();
+    // playerStrategy->issueOrder(deck, players_list);
+    toDefend();
+    toAttack();
+    playerStrategy->issueOrder(deck, players_list);
 }
 OrdersList* Player::getOrderList() {
     return orderList;

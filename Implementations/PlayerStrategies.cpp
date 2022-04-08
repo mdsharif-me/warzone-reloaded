@@ -40,7 +40,12 @@ ostream &operator<<(ostream &os, PlayerStrategy &ps)
     os << "Player strategy: " << ps.getPlayer()->getPlayerName() << endl;
     return os;
 }
-
+vector<Territory*> PlayerStrategy::getTerritoriesToDefend() {
+    return this->player->getTerritoriesToDefend();
+}
+vector<Territory*> PlayerStrategy::getTerritoriesToAttack() {
+    return this->player->getTerritoriesToAttack();
+}
 /**
  * Implementation of Human class
  */
@@ -60,7 +65,7 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
             break;
         }
         cout << "Be sure to deploy all your armies to be able to issue other orders" << endl;
-        for(Territory* territory: this->getPlayer()->toDefend()) {
+        for(Territory* territory: this->getPlayer()->getTerritoriesToDefend()) {
             cout << "Available number of Deployable Army: " << tempArmy << endl;
             cout << territory->getTerritoryName() << ":" << endl;
             int numberOfArmies; cin >> numberOfArmies;
@@ -93,14 +98,14 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
         }
         else if (orderString == "Advance") {
             cout << "Select the source territories number from the following territories" << endl;
-            for (int i = 0; i < this->getPlayer()->toDefend().size(); i++) {
-                cout << i << ": " << this->getPlayer()->toDefend()[i]->getTerritoryName() << endl;
+            for (int i = 0; i < this->getPlayer()->getTerritoriesToDefend().size(); i++) {
+                cout << i << ": " << this->getPlayer()->getTerritoriesToDefend()[i]->getTerritoryName() << endl;
             }
             int sourceIndex;
             cin >> sourceIndex;
             vector<Territory *> adjacentTerritories;
-            if (sourceIndex < this->getPlayer()->toDefend().size() && sourceIndex >= 0) {
-                adjacentTerritories = this->getPlayer()->toDefend()[sourceIndex]->getAdjTerritories();
+            if (sourceIndex < this->getPlayer()->getTerritoriesToDefend().size() && sourceIndex >= 0) {
+                adjacentTerritories = this->getPlayer()->getTerritoriesToDefend()[sourceIndex]->getAdjTerritories();
                 cout << "Select the adjacent territories number to which the army should be moved to." << endl;
                 for (int i = 0; i < adjacentTerritories.size(); i++) {
                     cout << i << ": " << adjacentTerritories[i]->getTerritoryName() << endl;
@@ -108,12 +113,12 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
                 int targetIndex;
                 cin >> targetIndex;
                 if (targetIndex < adjacentTerritories.size() && targetIndex >= 0) {
-                    cout << "Enter number of armies (" << this->getPlayer()->toDefend()[sourceIndex]->getArmyCount() << "):" << endl;
+                    cout << "Enter number of armies (" << this->getPlayer()->getTerritoriesToDefend()[sourceIndex]->getArmyCount() << "):" << endl;
                     int armynum;
                     cin >> armynum;
                     if (armynum >= 0) {
                         //Advance does not require a card.
-                        auto *advance = new Advance(this->getPlayer(), this->getPlayer()->toDefend()[sourceIndex],
+                        auto *advance = new Advance(this->getPlayer(), this->getPlayer()->getTerritoriesToDefend()[sourceIndex],
                                                     adjacentTerritories[targetIndex], armynum);
                         this->getPlayer()->getOrderList()->add(advance);
                     }
@@ -125,19 +130,19 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
         }
         else if (orderString == "Bomb") {
             cout << "Select the target territories number from the following territories" << endl;
-            for (int i = 0; i < this->getPlayer()->toAttack().size(); i++) {
-                cout << i << ": " << this->getPlayer()->toAttack()[i]->getTerritoryName() << endl;
+            for (int i = 0; i < this->getPlayer()->getTerritoriesToAttack().size(); i++) {
+                cout << i << ": " << this->getPlayer()->getTerritoriesToAttack()[i]->getTerritoryName() << endl;
             }
             int indexToBomb;
             cin >> indexToBomb;
-            if (indexToBomb < this->getPlayer()->toAttack().size() && indexToBomb >= 0) {
+            if (indexToBomb < this->getPlayer()->getTerritoriesToAttack().size() && indexToBomb >= 0) {
                 string bomb = "bomb";
                 int index = this->getPlayer()->getPlayerHand()->findCard(bomb);
                 // playing the card from hand
                 if(index != -1)
                     // the order is issued by the play method in card class
                     this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
-                                                                                    this->getPlayer()->toAttack()[indexToBomb]);
+                                                                                    this->getPlayer()->getTerritoriesToAttack()[indexToBomb]);
                     //Bomb *bomb = new Bomb(this, this->toAttack()[indexToBomb]);
                     //orderList->add(bomb);
                 else
@@ -148,8 +153,8 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
         }
         else if(orderString == "Airlift"){
             cout << "Select the source and target territories number from the following territories" << endl;
-            for (int i = 0; i < this->getPlayer()->toDefend().size(); i++) {
-                cout << i << ": " << this->getPlayer()->toDefend()[i]->getTerritoryName() << endl;
+            for (int i = 0; i < this->getPlayer()->getTerritoriesToDefend().size(); i++) {
+                cout << i << ": " << this->getPlayer()->getTerritoriesToDefend()[i]->getTerritoryName() << endl;
             }
             int indexToAirliftFrom;
             cout << "From: " << endl;
@@ -160,16 +165,16 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
             int armyNo;
             cout << "Number of army " << endl;
             cin >> armyNo;
-            if (indexToAirliftFrom < this->getPlayer()->toDefend().size() && indexToAirliftFrom >= 0 &&
-                indexToAirliftTo < this->getPlayer()->toDefend().size() && indexToAirliftTo >= 0 && armyNo >= 0) {
+            if (indexToAirliftFrom < this->getPlayer()->getTerritoriesToDefend().size() && indexToAirliftFrom >= 0 &&
+                indexToAirliftTo < this->getPlayer()->getTerritoriesToDefend().size() && indexToAirliftTo >= 0 && armyNo >= 0) {
                 string airlift = "airlift";
                 int index = this->getPlayer()->getPlayerHand()->findCard(airlift);
                 // playing the card from hand
                 if(index != -1)
                     // the order is issued in the play method on card class
                     this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
-                                                                                    this->getPlayer()->toDefend()[indexToAirliftFrom],
-                                                                                    this->getPlayer()->toDefend()[indexToAirliftTo],
+                                                                                    this->getPlayer()->getTerritoriesToDefend()[indexToAirliftFrom],
+                                                                                    this->getPlayer()->getTerritoriesToDefend()[indexToAirliftTo],
                                                                                     armyNo);
                     //auto *airlift = new Airlift(this, this->toDefend()[indexToAirliftFrom],
                     //                            this->toDefend()[indexToAirliftTo], armyNo);
@@ -182,19 +187,19 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
         }
         else if(orderString == "Blockade") {
             cout << "Select the target territories number from the following territories" << endl;
-            for (int i = 0; i < this->getPlayer()->toDefend().size(); i++) {
-                cout << i << ": " << this->getPlayer()->toDefend()[i]->getTerritoryName() << endl;
+            for (int i = 0; i < this->getPlayer()->getTerritoriesToDefend().size(); i++) {
+                cout << i << ": " << this->getPlayer()->getTerritoriesToDefend()[i]->getTerritoryName() << endl;
             }
             int indexToBlockade;
             cin >> indexToBlockade;
-            if (indexToBlockade < this->getPlayer()->toDefend().size() && indexToBlockade >= 0) {
+            if (indexToBlockade < this->getPlayer()->getTerritoriesToDefend().size() && indexToBlockade >= 0) {
                 string blockade = "blockade";
                 int index = this->getPlayer()->getPlayerHand()->findCard(blockade);
                 // playing the card from hand
                 if(index != -1)
                     // order is issued in play method of class card
                     this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
-                                                                                    this->getPlayer()->toDefend()[indexToBlockade]);
+                                                                                    this->getPlayer()->getTerritoriesToDefend()[indexToBlockade]);
                     //auto *blockade = new Blockade(this, this->toDefend()[indexToBlockade]);
                     //orderList->add(blockade);
                 else
@@ -213,7 +218,7 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
             int indexToPlayer;
             cin >> indexToPlayer;
             if (indexToPlayer < players_list.size() && indexToPlayer >= 0) {
-                string diplomacy = "diplomacy";
+                string diplomacy = "Diplomacy";
                 int index = this->getPlayer()->getPlayerHand()->findCard(diplomacy);
                 if(index != -1) {
                     // order issued in play method of class card
@@ -232,7 +237,7 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
         }
     }
 }
-vector<Territory*> Human::toAttack() {
+void Human::toAttack() {
     cout << "The following are enemy territories, decide priority of the territories to be attacked:" << endl;
     vector<Territory*> enemyTerritories = this->getPlayer()->get_neighbour_territories(this->getPlayer());
     for(int i = 1; i <= enemyTerritories.size(); i++){
@@ -260,7 +265,7 @@ vector<Territory*> Human::toAttack() {
     while(enemyTerritories.size() != this->getPlayer()->getTerritoriesToAttack().size());
 
 }
-vector<Territory*> Human::toDefend() {
+void Human::toDefend() {
     cout << "The following are your territories, decide priority of the territories to be defended:" << endl;
     for(int i = 1; i <= this->getPlayer()->getTerritories().size(); i++){
         cout << i  << ": "<< this->getPlayer()->getTerritories()[i-1]->getTerritoryName() << endl;
@@ -294,10 +299,10 @@ Aggressive::Aggressive(Player *player) : PlayerStrategy(player) {}
 Aggressive::Aggressive(const Aggressive &aggressive) {
     this->setPlayer(aggressive.getPlayer());
 }
-void Aggressive::issueOrder() {
+void Aggressive::issueOrder(Deck* deck, vector<Player*> players_list) {
 
 }
-vector<Territory*> Aggressive::toAttack() {
+void Aggressive::toAttack() {
     // ToAttack has order  of territories from weakest to strongest
     if(isStartOfGame()){
         int number = this->getPlayer()->getReinforcementPool() / this->getPlayer()->getTerritories().size();
@@ -324,7 +329,7 @@ vector<Territory*> Aggressive::toAttack() {
     this->getPlayer()->setTerritoriesToDefend(sortedTerritoriesFromWeakestToStrongest);
 
 }
-vector<Territory*> Aggressive::toDefend() {
+void Aggressive::toDefend() {
     this->getPlayer()->getTerritoriesToDefend().clear();
 }
 
@@ -346,20 +351,22 @@ ostream &operator<<(ostream& os, const Benevolent &benevolent) {
     os << "Benevolent player: " << benevolent.getPlayer()->getPlayerName() << endl;
     return os;
 }
-void Benevolent::issueOrder() {
+void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
     int numberOfArmies;
     int territoryToMoveToIndex;
+    vector<Territory* > sortedTerritoriesFromWeakestToStrongest;
     vector<Territory *> sortedTerritoriesFromStrongestToWeakest;
     vector<Territory *> adjacentTerritories;
-
-
-    toAttack();
-    toDefend();
-
     // Deployment Ordering
     int reinforcementArmies = this->getPlayer()->getReinforcementPool();
     int armiesToDeploy = 0;
-    for (Territory *territory: this->toDefend()) {
+    sortedTerritoriesFromWeakestToStrongest = this->getPlayer()->getTerritoriesToDefend();
+    std::sort(sortedTerritoriesFromWeakestToStrongest.begin(), sortedTerritoriesFromWeakestToStrongest.end(),
+              [](Territory *lhs, Territory *rhs) {
+                  return lhs->getArmyCount() < rhs->getArmyCount();
+              });
+
+    for (Territory *territory: sortedTerritoriesFromWeakestToStrongest) {
         if (reinforcementArmies <= 0) {
             break;
         }
@@ -376,7 +383,7 @@ void Benevolent::issueOrder() {
     }
     // if after all territories have been looped we have any armies left in the reinforcement pool then assign them to the weakest territory
     if (reinforcementArmies > 0) {
-        auto *deploy = new Deploy(this->getPlayer(), toDefend()[0], armiesToDeploy);
+        auto *deploy = new Deploy(this->getPlayer(), getTerritoriesToDefend()[0], armiesToDeploy);
         this->getPlayer()->getOrderList()->add(deploy);
     }
     cout << "Deployment Order is complete, now other orders can be issued" << endl;
@@ -403,7 +410,7 @@ void Benevolent::issueOrder() {
             cout << "Your turn has now ended." << endl;
             break;
         } else if (orderString == "Advance") {
-            sortedTerritoriesFromStrongestToWeakest = this->getPlayer()->toDefend();
+            sortedTerritoriesFromStrongestToWeakest = this->getPlayer()->getTerritoriesToDefend();
             std::sort(sortedTerritoriesFromStrongestToWeakest.begin(), sortedTerritoriesFromStrongestToWeakest.end(),
                       [](Territory *lhs, Territory *rhs) {
                           return lhs->getArmyCount() > rhs->getArmyCount();
@@ -451,15 +458,23 @@ void Benevolent::issueOrder() {
                     break;
                 }
             } while (true);
-
-            auto *airlift = new Airlift(this->getPlayer(),
+            string airlift = "Airlift";
+            int index = this->getPlayer()->getPlayerHand()->findCard(airlift);
+            // playing the card from hand
+            if(index != -1)
+                // the order is issued in the play method on card class
+                this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
+                                                                                strongestTerritory,
+                                                                                adjacentTerritories[territoryToMoveToIndex],
+                                                                                numberOfArmies);
+            /*auto *airlift = new Airlift(this->getPlayer(),
                                         strongestTerritory,
                                         adjacentTerritories[territoryToMoveToIndex], numberOfArmies);
             this->getPlayer()->getOrderList()->add(airlift);
-
+*/
         } else if (orderString == "Blockade") {
             Territory *targetTerritory;
-            vector<Territory *> territoriesToBlockade = this->toDefend();
+            vector<Territory *> territoriesToBlockade = this->getTerritoriesToDefend();
             int toBlockadeIndex = rand() % territoriesToBlockade.size();
             if (toBlockadeIndex > -1 && toBlockadeIndex <= territoriesToBlockade.size()) {
                 targetTerritory = territoriesToBlockade[toBlockadeIndex];
@@ -467,20 +482,34 @@ void Benevolent::issueOrder() {
             if (targetTerritory->getOwner() == nullptr) {
                 cout << "This territory is already Blockaded" << endl;
             } else {
-                auto *blockade = new Blockade(this->getPlayer(), targetTerritory);
-                this->getPlayer()->getOrderList()->add(blockade);
+               /* auto *blockade = new Blockade(this->getPlayer(), targetTerritory);
+                this->getPlayer()->getOrderList()->add(blockade);*/
+                string blockade = "Blockade";
+                int index = this->getPlayer()->getPlayerHand()->findCard(blockade);
+                if(index != -1)
+                    this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
+                                                                                    targetTerritory);
             }
 
         } else if (orderString == "Negotiate") {
             //this->getPlayer()->getNegotiatePlayersList()
-
+            Player* player;
+            do {
+                int playerInt = rand() % players_list.size();
+                player= players_list[playerInt];
+            } while (this->getPlayer()->getPlayerName() == player->getPlayerName());
+            string dimplomacy = "Diplomacy";
+            int index = this->getPlayer()->getPlayerHand()->findCard(dimplomacy);
+            if(index != -1)
+                this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
+                                                                                player);
         }
     }
 }
-vector<Territory*> Benevolent::toAttack() {
+void Benevolent::toAttack() {
     this->getPlayer()->getTerritoriesToAttack().clear();
 }
-vector<Territory*> Benevolent::toDefend() {
+void Benevolent::toDefend() {
     // ToDefend has order  of territories from weakest to strongest
     if(isStartOfGame()){
         int number = this->getPlayer()->getReinforcementPool() / this->getPlayer()->getTerritories().size();
@@ -510,28 +539,22 @@ vector<Territory*> Benevolent::toDefend() {
  * @param player
  */
 
-Neutral::Neutral(Player *player) : PlayerStrategy(player) {
-}
-
+Neutral::Neutral(Player *player) : PlayerStrategy(player) {}
 Neutral::Neutral(const Neutral &neutral)  : PlayerStrategy(neutral) {
     this->setPlayer(neutral.getPlayer());
 }
-
 Neutral::~Neutral() {
     this->setPlayer(nullptr);
 }
-
 Neutral &Neutral::operator=(const Neutral &neutral) {
     this->setPlayer(neutral.getPlayer());
     return *this;
 }
-
 ostream &operator<<(ostream& os, const Neutral &neutral) {
     os << "Neutral Player: " << neutral.getPlayer()->getPlayerName() << endl;
     return os;
 }
-
-void Neutral::issueOrder() {
+void Neutral::issueOrder(Deck* deck, vector<Player*> players_list) {
     if (dynamic_cast<Neutral*>(this->getPlayer()->getPlayerStrategy()) != nullptr) {
         if(this->getPlayer()->isPlayerWasAttacked()){
             this->getPlayer()->setPlayerStrategy(new Aggressive(this->getPlayer()));
@@ -545,18 +568,18 @@ void Neutral::issueOrder() {
         // code for aggressive strategy
         this->getPlayer()->getPlayerStrategy()->toAttack(); // this will prepare aggressive method toAttack()
         this->getPlayer()->getPlayerStrategy()->toDefend(); // this will prepare aggressive method toAttack
-        this->getPlayer()->getPlayerStrategy()->issueOrder(); // this will issue orders as aggressive strategy
+        this->getPlayer()->getPlayerStrategy()->issueOrder(deck, players_list); // this will issue orders as aggressive strategy
 
     }
 }
-vector<Territory*> Neutral::toAttack() {
+void Neutral::toAttack() {
     if (dynamic_cast<Neutral *>(this->getPlayer()->getPlayerStrategy()) != nullptr) {
         if (!this->getPlayer()->getTerritoriesToAttack().empty()) {
             this->getPlayer()->getTerritoriesToAttack().clear();
         }
     }
 }
-vector<Territory *> Neutral::toDefend() {
+void Neutral::toDefend() {
     if (dynamic_cast<Neutral *>(this->getPlayer()->getPlayerStrategy()) != nullptr) {
         if (!this->getPlayer()->getTerritoriesToDefend().empty()) {
             this->getPlayer()->getTerritoriesToDefend().clear();
@@ -582,12 +605,12 @@ ostream &operator<<(ostream& os, const Cheater &cheater) {
     os << "Cheater player: " << cheater.getPlayer()->getPlayerName() << endl;
     return os;
 }
-void Cheater::issueOrder() {
+void Cheater::issueOrder(Deck* deck, vector<Player*> players_list) {
 
 }
-vector<Territory*> Cheater::toAttack() {
+void Cheater::toAttack() {
 
 }
-vector<Territory*> Cheater::toDefect() {
+void Cheater::toDefect() {
 
 }

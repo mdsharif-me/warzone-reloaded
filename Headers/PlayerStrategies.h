@@ -24,13 +24,15 @@ public:
     PlayerStrategy(Player* p);
     PlayerStrategy(const PlayerStrategy& ps);
     PlayerStrategy& operator=(const PlayerStrategy &ps);
-    void ~PlayerStrategy();
+    ~PlayerStrategy();
     void setPlayer(Player* p);
     Player * getPlayer() const;
-    virtual void issueOrder() = 0;
-    virtual vector<Territory*> toAttack() = 0;
-    virtual vector<Territory*> toDefend() = 0;
+    virtual void issueOrder(Deck* deck, vector<Player*> players_list) = 0;
+    virtual void toAttack() = 0;
+    virtual void toDefend() = 0;
     bool isStartOfGame();
+    vector<Territory*> getTerritoriesToDefend();
+    vector<Territory*> getTerritoriesToAttack();
 
 };
 
@@ -45,9 +47,9 @@ public:
     ~Human();
     Human& operator=(const Human& h); // assignment operator
     friend ostream& operator<<(ostream& os, const Human& h); // output stream
-    void issueOrder();
-    vector<Territory*> toAttack();
-    vector<Territory*> toDefend();
+    void issueOrder(Deck* deck, vector<Player*> players_list);
+    void toAttack();
+    void toDefend();
 };
 
 /**
@@ -60,9 +62,9 @@ public:
     ~Aggressive();
     Aggressive& operator=(const Aggressive& aggressive);
     friend ostream& operator<< (ostream os, const Aggressive& aggressive);
-    void issueOrder();
-    vector<Territory*> toAttack();
-    vector<Territory*> toDefend();
+    void issueOrder(Deck* deck, vector<Player*> players_list);
+    void toAttack();
+    void toDefend();
 };
 
 
@@ -76,9 +78,9 @@ public:
     ~Benevolent();
     Benevolent& operator=(const Benevolent& benevolent);
     friend ostream& operator<< (ostream& os, const Benevolent& benevolent);
-    void issueOrder();
-    vector<Territory*> toAttack();
-    vector<Territory*> toDefend();
+    void issueOrder(Deck* deck, vector<Player*> players_list);
+    void toAttack();
+    void toDefend();
 };
 
 /**
@@ -91,9 +93,9 @@ public:
     ~Neutral();
     Neutral& operator=(const Neutral& neutral);
     friend ostream& operator<< (ostream& os, const Neutral& neutral);
-    void issueOrder();
-    vector<Territory*> toAttack();
-    vector<Territory*> toDefend();
+    void issueOrder(Deck* deck, vector<Player*> players_list);
+    void toAttack();
+    void toDefend();
 };
 
 /**
@@ -106,8 +108,8 @@ public:
     ~Cheater();
     Cheater& operator=(const Cheater& cheater);
     friend ostream& operator<< (ostream& os, const Cheater& cheater);
-    void issueOrder();
-    vector<Territory*> toAttack();
-    vector<Territory*> toDefect();
+    void issueOrder(Deck* deck, vector<Player*> players_list);
+    void toAttack();
+    void toDefect();
 };
 #endif //WARZONE_RELOADED_PLAYERSTRATEGIES_H
