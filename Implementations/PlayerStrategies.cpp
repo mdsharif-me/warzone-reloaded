@@ -136,7 +136,7 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
             int indexToBomb;
             cin >> indexToBomb;
             if (indexToBomb < this->getPlayer()->getTerritoriesToAttack().size() && indexToBomb >= 0) {
-                string bomb = "bomb";
+                string bomb = "Bomb";
                 int index = this->getPlayer()->getPlayerHand()->findCard(bomb);
                 // playing the card from hand
                 if(index != -1)
@@ -167,7 +167,7 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
             cin >> armyNo;
             if (indexToAirliftFrom < this->getPlayer()->getTerritoriesToDefend().size() && indexToAirliftFrom >= 0 &&
                 indexToAirliftTo < this->getPlayer()->getTerritoriesToDefend().size() && indexToAirliftTo >= 0 && armyNo >= 0) {
-                string airlift = "airlift";
+                string airlift = "Airlift";
                 int index = this->getPlayer()->getPlayerHand()->findCard(airlift);
                 // playing the card from hand
                 if(index != -1)
