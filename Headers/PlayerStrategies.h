@@ -62,7 +62,7 @@ public:
     ~Aggressive();
     Aggressive& operator=(const Aggressive& aggressive);
     friend ostream& operator<< (ostream os, const Aggressive& aggressive);
-    void issueOrder(Deck* deck, vector<Player*> players_list);
+    void issueOrder(Deck* deck, vector<Player*> players_list) override;
     void toAttack();
     void toDefend();
 };
@@ -78,7 +78,7 @@ public:
     ~Benevolent();
     Benevolent& operator=(const Benevolent& benevolent);
     friend ostream& operator<< (ostream& os, const Benevolent& benevolent);
-    void issueOrder(Deck* deck, vector<Player*> players_list);
+    void issueOrder(Deck* deck, vector<Player*> players_list) override;
     void toAttack();
     void toDefend();
 };
@@ -93,7 +93,7 @@ public:
     ~Neutral();
     Neutral& operator=(const Neutral& neutral);
     friend ostream& operator<< (ostream& os, const Neutral& neutral);
-    void issueOrder(Deck* deck, vector<Player*> players_list);
+    void issueOrder(Deck* deck, vector<Player*> players_list) override;
     void toAttack();
     void toDefend();
 };
@@ -108,8 +108,8 @@ public:
     ~Cheater();
     Cheater& operator=(const Cheater& cheater);
     friend ostream& operator<< (ostream& os, const Cheater& cheater);
-    void issueOrder(Deck* deck, vector<Player*> players_list);
+    void issueOrder(Deck* deck, vector<Player*> players_list) override;
     void toAttack();
-    void toDefect();
+    void toDefend();
 };
 #endif //WARZONE_RELOADED_PLAYERSTRATEGIES_H

@@ -4,7 +4,6 @@
 #include "../Headers/Player.h"
 using namespace std;
 
-
 Player::Player() {
     this->playerHand = new Hand();
     this->orderList = new OrdersList();
@@ -52,16 +51,106 @@ Player::~Player()
     orderList = nullptr;
     playerHand = nullptr;
 }
+vector<Territory *> Player::getTerritories() {
+    return territories;
+}
+OrdersList* Player::getOrderList() {
+    return orderList;
+}
+Hand* Player::getPlayerHand() {
+    return playerHand;
+}
+string Player::getPlayerName() {
+    return name;
+}
+int Player::getReinforcementPool() {
+    return reinforcementPool;
+}
+const string& Player::getName() const {
+    return name;
+}
+bool Player::isNewTerritoryConquered() const {
+    return newTerritoryConquered;
+}
+vector<Player *> Player::getNegotiatePlayersList() {
+    return negotiatePlayersList;
+}
+vector<Territory *> Player::getTerritoriesToAttack() {
+    return territoriesToAttack;
+}
+vector<Territory *> Player::getTerritoriesToDefend() {
+    return territoriesToDefend;
+}
+PlayerStrategy *Player::getPlayerStrategy() const {
+    return playerStrategy;
+}
+
+void Player::setOrderList(OrdersList *newOrderList) {
+    Player::orderList = newOrderList;
+}
+void Player::setPlayerHand(Hand *newPlayerHand) {
+    Player::playerHand = newPlayerHand;
+}
+void Player::setReinforcementPool(int nrArmies) {
+    reinforcementPool = nrArmies;
+}
+void Player::setName(const string &newName) {
+    this->name = newName;
+}
+void Player::addTerritory(Territory *territory) {
+    // if someone owns the territory, remove it from them
+    if (territory->getOwner() != nullptr){
+        territory->getOwner()->removeTerritory(territory);
+        territory->removeOwner();
+    }
+    // add this to this player
+    territory->addOwner(this);
+    territories.push_back(territory);
+
+}
+void Player::removeTerritory(Territory *territory) {
+    // find the territory and remove it
+    for(int i = 0; i < territories.size(); i++){
+        if (territories[i] == territory){
+            territories.erase(territories.begin()+i);
+        }
+    }
+    //std::remove(territories.begin(), territories.end(), territory);
+
+}
+void Player::setNewTerritoryConquered(bool arg) {
+    Player::newTerritoryConquered = arg;
+}
+void Player::addPlayerToNegotiatePlayersList(Player *player) {
+    negotiatePlayersList.push_back(player);
+}
+void Player::removePlayerFromNegotiatePlayersList(Player *player) {
+    std::remove(negotiatePlayersList.begin(), negotiatePlayersList.end(), player);
+
+}
+void Player::setTerritoriesToAttack(vector<Territory *> &terrToAttack) {
+    Player::territoriesToAttack = terrToAttack;
+}
+void Player::setTerritoriesToDefend(vector<Territory *> &terrToDefend) {
+    territoriesToDefend = terrToDefend;
+}
+void Player::setTerritories(vector<Territory *> terr) {
+    territories = std::move(terr);
+
+}
+void Player::setPlayerStrategy(PlayerStrategy* playerStrategy) {
+    Player::playerStrategy = playerStrategy;
+}
+void Player::setPlayerWasAttacked(bool wasAttacked) {
+    this->playerWasAttacked = wasAttacked;
+}
+
 void Player::toDefend()
 {
     playerStrategy->toDefend();
 }
-void Player::toAttack()
-{
+void Player::toAttack(){
     playerStrategy->toAttack();
-}
-vector<Territory *> Player::getTerritories() {
-    return territories;
 }
 void Player::issueOrder(Deck* deck, vector<Player*> players_list){
     // 1. The decision-marking code must be implemented within this method.
@@ -81,21 +170,7 @@ void Player::issueOrder(Deck* deck, vector<Player*> players_list){
     toAttack();
     playerStrategy->issueOrder(deck, players_list);
 }
-OrdersList* Player::getOrderList() {
-    return orderList;
-}
-Hand* Player::getPlayerHand() {
-    return playerHand;
-}
-string Player::getPlayerName() {
-    return name;
-}
-void Player::setOrderList(OrdersList *newOrderList) {
-    Player::orderList = newOrderList;
-}
-void Player::setPlayerHand(Hand *newPlayerHand) {
-    Player::playerHand = newPlayerHand;
-}
+
 Player& Player::operator=(const Player& player)
 {
     this->name = player.name;
@@ -110,19 +185,7 @@ ostream& operator<<(ostream& os, const Player& player)
     os << "Player Name: " << player.name << endl;
     return os;
 }
-int Player::getReinforcementPool() {
-    return reinforcementPool;
-}
-void Player::setReinforcementPool(int nrArmies) {
-    reinforcementPool = nrArmies;
-}
-void Player::setName(const string &newName) {
-    this->name = newName;
 
-}
-const string& Player::getName() const {
-    return name;
-}
 // returns neighbours not controlled by player
 vector<Territory*> Player::get_neighbour_territories(Player* p) {
     vector<Territory*> controlled = p->getTerritories();
@@ -173,61 +236,8 @@ vector<Territory*> Player::get_friendly_neighbour(Player* p) {
     }
     return friendly_neighbours;
 }
-void Player::addTerritory(Territory *territory) {
-    // if someone owns the territory, remove it from them
-    if (territory->getOwner() != nullptr){
-        territory->getOwner()->removeTerritory(territory);
-        territory->removeOwner();
-    }
-    // add this to this player
-    territory->addOwner(this);
-    territories.push_back(territory);
-
-}
-void Player::removeTerritory(Territory *territory) {
-    // find the territory and remove it
-    for(int i = 0; i < territories.size(); i++){
-        if (territories[i] == territory){
-            territories.erase(territories.begin()+i);
-        }
-    }
-    //std::remove(territories.begin(), territories.end(), territory);
-
-}
-bool Player::isNewTerritoryConquered() const {
-    return newTerritoryConquered;
-}
-void Player::setNewTerritoryConquered(bool arg) {
-    Player::newTerritoryConquered = arg;
-}
-void Player::addPlayerToNegotiatePlayersList(Player *player) {
-    negotiatePlayersList.push_back(player);
-}
 void Player::resetNegotiatePlayersList() {
     negotiatePlayersList.clear();
-}
-void Player::removePlayerFromNegotiatePlayersList(Player *player) {
-    std::remove(negotiatePlayersList.begin(), negotiatePlayersList.end(), player);
-
-}
-vector<Player *> Player::getNegotiatePlayersList() {
-    return negotiatePlayersList;
-}
-void Player::setTerritoriesToAttack(vector<Territory *> &terrToAttack) {
-    Player::territoriesToAttack = terrToAttack;
-}
-void Player::setTerritoriesToDefend(vector<Territory *> &terrToDefend) {
-    territoriesToDefend = terrToDefend;
-}
-vector<Territory *> Player::getTerritoriesToAttack() {
-    return territoriesToAttack;
-}
-vector<Territory *> Player::getTerritoriesToDefend() {
-    return territoriesToDefend;
-}
-void Player::setTerritories(vector<Territory *> terr) {
-    territories = std::move(terr);
-
 }
 bool Player::checkIfAlreadyExists(Territory* territory, vector<Territory *> territories) {
     for(auto t:territories){
@@ -237,20 +247,6 @@ bool Player::checkIfAlreadyExists(Territory* territory, vector<Territory *> terr
     }
     return false;
 }
-
-PlayerStrategy *Player::getPlayerStrategy() const {
-    return playerStrategy;
-}
-
-void Player::setPlayerStrategy(PlayerStrategy *playerStrategy) {
-    Player::playerStrategy = playerStrategy;
-}
-
-void Player::setPlayerWasAttacked(bool wasAttacked) {
-    this->playerWasAttacked = wasAttacked;
-}
-
 bool Player::isPlayerWasAttacked() {
     return this->playerWasAttacked;
 }
-
