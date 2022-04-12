@@ -17,12 +17,23 @@ Player::Player(string& name, vector<Territory*> ta, vector<Territory*> td, Hand 
     this->orderList = new OrdersList();
     this->newTerritoryConquered = false;
 }
-Player::Player(string &name) {
+Player::Player(string &name, string &strategy) {
     this->name = name;
     this->playerHand = new Hand();
     this->orderList = new OrdersList();
     this->newTerritoryConquered = false;
     this->playerWasAttacked = false;
+    if(strategy == "Human"){
+        playerStrategy = new Human(this);
+    }else if(strategy == "Aggressive"){
+        playerStrategy = new Aggressive(this);
+    }else if(strategy == "Benevolent"){
+        playerStrategy = new Benevolent(this);
+    }else if(strategy == "Neutral"){
+        playerStrategy = new Neutral(this);
+    }else if(strategy == "Cheater"){
+        playerStrategy = new Cheater(this);
+    }
 }
 Player::Player(const Player& p)
 {

@@ -1,0 +1,1 @@
+tournament -M ../Maps/canada.map -P Aggressive, Benevolent, Neutral, Cheater -G 1 -D 15

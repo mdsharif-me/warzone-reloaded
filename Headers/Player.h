@@ -36,7 +36,7 @@ private:
 
 public:
     Player();                                    //Default Constructor
-    Player(string& name);
+    Player(string& name, string& strategy);
     Player(string& name, vector<Territory*> ta, vector<Territory*> td, Hand* c);
     Player(const Player&);                      //Copy Constructor
     ~Player();                                  //Destructor

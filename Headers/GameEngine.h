@@ -30,6 +30,10 @@ public:
     friend ostream& operator << (ostream& os, const GameEngine& gameEngine); //stream insertion operator for Player
     void stringToLog(const std::string& message) override;
     void transition(const string& state_);
+    void addPlayer(string command, string strategy);
+    void loadAndValidateMap(string& path);
+    void gameStart();
+    void results(const string** result_, int, int);
 
 private:
     Map* map;									//initialized Map for the game

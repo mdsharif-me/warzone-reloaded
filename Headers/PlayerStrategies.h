@@ -5,14 +5,15 @@
 #ifndef WARZONE_RELOADED_PLAYERSTRATEGIES_H
 #define WARZONE_RELOADED_PLAYERSTRATEGIES_H
 #include "Player.h"
-
-#include "../Headers/Orders.h"
-#include "../Headers/Player.h"
-#include "../Headers/Cards.h"
-#include "../Headers/Map.h"
+#include "Cards.h"
+#include "Map.h"
+#include <vector>
 #include <iostream>
 using namespace std;
 
+class Player;
+class Territory;
+class Deck;
 /**
  * Implementation of PlayerStrategy class
  */
