@@ -14,7 +14,7 @@ GameEngine::GameEngine(vector<Player*> players_list, Map* map, Deck* deck){
 vector<Player *> GameEngine::getPlayersList() {
     return player_list;
 }
-void GameEngine::mainGameLoop(int maxNumOfTurns) {
+void GameEngine::mainGameLoop(int maxNumOfTurns, bool tournamentMode) {
 // 1. Round robin fashion in the order setup in startup phase
 // 2. This loop shall continue until only one of the players owns all the terrotires in the map.
 // 3. Also checks if any player does not control at least one territory
@@ -40,8 +40,29 @@ void GameEngine::mainGameLoop(int maxNumOfTurns) {
         this->executeOrderPhase();
         round++;
     }
-    cout << player_list.front()->getPlayerName() << "wins!!" << endl;
-    transition("win");
+    if(tournamentMode) {
+        vector<int> numbers;
+        for (auto player: player_list) {
+            int counter = player->getTerritories().size();
+            cout << player->getPlayerName() << " has " << counter << " territories in round " << maxNumOfTurns << endl;
+            numbers.push_back(counter);
+        }
+        int greatest = 0;
+        int greatestIndex = 0;
+        for(int i = 0; i < numbers.size(); i++){
+            if(greatest < numbers[i]){
+                greatest = numbers[i];
+                greatestIndex = i;
+            }
+        }
+        cout << player_list[greatestIndex]->getPlayerName() << "wins!!" << endl;
+        winnerIndex = greatestIndex;
+    }
+    else{
+        cout << player_list.front()->getPlayerName() << "wins!!" << endl;
+        winnerIndex = 0;
+        transition("win");
+    }
 }
 void GameEngine::reinforcementPhase() {
     // 1. Players are given armies that depends on the number of terrtories.
@@ -197,7 +218,7 @@ void GameEngine:: loadAndValidateMap(string& path){
         cout << "COMMAND FAIL: Tournament LoadMap failed" << endl;
     }
 }
-void GameEngine::gameStart(int maxNumOfTurns) {
+void GameEngine::gameStart(int maxNumOfTurns, bool tournamentMode) {
     this->deck->fillDeck();
     for(int i = 0; i < player_list.size();i++){
         //player_list[i]->getPlayerHand()->addToHand(new Card("Reinforcement"));
@@ -233,7 +254,7 @@ void GameEngine::gameStart(int maxNumOfTurns) {
         deck->draw(player);
         deck->draw(player);
     }
-    mainGameLoop(maxNumOfTurns);
+    mainGameLoop(maxNumOfTurns, tournamentMode);
 }
 void GameEngine::startupPhase(CommandProcessor* cp) {
     transition("start");
@@ -293,7 +314,7 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
         else if(command->getCommand() == "gamestart") {
             if (cp->validate(command->getCommand(), state)) {
                 cout << "GAME STARTING!!" << endl;
-                gameStart(-1);
+                gameStart(-1, false);
             }
             else{
                 cout << "COMMAND FAIL: gamestart failed" << endl;
@@ -371,10 +392,27 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
                             string playerName = "addplayer player" + to_string(i);
                             addPlayer(playerName, listOfPlayers[i]);
                         }
-                        gameStart(maxNoOfTurns);
+                        gameStart(maxNoOfTurns, true);
 
                         //typeid(player_list.front()->getPlayerStrategy()).name();
-                        result_[i].push_back(player_list.front()->getPlayerName());
+                        //result_[i].push_back(player_list[winnerIndex]->getPlayerName());
+                        string type;
+                        if (dynamic_cast<Human*>(player_list[winnerIndex]->getPlayerStrategy()) != nullptr){
+                            type = "Human";
+                        }
+                        else if (dynamic_cast<Aggressive*>(player_list[winnerIndex]->getPlayerStrategy()) != nullptr){
+                            type = "Aggressive";
+                        }
+                        else if (dynamic_cast<Benevolent*>(player_list[winnerIndex]->getPlayerStrategy()) != nullptr){
+                            type = "Benevolent";
+                        }
+                        else if (dynamic_cast<Cheater*>(player_list[winnerIndex]->getPlayerStrategy()) != nullptr){
+                            type = "Cheater";
+                        }
+                        else if (dynamic_cast<Neutral*>(player_list[winnerIndex]->getPlayerStrategy()) != nullptr){
+                            type = "Neutral";
+                        }
+                        result_[i].push_back(type);
                         player_list.clear();
                     }
                 }

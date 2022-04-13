@@ -58,13 +58,13 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
     int tempArmy;
     do{
         tempArmy = this->getPlayer()->getReinforcementPool(); //Getting player
-        if(tempArmy==0) {
-            cout << "No more armies to deploy!";
-            break;
-        }
         cout << "Currently inside Human Player" << endl;
         cout << "Be sure to deploy all your armies to be able to issue other orders" << endl;
         for(Territory* territory: this->getPlayer()->getTerritoriesToDefend()) {
+            if(tempArmy==0) {
+                cout << "No more armies to deploy!";
+                break;
+            }
             cout << "Available number of Deployable Army: " << tempArmy << endl;
             cout << territory->getTerritoryName() << ":" << endl;
             int numberOfArmies; cin >> numberOfArmies;
@@ -247,6 +247,8 @@ void Human::toAttack() {
     for(int i = 1; i <= enemyTerritories.size(); i++){
         cout << i  << ": "<< this->getPlayer()->getTerritories()[i-1]->getTerritoryName() << endl;
     }
+    vector<Territory*> territoriesToAttack;
+
     cout <<"Select the order of priority by writing the number (type 0 to stop)" << endl;
     do{
         int numberOrder; cin >> numberOrder;
@@ -257,8 +259,10 @@ void Human::toAttack() {
             cout << "Invalid request, try again" << endl;
         }
         else{
-            if(!this->getPlayer()->checkIfAlreadyExists(enemyTerritories[numberOrder-1], this->getPlayer()->getTerritoriesToAttack())) {
-                this->getPlayer()->getTerritoriesToAttack().push_back(enemyTerritories[numberOrder-1]);
+            Territory* territoryA = enemyTerritories[numberOrder-1];
+            bool isSame = this->getPlayer()->checkIfAlreadyExists(territoryA, territoriesToAttack);
+            if(!isSame) {
+                territoriesToAttack.push_back(territoryA);
                 cout << "Territory successfully added" << endl;
             }
             else{
@@ -266,17 +270,21 @@ void Human::toAttack() {
             }
         }
     }
-    while(enemyTerritories.size() != this->getPlayer()->getTerritoriesToAttack().size());
+    while(enemyTerritories.size() != territoriesToAttack.size());
+    this->getPlayer()->setTerritoriesToAttack(territoriesToAttack);
 
 }
 void Human::toDefend() {
+
     cout << "The following are your territories, decide priority of the territories to be defended:" << endl;
     for(int i = 1; i <= this->getPlayer()->getTerritories().size(); i++){
         cout << i  << ": "<< this->getPlayer()->getTerritories()[i-1]->getTerritoryName() << endl;
     }
+    vector<Territory*> territoriesToDefend;
+
     cout <<"Select the order of priority by writing the number (type 0 to stop)" << endl;
     do{
-        int numberOrder; cin >> numberOrder;
+        int numberOrder = 0; cin >> numberOrder;
         if(numberOrder == 0){
             break;
         }
@@ -284,8 +292,10 @@ void Human::toDefend() {
             cout << "Invalid request, try again" << endl;
         }
         else{
-            if(!this->getPlayer()->checkIfAlreadyExists(this->getPlayer()->getTerritories()[numberOrder-1], this->getPlayer()->getTerritoriesToDefend())) {
-                this->getPlayer()->getTerritoriesToDefend().push_back(this->getPlayer()->getTerritories()[numberOrder-1]);
+            Territory* territory = this->getPlayer()->getTerritories()[numberOrder-1];
+            bool isSame = this->getPlayer()->checkIfAlreadyExists(territory, territoriesToDefend);
+            if(!isSame) {
+                territoriesToDefend.push_back(territory);
                 cout << "Territory successfully added" << endl;
             }
             else{
@@ -293,7 +303,8 @@ void Human::toDefend() {
             }
         }
     }
-    while(this->getPlayer()->getTerritories().size() != this->getPlayer()->getTerritoriesToDefend().size());
+    while(this->getPlayer()->getTerritories().size() != territoriesToDefend.size());
+    this->getPlayer()->setTerritoriesToDefend(territoriesToDefend);
 }
 
 /**
