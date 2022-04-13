@@ -196,11 +196,10 @@ void GameEngine:: loadAndValidateMap(string& path){
 }
 void GameEngine::gameStart() {
     for(int i = 0; i < player_list.size();i++){
-        player_list[i]->getPlayerHand()->addToHand(new Card("deploy"));
-        player_list[i]->getPlayerHand()->addToHand(new Card("reinforcement"));
-        player_list[i]->getPlayerHand()->addToHand(new Card("blockade"));
-        player_list[i]->getPlayerHand()->addToHand(new Card("airlift"));
-        player_list[i]->getPlayerHand()->addToHand(new Card("diplomacy"));
+        player_list[i]->getPlayerHand()->addToHand(new Card("Reinforcement"));
+        player_list[i]->getPlayerHand()->addToHand(new Card("Blockade"));
+        player_list[i]->getPlayerHand()->addToHand(new Card("Airlift"));
+        player_list[i]->getPlayerHand()->addToHand(new Card("Diplomacy"));
     }
     int number = map->getTerritories().size() / player_list.size();
     int counter = 0;

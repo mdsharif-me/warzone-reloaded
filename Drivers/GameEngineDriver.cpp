@@ -30,21 +30,18 @@ int main(int argc, char* argv[]) {
     }
     GameEngine* g = new GameEngine();
     Deck* deck = new Deck();
-    deck->addToDeck(new Card("deploy"));
-    deck->addToDeck(new Card("reinforcement"));
-    deck->addToDeck(new Card("blockade"));
-    deck->addToDeck(new Card("airlift"));
-    deck->addToDeck(new Card("diplomacy"));
-    deck->addToDeck(new Card("deploy"));
-    deck->addToDeck(new Card("reinforcement"));
-    deck->addToDeck(new Card("blockade"));
-    deck->addToDeck(new Card("airlift"));
-    deck->addToDeck(new Card("diplomacy"));
-    deck->addToDeck(new Card("deploy"));
-    deck->addToDeck(new Card("reinforcement"));
-    deck->addToDeck(new Card("blockade"));
-    deck->addToDeck(new Card("airlift"));
-    deck->addToDeck(new Card("diplomacy"));
+    deck->addToDeck(new Card("Reinforcement"));
+    deck->addToDeck(new Card("Blockade"));
+    deck->addToDeck(new Card("Airlift"));
+    deck->addToDeck(new Card("Diplomacy"));
+    deck->addToDeck(new Card("Reinforcement"));
+    deck->addToDeck(new Card("Blockade"));
+    deck->addToDeck(new Card("Airlift"));
+    deck->addToDeck(new Card("Diplomacy"));
+    deck->addToDeck(new Card("Reinforcement"));
+    deck->addToDeck(new Card("Blockade"));
+    deck->addToDeck(new Card("Airlift"));
+    deck->addToDeck(new Card("Diplomacy"));
     g->setDeck(deck);
     g->startupPhase(c);
 
