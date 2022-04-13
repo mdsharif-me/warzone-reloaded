@@ -994,7 +994,10 @@ void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
             cout << endl;
         }
 
-        else if (orderString == "Reinforcement")
+        else if (orderString == "Reinforcement") {
+            cout << this->getPlayer()->getPlayerName() << ": chose Reinforcement." << endl;
+
+        }
     }
 }
 void Benevolent::toAttack() {

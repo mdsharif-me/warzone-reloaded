@@ -199,7 +199,7 @@ void GameEngine:: loadAndValidateMap(string& path){
 }
 void GameEngine::gameStart() {
     for(int i = 0; i < player_list.size();i++){
-        player_list[i]->getPlayerHand()->addToHand(new Card("Reinforcement"));
+        //player_list[i]->getPlayerHand()->addToHand(new Card("Reinforcement"));
         player_list[i]->getPlayerHand()->addToHand(new Card("Blockade"));
         player_list[i]->getPlayerHand()->addToHand(new Card("Airlift"));
         player_list[i]->getPlayerHand()->addToHand(new Card("Diplomacy"));
