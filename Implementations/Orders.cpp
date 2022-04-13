@@ -635,8 +635,8 @@ void Blockade  :: execute() {
     if (orderValid) {
         //double the number of armies
         targetTerritory->setArmyCount(targetTerritory->getArmyCount() * 2);
-        targetTerritory->getOwner()->removeTerritory(targetTerritory);
-        targetTerritory->removeOwner();
+        //targetTerritory->getOwner()->removeTerritory(targetTerritory);
+        //targetTerritory->removeOwner();
 
         cout << "Blockade order executed" << endl;
         cout << targetTerritory->getTerritoryName() << " belongs to Neutral Player now, doubles its armies and has now " << targetTerritory->getArmyCount() << " armies." << endl;

@@ -583,11 +583,33 @@ void Aggressive::issueOrder(Deck* deck, vector<Player*> players_list) {
                     } else {
                         string blockade = "Blockade";
                         int index = this->getPlayer()->getPlayerHand()->findCard(blockade);
-                        if (index != -1)
+                        if (index != -1) {
+                            bool foundA = false;
+                            for(Player* tempA: players_list) {
+                                if (dynamic_cast<Neutral *>(tempA->getPlayerStrategy()) != nullptr) {
+                                    targetTerritory->getOwner()->removeTerritory(targetTerritory);
+                                    targetTerritory->removeOwner();
+                                    targetTerritory->addOwner(tempA);
+                                    tempA->addTerritory(targetTerritory);
+                                    foundA = true;
+                                }
+                            }
+                            if(!foundA) {
+                                string nameA = "Neutral Player";
+                                string strategy_nameA = "Neutral";
+                                Player* newPlayerA = new Player(nameA, strategy_nameA);
+                                players_list.push_back(newPlayerA);
+                                targetTerritory->getOwner()->removeTerritory(targetTerritory);
+                                targetTerritory->removeOwner();
+                                targetTerritory->addOwner(newPlayerA);
+                                newPlayerA->addTerritory(targetTerritory);
+                            }
+
                             this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
                                                                                             targetTerritory);
-                        cout << this->getPlayer()->getPlayerName() << ": issued a Blockade Order against "
-                             << targetTerritory->getTerritoryName() << endl;
+                            cout << this->getPlayer()->getPlayerName() << ": issued a Blockade Order against "
+                                 << targetTerritory->getTerritoryName() << endl;
+                        }
                     }
                 }
                 auto it = std::find(availableOrders.begin(), availableOrders.end(), "Blockade");
@@ -936,10 +958,33 @@ void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
                     } else {
                         string blockade = "Blockade";
                         int index = this->getPlayer()->getPlayerHand()->findCard(blockade);
-                        if(index != -1)
+                        if(index != -1) {
+                            bool foundB = false;
+                            for(Player* tempB: players_list) {
+                                if (dynamic_cast<Neutral *>(tempB->getPlayerStrategy()) != nullptr) {
+                                    targetTerritory->getOwner()->removeTerritory(targetTerritory);
+                                    targetTerritory->removeOwner();
+                                    targetTerritory->addOwner(tempB);
+                                    tempB->addTerritory(targetTerritory);
+                                    foundB = true;
+                                }
+                            }
+                            if(!foundB) {
+                                string nameB = "Neutral Player";
+                                string strategy_nameB = "Neutral";
+                                Player* newPlayerB = new Player(nameB, strategy_nameB);
+                                players_list.push_back(newPlayerB);
+                                targetTerritory->getOwner()->removeTerritory(targetTerritory);
+                                targetTerritory->removeOwner();
+                                targetTerritory->addOwner(newPlayerB);
+                                newPlayerB->addTerritory(targetTerritory);
+                            }
+
                             this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
                                                                                             targetTerritory);
-                        cout << this->getPlayer()->getPlayerName() << ": issued a Blockade Order against " << targetTerritory->getTerritoryName() << endl;
+                            cout << this->getPlayer()->getPlayerName() << ": issued a Blockade Order against " << targetTerritory->getTerritoryName() << endl;
+
+                        }
                     }
                 }
             }

@@ -77,7 +77,7 @@ int main() {
 
 
     vector<Player*> playerslist;
-    playerslist.push_back(benevolentEnemyPlayer);
+    playerslist.push_back(neutralEnemyPlayer);
     playerslist.push_back(aggressiveEnemyPlayer);
 
     //*********************************************************************
