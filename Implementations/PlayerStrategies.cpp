@@ -306,6 +306,7 @@ Aggressive::Aggressive(const Aggressive &aggressive) {
     this->setPlayer(aggressive.getPlayer());
 }
 void Aggressive::issueOrder(Deck* deck, vector<Player*> players_list) {
+    cout << " aggressive inside issue order" << endl;
     int numberOfArmies;
     int territoryToMoveToIndex;
     vector<Territory *> sortedTerritoriesFromStrongestToWeakest = this->getPlayer()->getTerritoriesToDefend();
@@ -318,13 +319,19 @@ void Aggressive::issueOrder(Deck* deck, vector<Player*> players_list) {
             break;
         }
         do {
-            armiesToDeploy = std::rand() % reinforcementArmies + 1;
-            if (armiesToDeploy <= reinforcementArmies) {
-                auto *deploy = new Deploy(this->getPlayer(), territory, armiesToDeploy);
-                this->getPlayer()->getOrderList()->add(deploy);
-                reinforcementArmies -= armiesToDeploy;
+            if (reinforcementArmies == 0) {
+                cout << "aggressive player: reinforcement armies = 0";
                 break;
+            } else {
+                armiesToDeploy = std::rand() % reinforcementArmies + 1;
+                if (armiesToDeploy <= reinforcementArmies) {
+                    auto *deploy = new Deploy(this->getPlayer(), territory, armiesToDeploy);
+                    this->getPlayer()->getOrderList()->add(deploy);
+                    reinforcementArmies -= armiesToDeploy;
+                    break;
+                }
             }
+
         } while (true);
 
     }
@@ -350,7 +357,7 @@ void Aggressive::issueOrder(Deck* deck, vector<Player*> players_list) {
     availableOrders.push_back("end");
 
     cout << "Available Orders: ";
-    for (const string& order: availableOrders) {
+    for (const string &order: availableOrders) {
         cout << order << ", ";
     }
     cout << endl;
@@ -358,197 +365,270 @@ void Aggressive::issueOrder(Deck* deck, vector<Player*> players_list) {
     bool advancedOrderIssued = false;
     string orderString;
     while (true) {
-        int orderInt = rand() % availableOrders.size();
-        orderString = availableOrders[orderInt];
-        if (orderString == "end" && !advancedOrderIssued) {
-            orderString = "Advance";
-        }
-        vector<Territory*> enemyTerritories = this->getPlayer()->getTerritoriesToAttack();
-
-
-        if (orderString == "end") {
-            cout << "Your turn has now ended." << endl;
+        if (availableOrders.empty()) {
+            cout << "Aggressive player: availableOrders is empty" << endl;
             break;
-        }
-        else if (orderString == "Advance") {
-            vector<Territory*> startTerritoryUnfriendlyTerritories;
-            // Move armies from the strongest territories to the weakest
-            bool skipAdvanceOrder = false;
-            for (Territory *startTerritory: sortedTerritoriesFromStrongestToWeakest) {
-                if (startTerritory->getAdjTerritories().empty()) {
-                    cout << "no more territories to advance to" << endl;
-                }
-                adjacentTerritories = startTerritory->getAdjTerritories();
-                for(Territory* temp: adjacentTerritories) {
-                    if (temp->isEnemy(this->getPlayer())) {
-                        startTerritoryUnfriendlyTerritories.push_back(temp);
-                    }
-                }
-                int attempts = 0;
-                do {
-                    if (attempts == 100) {
+        } else {
+            int orderInt = rand() % availableOrders.size();
+            orderString = availableOrders[orderInt];
+            if (orderString == "end" && !advancedOrderIssued) {
+                orderString = "Advance";
+            }
+
+            if (orderString == "end") {
+                cout << "Your turn has now ended." << endl;
+                break;
+            } else if (orderString == "Advance") {
+                cout << this->getPlayer()->getPlayerName() << ": chose Advance." << endl;
+                vector<Territory *> startTerritoryUnfriendlyTerritories;
+                // Move armies from the strongest territories to the weakest
+                bool skipAdvanceOrder = false;
+                for (Territory *startTerritory: sortedTerritoriesFromStrongestToWeakest) {
+                    if (startTerritory->getAdjTerritories().empty()) {
+                        cout << "no more territories to advance to" << endl;
                         skipAdvanceOrder = true;
-                        break;
                     }
-                    if (startTerritoryUnfriendlyTerritories.empty()) {
-                        skipAdvanceOrder = true;
-                    } else {
-                        territoryToMoveToIndex = rand() % startTerritoryUnfriendlyTerritories.size();
-                    }
-
-                    if (skipAdvanceOrder) {
-                        break;
-                    } else {
-                        if (startTerritoryUnfriendlyTerritories[territoryToMoveToIndex]->getOwner()->getPlayerName() !=
-                            this->getPlayer()->getPlayerName()) {
-                            break;
-                        }
-                    }
-                    ++attempts;
-                } while (true);
-
-
-
-                do {
                     if (skipAdvanceOrder) {
                         break;
                     }
-                    if (isStartOfGame()) {
-                        numberOfArmies = 0;
-                        break;
-                    } else {
-                        numberOfArmies = rand() % startTerritory->getArmyCount() + 1;
-                        if (numberOfArmies >= 0 && numberOfArmies <= startTerritory->getArmyCount()) {
-                            break;
+                    adjacentTerritories = startTerritory->getAdjTerritories();
+                    for (Territory *temp: adjacentTerritories) {
+                        if (temp->isEnemy(this->getPlayer())) {
+                            startTerritoryUnfriendlyTerritories.push_back(temp);
                         }
                     }
-                } while (true);
+                    int attempts = 0;
+                    do {
+                        if (attempts == 10) {
+                            skipAdvanceOrder = true;
+                            break;
+                        }
+                        if (startTerritoryUnfriendlyTerritories.empty()) {
+                            cout << "Aggressive player: startTerritoryUnfriendlyTerritories is empty" << endl;
+                            skipAdvanceOrder = true;
+                        } else {
+                            territoryToMoveToIndex = rand() % startTerritoryUnfriendlyTerritories.size();
+                        }
 
-                if (!skipAdvanceOrder) {
-                    auto *advance = new Advance(this->getPlayer(),
-                                                startTerritory,
-                                                startTerritoryUnfriendlyTerritories[territoryToMoveToIndex], numberOfArmies);
-                    this->getPlayer()->getOrderList()->add(advance);
-                    cout << this->getPlayer()->getPlayerName() << ": issued an Advance Order" << endl;
-                    cout << this->getPlayer()->getPlayerName() << ": will move " << numberOfArmies << " armies "
-                    << "from " << startTerritory->getTerritoryName() << " to " << startTerritoryUnfriendlyTerritories[territoryToMoveToIndex]->getTerritoryName() << endl;
-                }
-                startTerritoryUnfriendlyTerritories.clear();
-            }
-            advancedOrderIssued = true;
-        }
-        else if (orderString == "Bomb") {
-            int territoryBombToIndex = rand() % enemyTerritories.size();
-            Territory* targetTerritory = enemyTerritories[territoryBombToIndex];
-            string bomb = "Bomb";
-            int index = this->getPlayer()->getPlayerHand()->findCard(bomb);
-            // playing the card from hand
-            if(index != -1)
-                // the order is issued by the play method in card class
-                this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
-                                                                                targetTerritory);
-            cout << this->getPlayer()->getPlayerName() << ": issued a Bomb Order" << endl;
-            cout << this->getPlayer()->getPlayerName() << ": " << targetTerritory->getTerritoryName()
-            << " belonging to " << targetTerritory->getOwner()->getPlayerName() << " will be bombed" << endl;
-        }
-        else if (orderString == "Airlift") {
-            bool skipAirliftOrder = false;
-            Territory *strongestTerritory = sortedTerritoriesFromStrongestToWeakest[0];
-            adjacentTerritories = strongestTerritory->getAdjTerritories();
-            vector<Territory* > friendlyNeighbourTerritories;
-            for(Territory* temp: adjacentTerritories) {
-                if (temp->isAllied(this->getPlayer())) {
-                    friendlyNeighbourTerritories.push_back(temp);
-                }
-            }
+                        if (skipAdvanceOrder) {
+                            break;
+                        } else {
+                            if (startTerritoryUnfriendlyTerritories[territoryToMoveToIndex]->getOwner()->getPlayerName() !=
+                                this->getPlayer()->getPlayerName()) {
+                                break;
+                            }
+                        }
+                        ++attempts;
+                    } while (true);
 
-            do {
+
+                    do {
+                        if (skipAdvanceOrder) {
+                            break;
+                        }
+                        if (isStartOfGame()) {
+                            numberOfArmies = 0;
+                            break;
+                        } else {
+                            if (startTerritory->getArmyCount() == 0) {
+                                cout << "Aggressive player: startTerritory army count == 0....skipping order" << endl;
+                                skipAdvanceOrder = true;
+                                break;
+                            } else {
+                                numberOfArmies = rand() % startTerritory->getArmyCount() + 1;
+                                if (numberOfArmies >= 0 && numberOfArmies <= startTerritory->getArmyCount()) {
+                                    break;
+                                }
+                            }
+                        }
+                    } while (true);
+
+                    if (!skipAdvanceOrder) {
+                        auto *advance = new Advance(this->getPlayer(),
+                                                    startTerritory,
+                                                    startTerritoryUnfriendlyTerritories[territoryToMoveToIndex],
+                                                    numberOfArmies);
+                        this->getPlayer()->getOrderList()->add(advance);
+                        cout << this->getPlayer()->getPlayerName() << ": issued an Advance Order" << endl;
+                        cout << this->getPlayer()->getPlayerName() << ": will move " << numberOfArmies << " armies "
+                             << "from " << startTerritory->getTerritoryName() << " to "
+                             << startTerritoryUnfriendlyTerritories[territoryToMoveToIndex]->getTerritoryName() << endl;
+                    }
+                    startTerritoryUnfriendlyTerritories.clear();
+                }
+                advancedOrderIssued = true;
+                auto it = std::find(availableOrders.begin(), availableOrders.end(), "Advance");
+                if (it != availableOrders.end()) {availableOrders.erase(it);}
+                cout << "Available Orders: ";
+                for (const string &order: availableOrders) {
+                    cout << order << ", ";
+                }
+                cout << endl;
+
+
+
+            } else if (orderString == "Bomb") {
+                cout << this->getPlayer()->getPlayerName() << ": chose Bomb." << endl;
+                vector<Territory *> enemyTerritories = this->getPlayer()->getTerritoriesToAttack();
+                bool skipBombOrder = false;
+                if (enemyTerritories.empty()) {
+                    skipBombOrder = true;
+                    cout << "Aggressive player: enemyTerritory is empty..skipping Bomb order" << endl;
+
+                } else {
+                    int territoryBombToIndex = rand() % enemyTerritories.size();
+                    Territory *targetTerritory = enemyTerritories[territoryBombToIndex];
+                    string bomb = "Bomb";
+                    int index = this->getPlayer()->getPlayerHand()->findCard(bomb);
+                    // playing the card from hand
+                    if (index != -1)
+                        // the order is issued by the play method in card class
+                        this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
+                                                                                        targetTerritory);
+                    cout << this->getPlayer()->getPlayerName() << ": issued a Bomb Order" << endl;
+                    cout << this->getPlayer()->getPlayerName() << ": " << targetTerritory->getTerritoryName()
+                         << " belonging to " << targetTerritory->getOwner()->getPlayerName() << " will be bombed"
+                         << endl;
+                }
+                auto it = std::find(availableOrders.begin(), availableOrders.end(), "Bomb");
+                if (it != availableOrders.end()) {availableOrders.erase(it);}
+                cout << "Available Orders: ";
+                for (const string &order: availableOrders) {
+                    cout << order << ", ";
+                }
+                cout << endl;
+
+
+
+            } else if (orderString == "Airlift") {
+                cout << this->getPlayer()->getPlayerName() << ": chose Airlift." << endl;
+                bool skipAirliftOrder = false;
+                Territory *strongestTerritory = sortedTerritoriesFromStrongestToWeakest[0];
+                adjacentTerritories = strongestTerritory->getAdjTerritories();
+                vector<Territory *> friendlyNeighbourTerritories;
+                for (Territory *temp: adjacentTerritories) {
+                    if (temp->isAllied(this->getPlayer())) {
+                        friendlyNeighbourTerritories.push_back(temp);
+                    }
+                }
+
                 if (friendlyNeighbourTerritories.empty()) {
                     skipAirliftOrder = true;
-                    break;
+                    cout << "Aggressive player: friendlyNeighbourTerritories is empty...skipping order " << endl;
                 } else {
                     territoryToMoveToIndex = rand() % friendlyNeighbourTerritories.size();
-                    if (friendlyNeighbourTerritories[territoryToMoveToIndex]->getOwner()->getPlayerName() ==
-                        this->getPlayer()->getPlayerName()) {
-                        break;
+                }
+
+                if (!skipAirliftOrder) {
+                    if (isStartOfGame()) {
+                        numberOfArmies = 0;
+                    } else {
+                        if (friendlyNeighbourTerritories[territoryToMoveToIndex]->getArmyCount() == 0) {
+                            cout << "Aggressive player: airlift -- target army count == 0...setting nrArmies to 0" << endl;
+                            numberOfArmies = 0;
+                        } else {
+                            numberOfArmies =
+                                    rand() % friendlyNeighbourTerritories[territoryToMoveToIndex]->getArmyCount() + 1;
+                        }
                     }
                 }
 
-            } while (true);
+                if (!skipAirliftOrder) {
+                    string airlift = "Airlift";
+                    int index = this->getPlayer()->getPlayerHand()->findCard(airlift);
+                    // playing the card from hand
 
-            do {
-                if (skipAirliftOrder) {
-                    break;
-                }
-                if (isStartOfGame()) {
-                    numberOfArmies = 0;
-                    break;
-                }
-                if (friendlyNeighbourTerritories.empty())
-                numberOfArmies = rand() % friendlyNeighbourTerritories[territoryToMoveToIndex]->getArmyCount() + 1;
-                if (numberOfArmies >= 0) {
-                    break;
-                }
-            } while (true);
-
-            if (!skipAirliftOrder) {
-                string airlift = "Airlift";
-                int index = this->getPlayer()->getPlayerHand()->findCard(airlift);
-                // playing the card from hand
-
-                if(index != -1) {
-                    if (strongestTerritory->getArmyCount() - numberOfArmies < 0 ) {
-                        numberOfArmies =strongestTerritory->getArmyCount();
+                    if (index != -1) {
+                        if (strongestTerritory->getArmyCount() - numberOfArmies < 0) {
+                            numberOfArmies = strongestTerritory->getArmyCount();
+                        }
+                        // the order is issued in the play method on card class
+                        this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
+                                                                                        strongestTerritory,
+                                                                                        friendlyNeighbourTerritories[territoryToMoveToIndex],
+                                                                                        numberOfArmies);
+                        cout << this->getPlayer()->getPlayerName() << ": issued an Airlift Order: " << numberOfArmies
+                             << " troops will be airlifted to "
+                             << friendlyNeighbourTerritories[territoryToMoveToIndex]->getTerritoryName() << endl;
                     }
-                    // the order is issued in the play method on card class
-                    this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
-                                                                                    strongestTerritory,
-                                                                                    friendlyNeighbourTerritories[territoryToMoveToIndex],
-                                                                                    numberOfArmies);
-                    cout << this->getPlayer()->getPlayerName() << ": issued an Airlift Order: " << numberOfArmies
-                         << " troops will be airlifted to "
-                         << friendlyNeighbourTerritories[territoryToMoveToIndex]->getTerritoryName() << endl;
                 }
-            }
-        }
-        else if (orderString == "Blockade") {
-            Territory *targetTerritory;
-            vector<Territory *> territoriesToBlockade = this->getTerritoriesToDefend();
-            int toBlockadeIndex;
-            do {
-                toBlockadeIndex = rand() % territoriesToBlockade.size();
-                if (toBlockadeIndex > -1 && toBlockadeIndex <= territoriesToBlockade.size()) {
-                    break;
+                auto it = std::find(availableOrders.begin(), availableOrders.end(), "Airlift");
+                if (it != availableOrders.end()) {availableOrders.erase(it);}
+                cout << "Available Orders: ";
+                for (const string &order: availableOrders) {
+                    cout << order << ", ";
                 }
-            } while (true);
+                cout << endl;
 
-            targetTerritory = territoriesToBlockade[toBlockadeIndex];
 
-            if (targetTerritory->getOwner() == nullptr) {
-                cout << "This territory is already Blockaded" << endl;
-            } else {
-                /* auto *blockade = new Blockade(this->getPlayer(), targetTerritory);
-                 this->getPlayer()->getOrderList()->add(blockade);*/
-                string blockade = "Blockade";
-                int index = this->getPlayer()->getPlayerHand()->findCard(blockade);
-                if(index != -1)
-                    this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
-                                                                                    targetTerritory);
-                cout << this->getPlayer()->getPlayerName() << ": issued a Blockade Order against " << targetTerritory->getTerritoryName() << endl;
+
+            } else if (orderString == "Blockade") {
+                cout << this->getPlayer()->getPlayerName() << ": chose Blockade." << endl;
+                bool skipBlockadeOrder = false;
+                Territory *targetTerritory;
+                vector<Territory *> territoriesToBlockade = this->getTerritoriesToDefend();
+                int toBlockadeIndex;
+                if (territoriesToBlockade.empty()) {
+                    skipBlockadeOrder = true;
+                    cout << "Aggressive player: territories to blockade is empty...skipping blockade order" << endl;
+                } else {
+                    toBlockadeIndex = rand() % territoriesToBlockade.size();
+                }
+
+                if(!skipBlockadeOrder) {
+                    targetTerritory = territoriesToBlockade[toBlockadeIndex];
+
+                    if (targetTerritory->getOwner() == nullptr) {
+                        cout << "This territory is already Blockaded" << endl;
+                    } else {
+                        string blockade = "Blockade";
+                        int index = this->getPlayer()->getPlayerHand()->findCard(blockade);
+                        if (index != -1)
+                            this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
+                                                                                            targetTerritory);
+                        cout << this->getPlayer()->getPlayerName() << ": issued a Blockade Order against "
+                             << targetTerritory->getTerritoryName() << endl;
+                    }
+                }
+                auto it = std::find(availableOrders.begin(), availableOrders.end(), "Blockade");
+                if (it != availableOrders.end()) {availableOrders.erase(it);}
+                cout << "Available Orders: ";
+                for (const string &order: availableOrders) {
+                    cout << order << ", ";
+                }
+                cout << endl;
+
+            } else if (orderString == "Diplomacy") {
+                cout << this->getPlayer()->getPlayerName() << ": chose Diplomacy." << endl;
+                bool skipDiplomacyOrder = false;
+                Player *player;
+                if(players_list.empty()) {
+                    skipDiplomacyOrder = true;
+                    cout << "Aggressive Player: players list is empty...skipping order" << endl;
+                } else {
+                    do {
+                        int playerInt = rand() % players_list.size();
+                        player = players_list[playerInt];
+                    } while (this->getPlayer()->getPlayerName() == player->getPlayerName());
+                }
+                if (!skipDiplomacyOrder) {
+                    string diplomacy = "Diplomacy";
+                    int index = this->getPlayer()->getPlayerHand()->findCard(diplomacy);
+                    if (index != -1)
+                        this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
+                                                                                        player);
+                    cout << this->getPlayer()->getPlayerName() << ": issued a Negotiate Order against "
+                         << player->getPlayerName() << endl;
+                }
+                skipDiplomacyOrder = false;
+                auto it = std::find(availableOrders.begin(), availableOrders.end(), "Diplomacy");
+                if (it != availableOrders.end()) {availableOrders.erase(it);}
+                cout << "Available Orders: ";
+                for (const string &order: availableOrders) {
+                    cout << order << ", ";
+                }
+                cout << endl;
             }
-        }
-        else if (orderString == "Diplomacy") {
-            Player* player;
-            do {
-                int playerInt = rand() % players_list.size();
-                player= players_list[playerInt];
-            } while (this->getPlayer()->getPlayerName() == player->getPlayerName());
-            string diplomacy = "Diplomacy";
-            int index = this->getPlayer()->getPlayerHand()->findCard(diplomacy);
-            if(index != -1)
-                this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
-                                                                                player);
-            cout << this->getPlayer()->getPlayerName() << ": issued a Negotiate Order against " << player->getPlayerName() << endl;
         }
     }
 }
@@ -630,28 +710,39 @@ void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
     // Deployment Ordering
     int reinforcementArmies = this->getPlayer()->getReinforcementPool();
     int armiesToDeploy = 0;
+    bool skipDeployOrderB = false;
+
+    cout << this->getPlayer()->getPlayerName() << ": chose Deploy." << endl;
     for (Territory *territory: sortedTerritoriesFromWeakestToStrongest) {
 
         if (reinforcementArmies <= 0) {
             break;
         }
         do {
-            armiesToDeploy = std::rand() % reinforcementArmies + 1;
-            if (armiesToDeploy <= reinforcementArmies) {
-                auto *deploy = new Deploy(this->getPlayer(), territory, armiesToDeploy);
-                this->getPlayer()->getOrderList()->add(deploy);
-                reinforcementArmies -= armiesToDeploy;
-                break;
+            if(reinforcementArmies == 0) {
+                skipDeployOrderB = true;
+                cout << "Benevolent player: reinforcementArmies = 0...skipping deploy order" << endl;
+            } else {
+                armiesToDeploy = std::rand() % reinforcementArmies + 1;
+                if (armiesToDeploy <= reinforcementArmies) {
+                    auto *deploy = new Deploy(this->getPlayer(), territory, armiesToDeploy);
+                    this->getPlayer()->getOrderList()->add(deploy);
+                    reinforcementArmies -= armiesToDeploy;
+                    break;
+                }
             }
         } while (true);
 
     }
-    // if after all territories have been looped we have any armies left in the reinforcement pool then assign them to the weakest territory
-    if (reinforcementArmies > 0) {
-        auto *deploy = new Deploy(this->getPlayer(), getTerritoriesToDefend()[0], armiesToDeploy);
-        this->getPlayer()->getOrderList()->add(deploy);
+    if (!skipDeployOrderB) {
+        // if after all territories have been looped we have any armies left in the reinforcement pool then assign them to the weakest territory
+        if (reinforcementArmies > 0) {
+            auto *deploy = new Deploy(this->getPlayer(), getTerritoriesToDefend()[0], armiesToDeploy);
+            this->getPlayer()->getOrderList()->add(deploy);
+        }
+        cout << this->getPlayer()->getPlayerName() << " completed deployment. now other orders can be issued." << endl;
     }
-    cout << this->getPlayer()->getPlayerName() << " completed deployment. now other orders can be issued." << endl;
+
 
     // Other orders
     // Add available orders
@@ -673,7 +764,13 @@ void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
     cout << endl;
 
     while (true) {
-        int orderInt = rand() % availableOrders.size();
+        int orderInt;
+        if (availableOrders.empty()) {
+            cout << "availableOrders is empty... skipping issuing orders" << endl;
+            break;
+        } else {
+            orderInt = rand() % availableOrders.size();
+        }
         string orderString = availableOrders[orderInt];
         sortedTerritoriesFromStrongestToWeakest = this->getPlayer()->getTerritoriesToDefend();
         std::sort(sortedTerritoriesFromStrongestToWeakest.begin(), sortedTerritoriesFromStrongestToWeakest.end(),
@@ -685,6 +782,7 @@ void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
             break;
         }
         else if (orderString == "Advance") {
+            cout << this->getPlayer()->getPlayerName() << ": chose Advance." << endl;
             // Move armies from the strongest territories to the weakest
             bool skipAdvanceOrder = false;
             vector<Territory*> friendlyTerritories;
@@ -726,7 +824,12 @@ void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
                         numberOfArmies = 0;
                         break;
                     }
-                    numberOfArmies = rand() % startTerritory->getArmyCount() + 1;
+                    if (startTerritory->getArmyCount() == 0) {
+                        cout << "Benevolent PLayer: startTerritory->getArmyCount() = 0 ... setting army count to 0"<< endl;
+                        numberOfArmies = 0;
+                    } else {
+                        numberOfArmies = rand() % startTerritory->getArmyCount() + 1;
+                    }
                     if (numberOfArmies >= 0 && numberOfArmies <= startTerritory->getArmyCount()) {
                         break;
                     }
@@ -742,12 +845,23 @@ void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
                          << "from " << startTerritory->getTerritoryName() << " to " << friendlyTerritories[territoryToMoveToIndex]->getTerritoryName() << endl;
                 }
                 friendlyTerritories.clear();
+                skipAdvanceOrder = false;
+                auto it = std::find(availableOrders.begin(), availableOrders.end(), "Advance");
+                if (it != availableOrders.end()) {availableOrders.erase(it);}
+                cout << "Available Orders: ";
+                for (const string &order: availableOrders) {
+                    cout << order << ", ";
+                }
+                cout << endl;
             }
+            std::remove(availableOrders.begin(), availableOrders.end(), "Advance");
         }
         else if (orderString == "Bomb") {
+            cout << this->getPlayer()->getPlayerName() << ": chose Bomb." << endl;
             cout << "Benevolent Player Strategy: cannot bomb enemy territory" << endl;
         }
         else if (orderString == "Airlift") {
+            cout << this->getPlayer()->getPlayerName() << ": chose Airlift." << endl;
             bool skipAirliftOrder = false;
             Territory *strongestTerritory = sortedTerritoriesFromStrongestToWeakest[0];
             adjacentTerritories = strongestTerritory->getAdjTerritories();
@@ -760,6 +874,7 @@ void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
 
             do {
                 if (friendlyNeighbourTerritories.empty()) {
+                    cout << "Benevolent Player: friendlyNeighbourTerritories is empty.. skipping Airlift order" << endl;
                     skipAirliftOrder = true;
                     break;
                 } else {
@@ -775,7 +890,12 @@ void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
                 if (skipAirliftOrder) {
                     break;
                 } else {
-                    numberOfArmies = rand() % friendlyNeighbourTerritories[territoryToMoveToIndex]->getArmyCount();
+                    if (friendlyNeighbourTerritories[territoryToMoveToIndex]->getArmyCount() == 0) {
+                        numberOfArmies = 0;
+                        cout << "Benevolent Player: friendlyNeighbourTerritories[territoryToMoveToIndex]->getArmyCount() == 0...setting number of armies to 0" << endl;
+                    } else {
+                        numberOfArmies = rand() % friendlyNeighbourTerritories[territoryToMoveToIndex]->getArmyCount();
+                    }
                     if (numberOfArmies >= 0) {
                         break;
                     }
@@ -799,12 +919,29 @@ void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
                          << friendlyNeighbourTerritories[territoryToMoveToIndex] << endl;
                 }
             }
+            skipAirliftOrder = false;
+            auto it = std::find(availableOrders.begin(), availableOrders.end(), "Airlift");
+            if (it != availableOrders.end()) {availableOrders.erase(it);}
+            cout << "Available Orders: ";
+            for (const string &order: availableOrders) {
+                cout << order << ", ";
+            }
+            cout << endl;
         }
         else if (orderString == "Blockade") {
+            cout << this->getPlayer()->getPlayerName() << ": chose Blockade." << endl;
+            bool skipBlockadeOrderB = false;
+            int toBlockadeIndex;
             Territory *targetTerritory;
             vector<Territory *> territoriesToBlockade = this->getTerritoriesToDefend();
-            if (!territoriesToBlockade.empty()) {
-                int toBlockadeIndex = rand() % territoriesToBlockade.size();
+            if(territoriesToBlockade.empty()) {
+                skipBlockadeOrderB = true;
+                cout << "Benevolent Player: territoriesToBlockade is empty...skipping blockade order" << endl;
+            } else {
+                toBlockadeIndex = rand() % territoriesToBlockade.size();
+            }
+
+            if (!skipBlockadeOrderB) {
                 if (toBlockadeIndex >= 0 && toBlockadeIndex <= territoriesToBlockade.size()) {
                     targetTerritory = territoriesToBlockade[toBlockadeIndex];
                 }
@@ -821,19 +958,38 @@ void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
                     }
                 }
             }
+            skipBlockadeOrderB = false;
+            auto it = std::find(availableOrders.begin(), availableOrders.end(), "Blockade");
+            if (it != availableOrders.end()) {availableOrders.erase(it);}
+            cout << "Available Orders: ";
+            for (const string &order: availableOrders) {
+                cout << order << ", ";
+            }
+            cout << endl;
         }
         else if (orderString == "Diplomacy") {
+            cout << this->getPlayer()->getPlayerName() << ": chose Diplomacy." << endl;
+            int playerIntB;
             Player* player;
+            bool skipDiplomacyOrderB = false;
+            int playerInt;
             do {
-                if (!players_list.empty()) {
-                    int playerInt = rand() % players_list.size();
-                    player= players_list[playerInt];
+                if (players_list.empty()) {
+                    skipDiplomacyOrderB = true;
+                    cout << "Benevolent PLayer: players_list is empty...skipping diplomacy order" << endl;
+                } else {
+                    playerIntB = rand() % players_list.size();
+                }
+
+                if (!skipDiplomacyOrderB) {
+                    player= players_list[playerIntB];
+                    if (player->getPlayerName() == this->getPlayer()->getPlayerName()) {continue;}
                 } else {
                     break;
                 }
             } while (this->getPlayer()->getPlayerName() == player->getPlayerName());
 
-            if (!players_list.empty()) {
+            if (!skipDiplomacyOrderB) {
                 string diplomacy = "Diplomacy";
                 int index = this->getPlayer()->getPlayerHand()->findCard(diplomacy);
                 if(index != -1)
@@ -843,7 +999,17 @@ void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
             } else {
                 cout << "No player to negotiate to" << endl;
             }
+            skipDiplomacyOrderB = false;
+            auto it = std::find(availableOrders.begin(), availableOrders.end(), "Diplomacy");
+            if (it != availableOrders.end()) {availableOrders.erase(it);}
+            cout << "Available Orders: ";
+            for (const string &order: availableOrders) {
+                cout << order << ", ";
+            }
+            cout << endl;
         }
+
+        else if (orderString == "Reinforcement")
     }
 }
 void Benevolent::toAttack() {

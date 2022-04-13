@@ -81,6 +81,7 @@ ostream &operator<<(ostream &ostream, const Card &card) {
  * @param hand
  * @param deck
  */
+// Bomb Order
 void Card::play(Player *player, Deck* deck, Territory* target) {
     // Adding the played card as an order to player's list of orders
     if (this->type == "Bomb") {
@@ -100,6 +101,7 @@ void Card::play(Player *player, Deck* deck, Territory* target) {
         }
     }
 }
+
 void Card::play(Player *player, Deck* deck, Territory* start, Territory* target, int army) {
     // Adding the played card as an order to player's list of orders
     if (this->type == "Airlift") {
