@@ -315,7 +315,9 @@ int Map::visitContinentNeighbours(Territory *territory, string continent, int vi
 }
 
 
-// Territory - Constructors/Destructor
+/**
+ * Territory class implementation
+ */
 Territory::Territory() {
 	this->territoryName = "";
 	this->continentName = "";
@@ -411,6 +413,28 @@ bool Territory::isEnemy(Player *player) {
     } else {
         return false;
     }
+}
+
+// copy constructor implementation
+Territory::Territory(const Territory &territory) {
+    this->territoryName = territory.territoryName;
+    this->adjTerritories = territory.adjTerritories;
+    this->continentName = territory.continentName;
+    this->armyCount = territory.armyCount;
+    this->isVisited = territory.isVisited;
+    this->owner = territory.owner;
+
+}
+
+// assignment = operator implementation
+Territory &Territory::operator=(const Territory &territory) {
+    this->territoryName = territory.territoryName;
+    this->adjTerritories = territory.adjTerritories;
+    this->continentName = territory.continentName;
+    this->armyCount = territory.armyCount;
+    this->isVisited = territory.isVisited;
+    this->owner = territory.owner;
+    return *this;
 }
 
 //Default Constructor

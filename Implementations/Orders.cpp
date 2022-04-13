@@ -429,7 +429,8 @@ void Advance  :: execute() {
             // increase #armies in the target territories
             targetTerritory->setArmyCount(targetTerritory->getArmyCount() + this->nrArmies);
 
-        } else if (targetTerritory->getOwner()->getPlayerName() != player->getPlayerName()) {
+        } else if (startTerritory->getOwner()->getPlayerName() == player->getPlayerName() &&
+                targetTerritory->getOwner()->getPlayerName() != player->getPlayerName()) {
             bool attackerKilledDefending = false;
             bool defenderKilledAttacker = false;
 
@@ -460,7 +461,14 @@ void Advance  :: execute() {
                 player->setNewTerritoryConquered(true);
             }
 
-
+            if (targetTerritory->getOwner()->getPlayerName() == this->player->getPlayerName()) {
+                cout << "<" << this->player->getPlayerName() <<">>" << " has conquered " << this->getTargetTerritory()->getTerritoryName() << endl;
+                cout << "The territory " << targetTerritory->getTerritoryName() << " has new owner: <<" << this->getTargetTerritory()->getOwner()->getPlayerName() << ">>" << endl;
+            }
+            if (player->isNewTerritoryConquered()) {
+                cout << "At least one territory has been conquered by <<" << this->player->getPlayerName() << ">> during this turn." << endl;
+                cout << "A random card will be given to <<" << this->player->getPlayerName() << ">> at the end of this turn." << endl;
+            }
         }
 
         cout << "Advance order executed" << endl;
@@ -472,14 +480,7 @@ void Advance  :: execute() {
         delete subject;
         logObserver = nullptr;
         subject = nullptr;
-        if (targetTerritory->getOwner()->getPlayerName() == this->player->getPlayerName()) {
-            cout << "<" << this->player->getPlayerName() <<">>" << " has conquered " << this->getTargetTerritory()->getTerritoryName() << endl;
-            cout << "The territory " << targetTerritory->getTerritoryName() << " has new owner: <<" << this->getTargetTerritory()->getOwner()->getPlayerName() << ">>" << endl;
-        }
-        if (player->isNewTerritoryConquered()) {
-            cout << "At least one territory has been conquered by <<" << this->player->getPlayerName() << ">> during this turn." << endl;
-            cout << "A random card will be given to <<" << this->player->getPlayerName() << ">> at the end of this turn." << endl;
-        }
+
     } else {
         cout << "Cannot execute invalid Advance order." << endl;
 
@@ -634,8 +635,8 @@ void Blockade  :: execute() {
     if (orderValid) {
         //double the number of armies
         targetTerritory->setArmyCount(targetTerritory->getArmyCount() * 2);
-        targetTerritory->getOwner()->removeTerritory(targetTerritory);
-        targetTerritory->removeOwner();
+        //targetTerritory->getOwner()->removeTerritory(targetTerritory);
+        //targetTerritory->removeOwner();
 
         cout << "Blockade order executed" << endl;
         cout << targetTerritory->getTerritoryName() << " belongs to Neutral Player now, doubles its armies and has now " << targetTerritory->getArmyCount() << " armies." << endl;

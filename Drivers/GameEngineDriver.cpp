@@ -30,26 +30,8 @@ int main(int argc, char* argv[]) {
     }
     GameEngine* g = new GameEngine();
     Deck* deck = new Deck();
-    deck->addToDeck(new Card("deploy"));
-    deck->addToDeck(new Card("reinforcement"));
-    deck->addToDeck(new Card("blockade"));
-    deck->addToDeck(new Card("airlift"));
-    deck->addToDeck(new Card("diplomacy"));
-    deck->addToDeck(new Card("deploy"));
-    deck->addToDeck(new Card("reinforcement"));
-    deck->addToDeck(new Card("blockade"));
-    deck->addToDeck(new Card("airlift"));
-    deck->addToDeck(new Card("diplomacy"));
-    deck->addToDeck(new Card("deploy"));
-    deck->addToDeck(new Card("reinforcement"));
-    deck->addToDeck(new Card("blockade"));
-    deck->addToDeck(new Card("airlift"));
-    deck->addToDeck(new Card("diplomacy"));
     g->setDeck(deck);
     g->startupPhase(c);
-
-
-    //g->mainGameLoop();
     return 0;
 }
 

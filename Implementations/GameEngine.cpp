@@ -14,13 +14,13 @@ GameEngine::GameEngine(vector<Player*> players_list, Map* map, Deck* deck){
 vector<Player *> GameEngine::getPlayersList() {
     return player_list;
 }
-void GameEngine::mainGameLoop() {
+void GameEngine::mainGameLoop(int maxNumOfTurns, bool tournamentMode) {
 // 1. Round robin fashion in the order setup in startup phase
 // 2. This loop shall continue until only one of the players owns all the terrotires in the map.
 // 3. Also checks if any player does not control at least one territory
 // 4. if so the player is removed from the game.
     int round = 1;
-    while (player_list.size() != 1){
+    while (player_list.size() != 1 && maxNumOfTurns != round){
         cout << "----------------------------------------------------------------------------" << endl;
         cout << "Round " << round << " has Began" << endl;
         cout << "============================================================================" << endl;
@@ -40,8 +40,29 @@ void GameEngine::mainGameLoop() {
         this->executeOrderPhase();
         round++;
     }
-    cout << player_list.front()->getPlayerName() << "wins!!" << endl;
-    transition("win");
+    if(tournamentMode) {
+        vector<int> numbers;
+        for (auto player: player_list) {
+            int counter = player->getTerritories().size();
+            cout << player->getPlayerName() << " has " << counter << " territories in round " << maxNumOfTurns << endl;
+            numbers.push_back(counter);
+        }
+        int greatest = 0;
+        int greatestIndex = 0;
+        for(int i = 0; i < numbers.size(); i++){
+            if(greatest < numbers[i]){
+                greatest = numbers[i];
+                greatestIndex = i;
+            }
+        }
+        cout << player_list[greatestIndex]->getPlayerName() << "wins!!" << endl;
+        winnerIndex = greatestIndex;
+    }
+    else{
+        cout << player_list.front()->getPlayerName() << "wins!!" << endl;
+        winnerIndex = 0;
+        transition("win");
+    }
 }
 void GameEngine::reinforcementPhase() {
     // 1. Players are given armies that depends on the number of terrtories.
@@ -131,6 +152,9 @@ void GameEngine::executeOrderPhase() {
     // 6. This means you for loop all the deplot order from each player first.
     // 7. Once all the order for all player are executed return back to the reinforcementPhase.
     for(Player* player: this->getPlayersList()) {
+        cout << "----------------------------------------------------------------------------" << endl;
+        cout << player->getPlayerName() << " ORDER EXECUTION taking place!!" << endl;
+        cout << "============================================================================" << endl;
         vector<Order* > orders = player->getOrderList()->getOrders();
         for(Order* order: orders) {
             if (dynamic_cast<const Deploy*>(order) != nullptr) {
@@ -157,6 +181,80 @@ void GameEngine::executeOrderPhase() {
     for(Player* player: this->getPlayersList()) {
         player->getNegotiatePlayersList().clear();
     }
+}
+void GameEngine::addPlayer(string command, string strategy){
+    if(strategy.empty()) {
+        string playerName = command.substr(10);
+        string human = "Human";
+        player_list.push_back(new Player(playerName, human));
+        cout << "PLAYER ADDED: " << playerName << endl;
+    }
+    else{
+        string playerName = command.substr(10);
+        player_list.push_back(new Player(playerName, strategy));
+        cout << "PLAYER ADDED: " << playerName << endl;
+    }
+    if (player_list.size() >= 2 && player_list.size() <= 6) {
+        cout << "CHANGE STATE TO: playersadded" << endl;
+        transition("playersadded");
+    }
+    if (player_list.size() == 6) {
+        cout << "MAX PLAYER LIST REACHED : Cannot add more players";
+    }
+}
+void GameEngine:: loadAndValidateMap(string& path){
+    MapLoader mapLoader(path);
+    if (mapLoader.extract()) {
+        this->map = mapLoader.createMap();
+        transition("maploaded");
+        if (map->mapValidate()) {
+            cout << "\nSuccess: Map \"" << path << "\" has been built.\n\n";
+            transition("mapvalidated");
+        } else {
+            cout << "\nError: Map file \"" << path << "\" is invalid.\n\n";
+            exit(0);
+        }
+    } else {
+        cout << "COMMAND FAIL: Tournament LoadMap failed" << endl;
+    }
+}
+void GameEngine::gameStart(int maxNumOfTurns, bool tournamentMode) {
+    this->deck->fillDeck();
+    for(int i = 0; i < player_list.size();i++){
+        //player_list[i]->getPlayerHand()->addToHand(new Card("Reinforcement"));
+        player_list[i]->getPlayerHand()->addToHand(new Card("Blockade"));
+        player_list[i]->getPlayerHand()->addToHand(new Card("Airlift"));
+        player_list[i]->getPlayerHand()->addToHand(new Card("Diplomacy"));
+        player_list[i]->getPlayerHand()->addToHand(new Card("Bomb"));
+    }
+    int number = map->getTerritories().size() / player_list.size();
+    int counter = 0;
+    int territoryIndex = 0;
+    for (int i = 0; i < player_list.size(); i++) {
+        while (counter < number) {
+            player_list[i]->addTerritory(map->getTerritories()[territoryIndex]);
+            map->getTerritories()[territoryIndex]->addOwner(player_list[i]);
+            territoryIndex++;
+            counter++;
+        }
+        counter = 0;
+    }
+    while (map->getTerritories().size() % territoryIndex != 0) {
+        if (counter == player_list.size()) {
+            counter = 0;
+        } else {
+            player_list[counter]->addTerritory(map->getTerritories()[territoryIndex]);
+            territoryIndex++;
+            counter++;
+        }
+    }
+    shuffle(player_list.begin(), player_list.end(), std::mt19937(std::random_device()()));
+    for (auto player: player_list) {
+        player->setReinforcementPool(50);
+        deck->draw(player);
+        deck->draw(player);
+    }
+    mainGameLoop(maxNumOfTurns, tournamentMode);
 }
 void GameEngine::startupPhase(CommandProcessor* cp) {
     transition("start");
@@ -199,16 +297,7 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
         }
         else if(command->getCommand().find("addplayer") != string::npos){
             if (cp->validate(command->getCommand(), state)) {
-                string playerName = command->getCommand().substr(10);
-                player_list.push_back(new Player(playerName));
-                cout << "PLAYER ADDED: " << playerName << endl;
-                if(player_list.size() >= 2 && player_list.size() <= 6) {
-                    cout << "CHANGE STATE TO: playersadded" << endl;
-                    transition("playersadded");
-                }
-                if(player_list.size() == 6){
-                    cout << "MAX PLAYER LIST REACHED : Cannot add more players";
-                }
+                addPlayer(command->getCommand(), "");
             }
             else{
                 cout << "COMMAND FAIL: addplayer failed" << endl;
@@ -225,44 +314,116 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
         else if(command->getCommand() == "gamestart") {
             if (cp->validate(command->getCommand(), state)) {
                 cout << "GAME STARTING!!" << endl;
-                for(int i = 0; i < player_list.size();i++){
-                    player_list[i]->getPlayerHand()->addToHand(new Card("deploy"));
-                    player_list[i]->getPlayerHand()->addToHand(new Card("reinforcement"));
-                    player_list[i]->getPlayerHand()->addToHand(new Card("blockade"));
-                    player_list[i]->getPlayerHand()->addToHand(new Card("airlift"));
-                    player_list[i]->getPlayerHand()->addToHand(new Card("diplomacy"));
-                }
-                int number = map->getTerritories().size() / player_list.size();
-                int counter = 0;
-                int territoryIndex = 0;
-                for (int i = 0; i < player_list.size(); i++) {
-                    while (counter < number) {
-                        player_list[i]->addTerritory(map->getTerritories()[territoryIndex]);
-                        map->getTerritories()[territoryIndex]->addOwner(player_list[i]);
-                        territoryIndex++;
-                        counter++;
-                    }
-                    counter = 0;
-                }
-                while (map->getTerritories().size() % territoryIndex != 0) {
-                    if (counter == player_list.size()) {
-                        counter = 0;
-                    } else {
-                        player_list[counter]->addTerritory(map->getTerritories()[territoryIndex]);
-                        territoryIndex++;
-                        counter++;
-                    }
-                }
-                shuffle(player_list.begin(), player_list.end(), std::mt19937(std::random_device()()));
-                for (auto player: player_list) {
-                    player->setReinforcementPool(50);
-                    deck->draw(player);
-                    deck->draw(player);
-                }
-                mainGameLoop();
+                gameStart(-1, false);
             }
             else{
                 cout << "COMMAND FAIL: gamestart failed" << endl;
+            }
+        }
+        else if(command->getCommand().find("tournament") != string::npos){
+            try {
+                vector<string> listOfMaps;
+                vector<string> listOfPlayers;
+                int listOfMapsFilesStartIndex = command->getCommand().find("-M ");
+                int listOfMapFilesEndIndex = command->getCommand().find(" -P");
+                string listOfMapFiles = command->getCommand().substr(listOfMapsFilesStartIndex + 2,listOfMapFilesEndIndex - listOfMapsFilesStartIndex - 2);
+                cout << "List of Map Files: " << listOfMapFiles << endl;
+                string maps = listOfMapFiles;
+                int listOfPlayersStratStartIndex = command->getCommand().find("-P ");
+                int listOfPlayersStratEndIndex = command->getCommand().find(" -G");
+                string listOfPlayersStrat = command->getCommand().substr(listOfPlayersStratStartIndex + 2,listOfPlayersStratEndIndex - listOfPlayersStratStartIndex - 2);
+                cout << "List of Player Strategies: " << listOfPlayersStrat << endl;
+                string players = listOfPlayersStrat;
+                int numberOfGamesStartIndex = command->getCommand().find("-G ");
+                int numberOfGamesEndIndex = command->getCommand().find(" -D");
+                int numberOfGames = stoi(command->getCommand().substr(numberOfGamesStartIndex + 3,numberOfGamesEndIndex - numberOfGamesStartIndex - 3));
+                cout <<"Tournament >> Number of Games: " << numberOfGames << endl;
+
+                int maxNoOfTurnsStartIndex = command->getCommand().find("-D ");
+                int maxNoOfTurns = stoi(command->getCommand().substr(maxNoOfTurnsStartIndex + 3));
+                cout << "Tournament >> Maximum number of Turns per player: " << maxNoOfTurns << endl;
+
+                //Splitting listOfMapsFiles
+                int pos = 0;
+                std::string token;
+                while ((pos = listOfMapFiles.find(", ")) != std::string::npos) {
+                    token = listOfMapFiles.substr(1, pos-1);
+                    listOfMaps.push_back(token);
+                    listOfMapFiles.erase(0, pos + 1);
+                }
+                if ((pos = listOfMapFiles.find(",")) == std::string::npos){
+                    listOfMaps.push_back(listOfMapFiles.substr(pos+2));
+                }
+                if(listOfMaps.size() > 5 || listOfMaps.size() <= 0){
+                    throw "Number of Maps: greater than 5 or less than 1";
+                }
+                //Splitting players
+                pos = 0;
+                while ((pos = listOfPlayersStrat.find(", ")) != std::string::npos) {
+                    token = listOfPlayersStrat.substr(1, pos-1);
+                    listOfPlayers.push_back(token);
+                    listOfPlayersStrat.erase(0, pos + 1);
+                }
+                if ((pos = listOfPlayersStrat.find(", ")) == std::string::npos){
+                    listOfPlayers.push_back(listOfPlayersStrat.substr(pos+2));
+                }
+                if(listOfPlayers.size() < 2 || listOfPlayers.size() > 4){
+                    throw "Number of Players less than 2 or greater than 4";
+                }
+                if(numberOfGames < 1 || numberOfGames > 5){
+                    throw "Number of games less than 1 or greater than 5";
+                }
+                if(maxNoOfTurns < 10 || maxNoOfTurns > 50){
+                    throw "Maximum number of turns is less than 10 or greater than 50";
+                }
+                vector<vector<string>> result_;
+
+
+                for(int i = 0; i < listOfMaps.size(); i++) {
+                    loadAndValidateMap(listOfMaps[i]);
+                    vector<string> empty_vector;
+                    result_.push_back(empty_vector);
+                    for (int j = 0; j < numberOfGames; j++) {
+                        cout << "__________________________________________________________________________" << endl;
+                        cout << "GAME " << j+1 << endl;
+                        cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+
+                        for(int i = 0; i < listOfPlayers.size(); i++){
+                            string playerName = "addplayer player" + to_string(i);
+                            addPlayer(playerName, listOfPlayers[i]);
+                        }
+                        gameStart(maxNoOfTurns, true);
+
+                        //typeid(player_list.front()->getPlayerStrategy()).name();
+                        //result_[i].push_back(player_list[winnerIndex]->getPlayerName());
+                        string type;
+                        if (dynamic_cast<Human*>(player_list[winnerIndex]->getPlayerStrategy()) != nullptr){
+                            type = "Human";
+                        }
+                        else if (dynamic_cast<Aggressive*>(player_list[winnerIndex]->getPlayerStrategy()) != nullptr){
+                            type = "Aggressive";
+                        }
+                        else if (dynamic_cast<Benevolent*>(player_list[winnerIndex]->getPlayerStrategy()) != nullptr){
+                            type = "Benevolent";
+                        }
+                        else if (dynamic_cast<Cheater*>(player_list[winnerIndex]->getPlayerStrategy()) != nullptr){
+                            type = "Cheater";
+                        }
+                        else if (dynamic_cast<Neutral*>(player_list[winnerIndex]->getPlayerStrategy()) != nullptr){
+                            type = "Neutral";
+                        }
+                        result_[i].push_back(type);
+                        player_list.clear();
+                    }
+                }
+                tournamentSettings(maps, players, numberOfGames, maxNoOfTurns);
+                results(result_);
+            }
+            catch (const out_of_range& oor){
+                cout << "COMMAND FAIL: Tournament failed " << oor.what() << endl;
+            }
+            catch (const char* msg){
+                cout << "ERROR: " << msg << endl;
             }
         }
         else{
@@ -360,6 +521,31 @@ void GameEngine::transition(const string& state_) {
     LogObserver* logObserver = new LogObserver(subject);
     subject->Notify(this);
 }
+void GameEngine::results(vector<vector<string>> result_) {
+    string result;
+    for(int i = 0; i < result_.size(); i++){
+        result += "Map " + to_string(i) + "  |  ";
+        for( int j = 0; j < result_[i].size(); j++){
+            result += result_[i][j] + "  |  ";
+        }
+        result += "\n";
+    }
+    cout << result << endl;
+    Subject* subject = new Subject();
+    subject->setMessage("Results: \n" + result);
+    LogObserver* logObserver = new LogObserver(subject);
+    subject->Notify(this);
+}
+void GameEngine::tournamentSettings(string& mapList, string& playerList, int numberOfGames, int maxNum) {
+    string result = "Tournament mode: \n" ;
+    result += "M: "+ mapList + "\nP: " + playerList + "\nG: " + to_string(numberOfGames) + "\nD: " + to_string(maxNum);
+    cout << result << endl;
+    Subject* subject = new Subject();
+    subject->setMessage("Results: \n" + result);
+    LogObserver* logObserver = new LogObserver(subject);
+    subject->Notify(this);
+}
+
 
 
 

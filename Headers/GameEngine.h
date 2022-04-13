@@ -13,7 +13,7 @@ public:
     ~GameEngine();
     GameEngine(const GameEngine&);
     void startupPhase(CommandProcessor* cp); //Assignment 2 Part 2
-    void mainGameLoop(); //Assignment 2 Part 3
+    void mainGameLoop(int, bool); //Assignment 2 Part 3
     void reinforcementPhase(); //Assignment 2 Part 3
     void issueOrdersPhase(); //Assingment 2 Part 3
     void executeOrderPhase(); //Assignment 2 Part 3
@@ -30,11 +30,16 @@ public:
     friend ostream& operator << (ostream& os, const GameEngine& gameEngine); //stream insertion operator for Player
     void stringToLog(const std::string& message) override;
     void transition(const string& state_);
-
+    void addPlayer(string command, string strategy);
+    void loadAndValidateMap(string& path);
+    void gameStart(int, bool);
+    void results(vector<vector<string>>);
+    void tournamentSettings(string&, string&, int, int);
 private:
     Map* map;									//initialized Map for the game
     vector<Player*> player_list;				//initialized Player Array for the gamePlayer array
     Deck* deck;
     string state;
+    int winnerIndex;
 };
 #endif // GAMEENGINE_H_INCLUDED

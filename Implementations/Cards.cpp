@@ -19,22 +19,22 @@ class Bomb;
  * @param type
  */
 Card::Card(string type){
-    if(type == "bomb")
-        this->type = new cardType(bomb);
-    else if(type == "reinforcement")
-        this->type = new cardType(reinforcement);
-    else if(type == "blockade")
-        this->type = new cardType(blockade);
-    else if(type == "airlift")
-        this->type = new cardType(airlift);
-    else if(type == "diplomacy")
-        this->type = new cardType(diplomacy);
+    if(type == "Bomb")
+        this->type = "Bomb";
+    else if(type == "Reinforcement")
+        this->type = "Reinforcement";
+    else if(type == "Blockade")
+        this->type = "Blockade";
+    else if(type == "Airlift")
+        this->type = "Airlift";
+    else if(type == "Diplomacy")
+        this->type = "Diplomacy";
 }
 /**
  * Card class destructor
  */
 Card::~Card() {
-    delete type;
+    type = "";
 }
 /**
  * Assignment operator
@@ -50,14 +50,15 @@ Card &Card::operator=(Card *card) {
  * Accessor for card type
  * @return
  */
-cardType* Card::getType() const {return type;}
+string Card::getType() const {return type;}
 
 /**
  * Mutator for card type
  * @param newType
  */
-void Card::setType(cardType* newType) {
+void Card::setType(string &newType) {
     this->type = newType;
+
 }
 
 /**
@@ -80,11 +81,12 @@ ostream &operator<<(ostream &ostream, const Card &card) {
  * @param hand
  * @param deck
  */
+// Bomb Order
 void Card::play(Player *player, Deck* deck, Territory* target) {
     // Adding the played card as an order to player's list of orders
-    if (*this->type == bomb) {
+    if (this->type == "Bomb") {
         player->getOrderList()->add(new Bomb(player, target));
-    } else if (*this->type == blockade) {
+    } else if (this->type == "Blockade") {
         player->getOrderList()->add(new Blockade(player, target));
     }
     // The card is then placed from the player's hand to the deck
@@ -99,9 +101,10 @@ void Card::play(Player *player, Deck* deck, Territory* target) {
         }
     }
 }
+
 void Card::play(Player *player, Deck* deck, Territory* start, Territory* target, int army) {
     // Adding the played card as an order to player's list of orders
-    if (*this->type == airlift) {
+    if (this->type == "Airlift") {
         player->getOrderList()->add(new Airlift(player, start, target, army));
     }
     // The card is then placed from the player's hand to the deck
@@ -118,7 +121,7 @@ void Card::play(Player *player, Deck* deck, Territory* start, Territory* target,
 }
 void Card::play(Player *player, Deck* deck, Territory* target, int army) {
     // Adding the played card as an order to player's list of orders
-    if (*this->type == reinforcement) {
+    if (this->type == "Reinforcement") {
         player->getOrderList()->add(new Deploy(player, target, army));
     }
     // The card is then placed from the player's hand to the deck
@@ -135,7 +138,7 @@ void Card::play(Player *player, Deck* deck, Territory* target, int army) {
 }
 void Card::play(Player *player, Deck* deck, Player* target) {
     // Adding the played card as an order to player's list of orders
-    if (*type == diplomacy) {
+    if (type == "Diplomacy") {
         player->getOrderList()->add(new Negotiate(player, target));
     }
     // The card is then placed from the player's hand to the deck
@@ -150,6 +153,8 @@ void Card::play(Player *player, Deck* deck, Player* target) {
         }
     }
 }
+
+
 
 //************************** * Hand Class implementation * ***********************************************
 
@@ -208,22 +213,9 @@ void Hand::print() {
     }
 }
 
-int Hand::findCard(string type) {
-    cardType* findingType;
-    if (type == "bomb") {
-        findingType = new cardType(bomb);
-    } else if (type == "reinforcement") {
-        findingType = new cardType(bomb);
-    } else if (type == "blockade") {
-        findingType = new cardType(bomb);
-    } else if (type == "airlift") {
-        findingType = new cardType(bomb);
-    } else if (type == "diplomacy") {
-        findingType = new cardType(bomb);
-    }
+int Hand::findCard(string& type) {
     for(int i = 0; i < handCards.size(); i++){
-        if(handCards[i]->getType() == findingType){
-            delete findingType;
+        if(handCards[i]->getType() == type){
             return i;
         }
     }
@@ -307,4 +299,22 @@ void Deck::print() {
     for (auto & deckCard : deckCards) {
         cout << *deckCard << endl;
     }
+}
+
+void Deck::fillDeck() {
+    this->deckCards.clear();
+    this->addToDeck(new Card("Bomb"));
+    this->addToDeck(new Card("Blockade"));
+    this->addToDeck(new Card("Airlift"));
+    this->addToDeck(new Card("Diplomacy"));
+    //deck->addToDeck(new Card("Reinforcement"));
+    this->addToDeck(new Card("Bomb"));
+    this->addToDeck(new Card("Blockade"));
+    this->addToDeck(new Card("Airlift"));
+    this->addToDeck(new Card("Diplomacy"));
+    //deck->addToDeck(new Card("Reinforcement"));
+    this->addToDeck(new Card("Bomb"));
+    this->addToDeck(new Card("Blockade"));
+    this->addToDeck(new Card("Airlift"));
+    this->addToDeck(new Card("Diplomacy"));
 }

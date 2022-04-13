@@ -36,7 +36,7 @@ private:
 
 public:
     Player();                                    //Default Constructor
-    Player(string& name);
+    Player(string& name, string& strategy);
     Player(string& name, vector<Territory*> ta, vector<Territory*> td, Hand* c);
     Player(const Player&);                      //Copy Constructor
     ~Player();                                  //Destructor
@@ -45,8 +45,8 @@ public:
     bool isPlayerWasAttacked();
     PlayerStrategy *getPlayerStrategy() const;
     void setPlayerStrategy(PlayerStrategy *playerStrategy);
-    vector<Territory *> toDefend();             //Accessor
-    vector<Territory *> toAttack();             //Accessor
+    void toDefend();             //Accessor
+    void toAttack();             //Accessor
     vector<Territory *> getTerritories();       //Accessor
     void issueOrder(Deck* deck, vector<Player*> players_list);
     OrdersList* getOrderList();                 //Accessor
