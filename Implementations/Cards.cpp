@@ -300,3 +300,21 @@ void Deck::print() {
         cout << *deckCard << endl;
     }
 }
+
+void Deck::fillDeck() {
+    this->deckCards.clear();
+    this->addToDeck(new Card("Bomb"));
+    this->addToDeck(new Card("Blockade"));
+    this->addToDeck(new Card("Airlift"));
+    this->addToDeck(new Card("Diplomacy"));
+    //deck->addToDeck(new Card("Reinforcement"));
+    this->addToDeck(new Card("Bomb"));
+    this->addToDeck(new Card("Blockade"));
+    this->addToDeck(new Card("Airlift"));
+    this->addToDeck(new Card("Diplomacy"));
+    //deck->addToDeck(new Card("Reinforcement"));
+    this->addToDeck(new Card("Bomb"));
+    this->addToDeck(new Card("Blockade"));
+    this->addToDeck(new Card("Airlift"));
+    this->addToDeck(new Card("Diplomacy"));
+}

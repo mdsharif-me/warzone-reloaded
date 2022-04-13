@@ -198,6 +198,7 @@ void GameEngine:: loadAndValidateMap(string& path){
     }
 }
 void GameEngine::gameStart(int maxNumOfTurns) {
+    this->deck->fillDeck();
     for(int i = 0; i < player_list.size();i++){
         //player_list[i]->getPlayerHand()->addToHand(new Card("Reinforcement"));
         player_list[i]->getPlayerHand()->addToHand(new Card("Blockade"));
@@ -354,20 +355,30 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
                 if(maxNoOfTurns < 10 || maxNoOfTurns > 50){
                     throw "Maximum number of turns is less than 10 or greater than 50";
                 }
-                for(int i = 0; i < listOfPlayers.size(); i++){
-                    string playerName = "addplayer player" + to_string(i);
-                    addPlayer(playerName, listOfPlayers[i]);
-                }
-                string results[listOfMaps.size()][numberOfGames];
+                vector<vector<string>> result_;
+
+
                 for(int i = 0; i < listOfMaps.size(); i++) {
                     loadAndValidateMap(listOfMaps[i]);
+                    vector<string> empty_vetor;
+                    result_.push_back(empty_vetor);
                     for (int j = 0; j < numberOfGames; j++) {
+                        cout << "__________________________________________________________________________" << endl;
+                        cout << "GAME " << j+1 << endl;
+                        cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+
+                        for(int i = 0; i < listOfPlayers.size(); i++){
+                            string playerName = "addplayer player" + to_string(i);
+                            addPlayer(playerName, listOfPlayers[i]);
+                        }
                         gameStart(maxNoOfTurns);
+
                         //typeid(player_list.front()->getPlayerStrategy()).name();
-                        results[i][j] = player_list.front()->getPlayerName();
+                        result_[i].push_back(player_list.front()->getPlayerName());
+                        player_list.clear();
                     }
                 }
-
+                results(result_);
             }
             catch (const out_of_range& oor){
                 cout << "COMMAND FAIL: Tournament failed " << oor.what() << endl;
@@ -471,15 +482,16 @@ void GameEngine::transition(const string& state_) {
     LogObserver* logObserver = new LogObserver(subject);
     subject->Notify(this);
 }
-void GameEngine::results(const string **result_, int row, int column) {
+void GameEngine::results(vector<vector<string>> result_) {
     string result;
-    for(int i = 0; i < row; i++){
+    for(int i = 0; i < result_.size(); i++){
         result += "Map " + to_string(i) + "  |  ";
-        for( int j = 0; j < column; j++){
+        for( int j = 0; j < result_[i].size(); j++){
             result += result_[i][j] + "  |  ";
         }
         result += "\n";
     }
+    cout << result << endl;
     Subject* subject = new Subject();
     subject->setMessage("Results: \n" + result);
     LogObserver* logObserver = new LogObserver(subject);

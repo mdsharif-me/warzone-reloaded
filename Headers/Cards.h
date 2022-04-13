@@ -85,6 +85,7 @@ public:
     void print();
     vector<Card *> getDeckCards();
     void setDeckCards(const vector<Card *> &newDeckCards);
+    void fillDeck();
 
 };
 

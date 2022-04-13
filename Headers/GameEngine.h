@@ -33,7 +33,7 @@ public:
     void addPlayer(string command, string strategy);
     void loadAndValidateMap(string& path);
     void gameStart(int);
-    void results(const string** result_, int, int);
+    void results(vector<vector<string>>);
 
 private:
     Map* map;									//initialized Map for the game
