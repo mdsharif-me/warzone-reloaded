@@ -14,13 +14,13 @@ GameEngine::GameEngine(vector<Player*> players_list, Map* map, Deck* deck){
 vector<Player *> GameEngine::getPlayersList() {
     return player_list;
 }
-void GameEngine::mainGameLoop() {
+void GameEngine::mainGameLoop(int maxNumOfTurns) {
 // 1. Round robin fashion in the order setup in startup phase
 // 2. This loop shall continue until only one of the players owns all the terrotires in the map.
 // 3. Also checks if any player does not control at least one territory
 // 4. if so the player is removed from the game.
     int round = 1;
-    while (player_list.size() != 1){
+    while (player_list.size() != 1 && maxNumOfTurns != round){
         cout << "----------------------------------------------------------------------------" << endl;
         cout << "Round " << round << " has Began" << endl;
         cout << "============================================================================" << endl;
@@ -197,7 +197,7 @@ void GameEngine:: loadAndValidateMap(string& path){
         cout << "COMMAND FAIL: Tournament LoadMap failed" << endl;
     }
 }
-void GameEngine::gameStart() {
+void GameEngine::gameStart(int maxNumOfTurns) {
     for(int i = 0; i < player_list.size();i++){
         //player_list[i]->getPlayerHand()->addToHand(new Card("Reinforcement"));
         player_list[i]->getPlayerHand()->addToHand(new Card("Blockade"));
@@ -232,7 +232,7 @@ void GameEngine::gameStart() {
         deck->draw(player);
         deck->draw(player);
     }
-    mainGameLoop();
+    mainGameLoop(maxNumOfTurns);
 }
 void GameEngine::startupPhase(CommandProcessor* cp) {
     transition("start");
@@ -292,7 +292,7 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
         else if(command->getCommand() == "gamestart") {
             if (cp->validate(command->getCommand(), state)) {
                 cout << "GAME STARTING!!" << endl;
-                gameStart();
+                gameStart(-1);
             }
             else{
                 cout << "COMMAND FAIL: gamestart failed" << endl;
@@ -362,7 +362,7 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
                 for(int i = 0; i < listOfMaps.size(); i++) {
                     loadAndValidateMap(listOfMaps[i]);
                     for (int j = 0; j < numberOfGames; j++) {
-                        gameStart();
+                        gameStart(maxNoOfTurns);
                         //typeid(player_list.front()->getPlayerStrategy()).name();
                         results[i][j] = player_list.front()->getPlayerName();
                     }

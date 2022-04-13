@@ -368,93 +368,54 @@ void Aggressive::issueOrder(Deck* deck, vector<Player*> players_list) {
         if (availableOrders.empty()) {
             cout << "Aggressive player: availableOrders is empty" << endl;
             break;
-        } else {
+        }
+        else {
             int orderInt = rand() % availableOrders.size();
             orderString = availableOrders[orderInt];
             if (orderString == "end" && !advancedOrderIssued) {
                 orderString = "Advance";
             }
-
             if (orderString == "end") {
                 cout << "Your turn has now ended." << endl;
                 break;
-            } else if (orderString == "Advance") {
+            }
+            else if (orderString == "Advance") {
                 cout << this->getPlayer()->getPlayerName() << ": chose Advance." << endl;
                 vector<Territory *> startTerritoryUnfriendlyTerritories;
                 // Move armies from the strongest territories to the weakest
-                bool skipAdvanceOrder = false;
                 for (Territory *startTerritory: sortedTerritoriesFromStrongestToWeakest) {
-                    if (startTerritory->getAdjTerritories().empty()) {
-                        cout << "no more territories to advance to" << endl;
-                        skipAdvanceOrder = true;
+                    if (startTerritory->getAdjTerritories().empty() || startTerritory->getArmyCount() == 0) {
+                        cout << "no more territories to advance to or no army at start territory" << endl;
+                        continue;
                     }
-                    if (skipAdvanceOrder) {
-                        break;
-                    }
-                    adjacentTerritories = startTerritory->getAdjTerritories();
-                    for (Territory *temp: adjacentTerritories) {
-                        if (temp->isEnemy(this->getPlayer())) {
-                            startTerritoryUnfriendlyTerritories.push_back(temp);
+                    else {
+                        adjacentTerritories = startTerritory->getAdjTerritories();
+                        for (Territory *temp: adjacentTerritories) {
+                            if (temp->isEnemy(this->getPlayer())) {
+                                startTerritoryUnfriendlyTerritories.push_back(temp);
+                            }
                         }
-                    }
-                    int attempts = 0;
-                    do {
-                        if (attempts == 10) {
-                            skipAdvanceOrder = true;
-                            break;
-                        }
+
                         if (startTerritoryUnfriendlyTerritories.empty()) {
                             cout << "Aggressive player: startTerritoryUnfriendlyTerritories is empty" << endl;
-                            skipAdvanceOrder = true;
+                            continue;
                         } else {
                             territoryToMoveToIndex = rand() % startTerritoryUnfriendlyTerritories.size();
                         }
+                        Territory* targetTerritory = startTerritoryUnfriendlyTerritories[territoryToMoveToIndex];
 
-                        if (skipAdvanceOrder) {
-                            break;
-                        } else {
-                            if (startTerritoryUnfriendlyTerritories[territoryToMoveToIndex]->getOwner()->getPlayerName() !=
-                                this->getPlayer()->getPlayerName()) {
-                                break;
-                            }
-                        }
-                        ++attempts;
-                    } while (true);
+                        numberOfArmies = rand() % startTerritory->getArmyCount() + 1;
 
 
-                    do {
-                        if (skipAdvanceOrder) {
-                            break;
-                        }
-                        if (isStartOfGame()) {
-                            numberOfArmies = 0;
-                            break;
-                        } else {
-                            if (startTerritory->getArmyCount() == 0) {
-                                cout << "Aggressive player: startTerritory army count == 0....skipping order" << endl;
-                                skipAdvanceOrder = true;
-                                break;
-                            } else {
-                                numberOfArmies = rand() % startTerritory->getArmyCount() + 1;
-                                if (numberOfArmies >= 0 && numberOfArmies <= startTerritory->getArmyCount()) {
-                                    break;
-                                }
-                            }
-                        }
-                    } while (true);
-
-                    if (!skipAdvanceOrder) {
-                        auto *advance = new Advance(this->getPlayer(),
-                                                    startTerritory,
-                                                    startTerritoryUnfriendlyTerritories[territoryToMoveToIndex],
-                                                    numberOfArmies);
+                        auto *advance = new Advance(this->getPlayer(), startTerritory, targetTerritory, numberOfArmies);
                         this->getPlayer()->getOrderList()->add(advance);
                         cout << this->getPlayer()->getPlayerName() << ": issued an Advance Order" << endl;
                         cout << this->getPlayer()->getPlayerName() << ": will move " << numberOfArmies << " armies "
-                             << "from " << startTerritory->getTerritoryName() << " to "
-                             << startTerritoryUnfriendlyTerritories[territoryToMoveToIndex]->getTerritoryName() << endl;
+                                 << "from " << startTerritory->getTerritoryName() << " to "
+                                 << startTerritoryUnfriendlyTerritories[territoryToMoveToIndex]->getTerritoryName()
+                                 << endl;
+                        startTerritoryUnfriendlyTerritories.clear();
                     }
-                    startTerritoryUnfriendlyTerritories.clear();
                 }
                 advancedOrderIssued = true;
                 auto it = std::find(availableOrders.begin(), availableOrders.end(), "Advance");
@@ -464,10 +425,8 @@ void Aggressive::issueOrder(Deck* deck, vector<Player*> players_list) {
                     cout << order << ", ";
                 }
                 cout << endl;
-
-
-
-            } else if (orderString == "Bomb") {
+            }
+            else if (orderString == "Bomb") {
                 cout << this->getPlayer()->getPlayerName() << ": chose Bomb." << endl;
                 vector<Territory *> enemyTerritories = this->getPlayer()->getTerritoriesToAttack();
                 bool skipBombOrder = false;
@@ -497,10 +456,8 @@ void Aggressive::issueOrder(Deck* deck, vector<Player*> players_list) {
                     cout << order << ", ";
                 }
                 cout << endl;
-
-
-
-            } else if (orderString == "Airlift") {
+            }
+            else if (orderString == "Airlift") {
                 cout << this->getPlayer()->getPlayerName() << ": chose Airlift." << endl;
                 bool skipAirliftOrder = false;
                 Territory *strongestTerritory = sortedTerritoriesFromStrongestToWeakest[0];
@@ -562,7 +519,8 @@ void Aggressive::issueOrder(Deck* deck, vector<Player*> players_list) {
 
 
 
-            } else if (orderString == "Blockade") {
+            }
+            else if (orderString == "Blockade") {
                 cout << this->getPlayer()->getPlayerName() << ": chose Blockade." << endl;
                 bool skipBlockadeOrder = false;
                 Territory *targetTerritory;
@@ -620,7 +578,8 @@ void Aggressive::issueOrder(Deck* deck, vector<Player*> players_list) {
                 }
                 cout << endl;
 
-            } else if (orderString == "Diplomacy") {
+            }
+            else if (orderString == "Diplomacy") {
                 cout << this->getPlayer()->getPlayerName() << ": chose Diplomacy." << endl;
                 bool skipDiplomacyOrder = false;
                 Player *player;
@@ -721,7 +680,6 @@ void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
 
     cout << this->getPlayer()->getPlayerName() << ": chose Deploy." << endl;
     for (Territory *territory: sortedTerritoriesFromWeakestToStrongest) {
-
         if (reinforcementArmies <= 0) {
             break;
         }
@@ -791,68 +749,38 @@ void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
         else if (orderString == "Advance") {
             cout << this->getPlayer()->getPlayerName() << ": chose Advance." << endl;
             // Move armies from the strongest territories to the weakest
-            bool skipAdvanceOrder = false;
             vector<Territory*> friendlyTerritories;
             for (Territory *startTerritory: sortedTerritoriesFromStrongestToWeakest) {
-                adjacentTerritories = startTerritory->getAdjTerritories();
-                for(Territory* territory: adjacentTerritories) {
-                    if (territory->isAllied(this->getPlayer())) {
-                        friendlyTerritories.push_back(territory);
-                    }
+                if (startTerritory->getAdjTerritories().empty() || startTerritory->getArmyCount() == 0) {
+                    cout << "no more territories to advance to or no army at start territory" << endl;
+                    continue;
                 }
-                int attempts = 0;
-                do {
-                    if (attempts == 10) {
-                        skipAdvanceOrder = true;
-                        break;
-                    }
-                    if (friendlyTerritories.empty()) {
-                        skipAdvanceOrder = true;
-                    } else {
-                        territoryToMoveToIndex = rand() % friendlyTerritories.size();
-                    }
-
-                    if (skipAdvanceOrder) {
-                        break;
-                    } else {
-                        if (friendlyTerritories[territoryToMoveToIndex]->getOwner()->getPlayerName() == this->getPlayer()->getPlayerName()) {
-                            break;
+                else {
+                    adjacentTerritories = startTerritory->getAdjTerritories();
+                    for (Territory *territory: adjacentTerritories) {
+                        if (territory->isAllied(this->getPlayer())) {
+                            friendlyTerritories.push_back(territory);
                         }
                     }
+                    if(friendlyTerritories.empty()) {
+                        cout << "Benevolent player: FriendlyTerritories is empty" << endl;
+                        continue;
+                    }
+                    else{
+                        territoryToMoveToIndex = rand() % friendlyTerritories.size();
+                    }
+                    Territory* targetTerritory = friendlyTerritories[territoryToMoveToIndex];
 
-                    ++attempts;
-                } while (true);
+                    numberOfArmies = rand() % startTerritory->getArmyCount() + 1;
 
-                do {
-                    if (skipAdvanceOrder) {
-                        break;
-                    }
-                    if (isStartOfGame()) {
-                        numberOfArmies = 0;
-                        break;
-                    }
-                    if (startTerritory->getArmyCount() == 0) {
-                        cout << "Benevolent PLayer: startTerritory->getArmyCount() = 0 ... setting army count to 0"<< endl;
-                        numberOfArmies = 0;
-                    } else {
-                        numberOfArmies = rand() % startTerritory->getArmyCount() + 1;
-                    }
-                    if (numberOfArmies >= 0 && numberOfArmies <= startTerritory->getArmyCount()) {
-                        break;
-                    }
-                } while (true);
-
-                if (!skipAdvanceOrder) {
-                    auto *advance = new Advance(this->getPlayer(),
-                                                startTerritory,
-                                                friendlyTerritories[territoryToMoveToIndex], numberOfArmies);
+                    auto *advance = new Advance(this->getPlayer(), startTerritory,targetTerritory, numberOfArmies);
                     this->getPlayer()->getOrderList()->add(advance);
                     cout << this->getPlayer()->getPlayerName() << ": issued an Advance Order" << endl;
                     cout << this->getPlayer()->getPlayerName() << ": will move " << numberOfArmies << " armies "
-                         << "from " << startTerritory->getTerritoryName() << " to " << friendlyTerritories[territoryToMoveToIndex]->getTerritoryName() << endl;
+                             << "from " << startTerritory->getTerritoryName() << " to "
+                             << friendlyTerritories[territoryToMoveToIndex]->getTerritoryName() << endl;
+                    friendlyTerritories.clear();
                 }
-                friendlyTerritories.clear();
-                skipAdvanceOrder = false;
                 auto it = std::find(availableOrders.begin(), availableOrders.end(), "Advance");
                 if (it != availableOrders.end()) {availableOrders.erase(it);}
                 cout << "Available Orders: ";

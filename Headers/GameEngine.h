@@ -13,7 +13,7 @@ public:
     ~GameEngine();
     GameEngine(const GameEngine&);
     void startupPhase(CommandProcessor* cp); //Assignment 2 Part 2
-    void mainGameLoop(); //Assignment 2 Part 3
+    void mainGameLoop(int); //Assignment 2 Part 3
     void reinforcementPhase(); //Assignment 2 Part 3
     void issueOrdersPhase(); //Assingment 2 Part 3
     void executeOrderPhase(); //Assignment 2 Part 3
@@ -32,7 +32,7 @@ public:
     void transition(const string& state_);
     void addPlayer(string command, string strategy);
     void loadAndValidateMap(string& path);
-    void gameStart();
+    void gameStart(int);
     void results(const string** result_, int, int);
 
 private:
