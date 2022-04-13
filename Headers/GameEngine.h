@@ -34,7 +34,7 @@ public:
     void loadAndValidateMap(string& path);
     void gameStart(int, bool);
     void results(vector<vector<string>>);
-
+    void tournamentSettings(string&, string&, int, int);
 private:
     Map* map;									//initialized Map for the game
     vector<Player*> player_list;				//initialized Player Array for the gamePlayer array

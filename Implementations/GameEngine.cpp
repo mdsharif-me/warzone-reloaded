@@ -328,12 +328,12 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
                 int listOfMapFilesEndIndex = command->getCommand().find(" -P");
                 string listOfMapFiles = command->getCommand().substr(listOfMapsFilesStartIndex + 2,listOfMapFilesEndIndex - listOfMapsFilesStartIndex - 2);
                 cout << "List of Map Files: " << listOfMapFiles << endl;
-
+                string maps = listOfMapFiles;
                 int listOfPlayersStratStartIndex = command->getCommand().find("-P ");
                 int listOfPlayersStratEndIndex = command->getCommand().find(" -G");
                 string listOfPlayersStrat = command->getCommand().substr(listOfPlayersStratStartIndex + 2,listOfPlayersStratEndIndex - listOfPlayersStratStartIndex - 2);
                 cout << "List of Player Strategies: " << listOfPlayersStrat << endl;
-
+                string players = listOfPlayersStrat;
                 int numberOfGamesStartIndex = command->getCommand().find("-G ");
                 int numberOfGamesEndIndex = command->getCommand().find(" -D");
                 int numberOfGames = stoi(command->getCommand().substr(numberOfGamesStartIndex + 3,numberOfGamesEndIndex - numberOfGamesStartIndex - 3));
@@ -381,8 +381,8 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
 
                 for(int i = 0; i < listOfMaps.size(); i++) {
                     loadAndValidateMap(listOfMaps[i]);
-                    vector<string> empty_vetor;
-                    result_.push_back(empty_vetor);
+                    vector<string> empty_vector;
+                    result_.push_back(empty_vector);
                     for (int j = 0; j < numberOfGames; j++) {
                         cout << "__________________________________________________________________________" << endl;
                         cout << "GAME " << j+1 << endl;
@@ -416,6 +416,7 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
                         player_list.clear();
                     }
                 }
+                tournamentSettings(maps, players, numberOfGames, maxNoOfTurns);
                 results(result_);
             }
             catch (const out_of_range& oor){
@@ -535,6 +536,16 @@ void GameEngine::results(vector<vector<string>> result_) {
     LogObserver* logObserver = new LogObserver(subject);
     subject->Notify(this);
 }
+void GameEngine::tournamentSettings(string& mapList, string& playerList, int numberOfGames, int maxNum) {
+    string result = "Tournament mode: \n" ;
+    result += "M: "+ mapList + "\nP: " + playerList + "\nG: " + to_string(numberOfGames) + "\nD: " + to_string(maxNum);
+    cout << result << endl;
+    Subject* subject = new Subject();
+    subject->setMessage("Results: \n" + result);
+    LogObserver* logObserver = new LogObserver(subject);
+    subject->Notify(this);
+}
+
 
 
 
