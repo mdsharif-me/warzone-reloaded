@@ -38,6 +38,10 @@ public:
 };
 
 
+class Player;
+class Deck;
+class Territory;
+
 /**
  * Implementation of Human class
  */
