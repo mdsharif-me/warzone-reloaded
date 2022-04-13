@@ -955,10 +955,18 @@ void Cheater::issueOrder(Deck* deck, vector<Player*> players_list) {
     enemyPlayer->setPlayerWasAttacked(true);
     this->getPlayer()->addTerritory(territory);
     this->getPlayer()->setNewTerritoryConquered(true);
+    cout << this->getPlayer()->getPlayerName() << " has acquired new territory: " << territory->getTerritoryName() << endl;
 }
 void Cheater::toAttack() {
     vector<Territory*> enemyTerritories = this->getPlayer()->get_neighbour_territories(this->getPlayer());
-    this->getPlayer()->setTerritoriesToAttack(enemyTerritories);
+    vector<Territory*> unfriendlyTerritories;
+    for(Territory* temp: enemyTerritories) {
+        if (temp->isEnemy(this->getPlayer())) {
+            unfriendlyTerritories.push_back(temp);
+        }
+    }
+
+    this->getPlayer()->setTerritoriesToAttack(unfriendlyTerritories);
 }
 void Cheater::toDefend() {
     vector<Territory*> defendTerritories = this->getPlayer()->getTerritories();
