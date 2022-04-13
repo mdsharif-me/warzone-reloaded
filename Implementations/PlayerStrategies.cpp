@@ -87,7 +87,7 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
     //this->getPlayer()->setReinforcementPool(0); // We do not need to do this, because execute() in deploy class does it for us.
     cout << "Deployment Order is complete, now other orders can be issued" << endl;
     // Other orders
-    cout << "Available Orders: Advance, Bomb, Airlift, Blockade, Negotiate" << endl;
+    cout << "Available Orders: Advance, Bomb, Airlift, Blockade, Diplomacy" << endl;
     while(true) {
         cout << "Select your next order (type 'end' to end your turn)." << endl;
         string orderString; cin >> orderString;
@@ -212,7 +212,7 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
                 cout << "Invalid Blockade order" << endl;
             }
         }
-        else if (orderString == "Negotiate") {
+        else if (orderString == "Diplomacy") {
             cout << "Select the target Player number from the following Players" << endl;
             for (int i = 0; i < players_list.size(); i++) {
                 if(this->getPlayer() != players_list[i]) {
@@ -537,7 +537,7 @@ void Aggressive::issueOrder(Deck* deck, vector<Player*> players_list) {
                 cout << this->getPlayer()->getPlayerName() << ": issued a Blockade Order against " << targetTerritory->getTerritoryName() << endl;
             }
         }
-        else if (orderString == "Negotiate") {
+        else if (orderString == "Diplomacy") {
             Player* player;
             do {
                 int playerInt = rand() % players_list.size();
@@ -822,7 +822,7 @@ void Benevolent::issueOrder(Deck* deck, vector<Player*> players_list) {
                 }
             }
         }
-        else if (orderString == "Negotiate") {
+        else if (orderString == "Diplomacy") {
             Player* player;
             do {
                 if (!players_list.empty()) {

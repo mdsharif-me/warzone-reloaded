@@ -77,7 +77,7 @@ int main() {
 
 
     vector<Player*> playerslist;
-    playerslist.push_back(cheaterEnemyPlayer);
+    playerslist.push_back(benevolentEnemyPlayer);
     playerslist.push_back(aggressiveEnemyPlayer);
 
     //*********************************************************************
@@ -121,15 +121,16 @@ int main() {
 
     playerslist[0]->setTerritories(playerTerritories);
     playerslist[0]->setReinforcementPool(10);
-    playerslist[0]->getPlayerHand()->addToHand(bomb);
+    playerslist[0]->getPlayerHand()->addToHand(diplomacy);
 
 
     playerslist[1]->setTerritories(enemyTerritories);
     playerslist[1]->setReinforcementPool(10);
-    playerslist[1]->getPlayerHand()->addToHand(airlift);
+    playerslist[1]->getPlayerHand()->addToHand(diplomacy);
+
 
     int turn = 0;
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 6; i++) {
         playerslist[0]->issueOrder(deck, playerslist);
         vector <Order* > aggressive_player_orders = playerslist[0]->getOrderList()->getOrders();
         for(Order* order: aggressive_player_orders) { order->execute();}
