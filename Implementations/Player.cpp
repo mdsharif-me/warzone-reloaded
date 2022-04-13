@@ -156,8 +156,7 @@ void Player::setPlayerWasAttacked(bool wasAttacked) {
     this->playerWasAttacked = wasAttacked;
 }
 
-void Player::toDefend()
-{
+void Player::toDefend(){
     playerStrategy->toDefend();
 }
 void Player::toAttack(){

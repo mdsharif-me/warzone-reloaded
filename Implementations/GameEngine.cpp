@@ -131,6 +131,9 @@ void GameEngine::executeOrderPhase() {
     // 6. This means you for loop all the deplot order from each player first.
     // 7. Once all the order for all player are executed return back to the reinforcementPhase.
     for(Player* player: this->getPlayersList()) {
+        cout << "----------------------------------------------------------------------------" << endl;
+        cout << player->getPlayerName() << " ORDER EXECUTION taking place!!" << endl;
+        cout << "============================================================================" << endl;
         vector<Order* > orders = player->getOrderList()->getOrders();
         for(Order* order: orders) {
             if (dynamic_cast<const Deploy*>(order) != nullptr) {
