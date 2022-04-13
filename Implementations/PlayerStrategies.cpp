@@ -635,25 +635,10 @@ void Aggressive::issueOrder(Deck* deck, vector<Player*> players_list) {
 void Aggressive::toAttack() {
     // ToAttack has order  of territories from weakest to strongest
     vector<Territory*> enemyTerritories = this->getPlayer()->get_neighbour_territories(this->getPlayer());
-    // TODO: is it needed?
-    /*if(isStartOfGame()){
-        int number = this->getPlayer()->getReinforcementPool() / enemyTerritories.size();
-        int counter = 0;
-        for (int i = 0; i < enemyTerritories.size(); i++) {
-            this->getPlayer()->getTerritories()[i]->setArmyCount(number);
-            this->getPlayer()->setReinforcementPool(this->getPlayer()->getReinforcementPool() - number);
-        }
-        int remainder = this->getPlayer()->getReinforcementPool() % this->getPlayer()->getTerritories().size();
-        if (remainder != 0) {
-            int currentArmyCount = this->getPlayer()->getTerritories()[0]->getArmyCount();
-            this->getPlayer()->getTerritories()[0]->setArmyCount(currentArmyCount + remainder);
-        }
-    }*/
     this->getPlayer()->setTerritoriesToAttack(enemyTerritories);
 
 }
 void Aggressive::toDefend() {
-    //TODO:
     // ToDefend has order  of territories from weakest to strongest
     vector<Territory*> allTerritories = this->getPlayer()->getTerritories();
     int reinforcementPool = this->getPlayer()->getReinforcementPool();

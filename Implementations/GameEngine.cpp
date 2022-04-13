@@ -203,6 +203,7 @@ void GameEngine::gameStart() {
         player_list[i]->getPlayerHand()->addToHand(new Card("Blockade"));
         player_list[i]->getPlayerHand()->addToHand(new Card("Airlift"));
         player_list[i]->getPlayerHand()->addToHand(new Card("Diplomacy"));
+        player_list[i]->getPlayerHand()->addToHand(new Card("Bomb"));
     }
     int number = map->getTerritories().size() / player_list.size();
     int counter = 0;
