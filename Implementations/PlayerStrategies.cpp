@@ -138,14 +138,14 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
                 string bomb = "Bomb";
                 int index = this->getPlayer()->getPlayerHand()->findCard(bomb);
                 // playing the card from hand
-                if(index != -1)
+                if(index != -1) {
                     // the order is issued by the play method in card class
                     this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
                                                                                     this->getPlayer()->getTerritoriesToAttack()[indexToBomb]);
-                    //Bomb *bomb = new Bomb(this, this->toAttack()[indexToBomb]);
-                    //orderList->add(bomb);
-                else
+                }
+                else {
                     cout << "You do not have any bomb cards!" << endl;
+                }
             } else {
                 cout << "Invalid Bomb order" << endl;
             }
@@ -169,17 +169,16 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
                 string airlift = "Airlift";
                 int index = this->getPlayer()->getPlayerHand()->findCard(airlift);
                 // playing the card from hand
-                if(index != -1)
+                if(index != -1) {
                     // the order is issued in the play method on card class
                     this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
                                                                                     this->getPlayer()->getTerritoriesToDefend()[indexToAirliftFrom],
                                                                                     this->getPlayer()->getTerritoriesToDefend()[indexToAirliftTo],
                                                                                     armyNo);
-                    //auto *airlift = new Airlift(this, this->toDefend()[indexToAirliftFrom],
-                    //                            this->toDefend()[indexToAirliftTo], armyNo);
-                    //orderList->add(airlift);
-                else
+                }
+                else {
                     cout << "You do not have any Airlift cards!" << endl;
+                }
             } else {
                 cout << "Invalid Airlift order" << endl;
             }
@@ -199,14 +198,15 @@ void Human::issueOrder(Deck* deck, vector<Player*> players_list) {
                     string blockade = "blockade";
                     int index = this->getPlayer()->getPlayerHand()->findCard(blockade);
                     // playing the card from hand
-                    if (index != -1)
+                    if (index != -1) {
                         // order is issued in play method of class card
                         this->getPlayer()->getPlayerHand()->getHandCards()[index]->play(this->getPlayer(), deck,
                                                                                         this->getPlayer()->getTerritoriesToDefend()[indexToBlockade]);
-                        //auto *blockade = new Blockade(this, this->toDefend()[indexToBlockade]);
-                        //orderList->add(blockade);
-                    else
+                    }
+
+                    else {
                         cout << "You do not have any Blockade cards!" << endl;
+                    }
                 }
             } else {
                 cout << "Invalid Blockade order" << endl;
