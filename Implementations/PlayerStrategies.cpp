@@ -951,6 +951,7 @@ ostream &operator<<(ostream& os, const Cheater &cheater) {
 void Cheater::issueOrder(Deck* deck, vector<Player*> players_list) {
     Territory* territory = this->getPlayer()->getTerritoriesToAttack().front();
     Player* enemyPlayer = territory->getOwner();
+    territory->setArmyCount(0);
     enemyPlayer->removeTerritory(territory);
     enemyPlayer->setPlayerWasAttacked(true);
     this->getPlayer()->addTerritory(territory);
