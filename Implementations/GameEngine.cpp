@@ -20,7 +20,7 @@ void GameEngine::mainGameLoop(int maxNumOfTurns, bool tournamentMode) {
 // 3. Also checks if any player does not control at least one territory
 // 4. if so the player is removed from the game.
     int round = 1;
-    while (player_list.size() != 1 && maxNumOfTurns != round){
+    while (player_list.size() != 1 && maxNumOfTurns + 1 != round){
         cout << "----------------------------------------------------------------------------" << endl;
         cout << "Round " << round << " has Began" << endl;
         cout << "============================================================================" << endl;
@@ -47,16 +47,22 @@ void GameEngine::mainGameLoop(int maxNumOfTurns, bool tournamentMode) {
             cout << player->getPlayerName() << " has " << counter << " territories in round " << maxNumOfTurns << endl;
             numbers.push_back(counter);
         }
-        int greatest = 0;
-        int greatestIndex = 0;
-        for(int i = 0; i < numbers.size(); i++){
-            if(greatest < numbers[i]){
-                greatest = numbers[i];
-                greatestIndex = i;
-            }
+//        int greatest = 0;
+//        int greatestIndex = 0;
+//        for(int i = 0; i < numbers.size(); i++){
+//            if(greatest < numbers[i]){
+//                greatest = numbers[i];
+//                greatestIndex = i;
+//            }
+//        }
+        if(player_list.size() == 1){
+            cout << player_list.front()->getPlayerName() << "wins!!" << endl;
+            winnerIndex = 0;
         }
-        cout << player_list[greatestIndex]->getPlayerName() << "wins!!" << endl;
-        winnerIndex = greatestIndex;
+        else {
+            cout << "The game was a draw!!" << endl;
+            winnerIndex = -1;
+        }
     }
     else{
         cout << player_list.front()->getPlayerName() << "wins!!" << endl;
@@ -202,7 +208,7 @@ void GameEngine::addPlayer(string command, string strategy){
         cout << "MAX PLAYER LIST REACHED : Cannot add more players";
     }
 }
-void GameEngine:: loadAndValidateMap(string& path){
+bool GameEngine:: loadAndValidateMap(string& path){
     MapLoader mapLoader(path);
     if (mapLoader.extract()) {
         this->map = mapLoader.createMap();
@@ -210,12 +216,15 @@ void GameEngine:: loadAndValidateMap(string& path){
         if (map->mapValidate()) {
             cout << "\nSuccess: Map \"" << path << "\" has been built.\n\n";
             transition("mapvalidated");
+            return true;
         } else {
+            return false;
             cout << "\nError: Map file \"" << path << "\" is invalid.\n\n";
             exit(0);
         }
     } else {
         cout << "COMMAND FAIL: Tournament LoadMap failed" << endl;
+        return false;
     }
 }
 void GameEngine::gameStart(int maxNumOfTurns, bool tournamentMode) {
@@ -321,109 +330,129 @@ void GameEngine::startupPhase(CommandProcessor* cp) {
             }
         }
         else if(command->getCommand().find("tournament") != string::npos){
-            try {
-                vector<string> listOfMaps;
-                vector<string> listOfPlayers;
-                int listOfMapsFilesStartIndex = command->getCommand().find("-M ");
-                int listOfMapFilesEndIndex = command->getCommand().find(" -P");
-                string listOfMapFiles = command->getCommand().substr(listOfMapsFilesStartIndex + 2,listOfMapFilesEndIndex - listOfMapsFilesStartIndex - 2);
-                cout << "List of Map Files: " << listOfMapFiles << endl;
-                string maps = listOfMapFiles;
-                int listOfPlayersStratStartIndex = command->getCommand().find("-P ");
-                int listOfPlayersStratEndIndex = command->getCommand().find(" -G");
-                string listOfPlayersStrat = command->getCommand().substr(listOfPlayersStratStartIndex + 2,listOfPlayersStratEndIndex - listOfPlayersStratStartIndex - 2);
-                cout << "List of Player Strategies: " << listOfPlayersStrat << endl;
-                string players = listOfPlayersStrat;
-                int numberOfGamesStartIndex = command->getCommand().find("-G ");
-                int numberOfGamesEndIndex = command->getCommand().find(" -D");
-                int numberOfGames = stoi(command->getCommand().substr(numberOfGamesStartIndex + 3,numberOfGamesEndIndex - numberOfGamesStartIndex - 3));
-                cout <<"Tournament >> Number of Games: " << numberOfGames << endl;
+            if (cp->validate(command->getCommand(), state)) {
+                try {
+                    vector<string> listOfMaps;
+                    vector<string> listOfPlayers;
+                    int listOfMapsFilesStartIndex = command->getCommand().find("-M ");
+                    int listOfMapFilesEndIndex = command->getCommand().find(" -P");
+                    string listOfMapFiles = command->getCommand().substr(listOfMapsFilesStartIndex + 2,
+                                                                         listOfMapFilesEndIndex -
+                                                                         listOfMapsFilesStartIndex - 2);
+                    cout << "List of Map Files: " << listOfMapFiles << endl;
+                    string maps = listOfMapFiles;
+                    int listOfPlayersStratStartIndex = command->getCommand().find("-P ");
+                    int listOfPlayersStratEndIndex = command->getCommand().find(" -G");
+                    string listOfPlayersStrat = command->getCommand().substr(listOfPlayersStratStartIndex + 2,
+                                                                             listOfPlayersStratEndIndex -
+                                                                             listOfPlayersStratStartIndex - 2);
+                    cout << "List of Player Strategies: " << listOfPlayersStrat << endl;
+                    string players = listOfPlayersStrat;
+                    int numberOfGamesStartIndex = command->getCommand().find("-G ");
+                    int numberOfGamesEndIndex = command->getCommand().find(" -D");
+                    int numberOfGames = stoi(command->getCommand().substr(numberOfGamesStartIndex + 3,
+                                                                          numberOfGamesEndIndex -
+                                                                          numberOfGamesStartIndex - 3));
+                    cout << "Tournament >> Number of Games: " << numberOfGames << endl;
 
-                int maxNoOfTurnsStartIndex = command->getCommand().find("-D ");
-                int maxNoOfTurns = stoi(command->getCommand().substr(maxNoOfTurnsStartIndex + 3));
-                cout << "Tournament >> Maximum number of Turns per player: " << maxNoOfTurns << endl;
+                    int maxNoOfTurnsStartIndex = command->getCommand().find("-D ");
+                    int maxNoOfTurns = stoi(command->getCommand().substr(maxNoOfTurnsStartIndex + 3));
+                    cout << "Tournament >> Maximum number of Turns per player: " << maxNoOfTurns << endl;
 
-                //Splitting listOfMapsFiles
-                int pos = 0;
-                std::string token;
-                while ((pos = listOfMapFiles.find(", ")) != std::string::npos) {
-                    token = listOfMapFiles.substr(1, pos-1);
-                    listOfMaps.push_back(token);
-                    listOfMapFiles.erase(0, pos + 1);
-                }
-                if ((pos = listOfMapFiles.find(",")) == std::string::npos){
-                    listOfMaps.push_back(listOfMapFiles.substr(pos+2));
-                }
-                if(listOfMaps.size() > 5 || listOfMaps.size() <= 0){
-                    throw "Number of Maps: greater than 5 or less than 1";
-                }
-                //Splitting players
-                pos = 0;
-                while ((pos = listOfPlayersStrat.find(", ")) != std::string::npos) {
-                    token = listOfPlayersStrat.substr(1, pos-1);
-                    listOfPlayers.push_back(token);
-                    listOfPlayersStrat.erase(0, pos + 1);
-                }
-                if ((pos = listOfPlayersStrat.find(", ")) == std::string::npos){
-                    listOfPlayers.push_back(listOfPlayersStrat.substr(pos+2));
-                }
-                if(listOfPlayers.size() < 2 || listOfPlayers.size() > 4){
-                    throw "Number of Players less than 2 or greater than 4";
-                }
-                if(numberOfGames < 1 || numberOfGames > 5){
-                    throw "Number of games less than 1 or greater than 5";
-                }
-                if(maxNoOfTurns < 10 || maxNoOfTurns > 50){
-                    throw "Maximum number of turns is less than 10 or greater than 50";
-                }
-                vector<vector<string>> result_;
-
-
-                for(int i = 0; i < listOfMaps.size(); i++) {
-                    loadAndValidateMap(listOfMaps[i]);
-                    vector<string> empty_vector;
-                    result_.push_back(empty_vector);
-                    for (int j = 0; j < numberOfGames; j++) {
-                        cout << "__________________________________________________________________________" << endl;
-                        cout << "GAME " << j+1 << endl;
-                        cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-
-                        for(int i = 0; i < listOfPlayers.size(); i++){
-                            string playerName = "addplayer player" + to_string(i);
-                            addPlayer(playerName, listOfPlayers[i]);
-                        }
-                        gameStart(maxNoOfTurns, true);
-
-                        //typeid(player_list.front()->getPlayerStrategy()).name();
-                        //result_[i].push_back(player_list[winnerIndex]->getPlayerName());
-                        string type;
-                        if (dynamic_cast<Human*>(player_list[winnerIndex]->getPlayerStrategy()) != nullptr){
-                            type = "Human";
-                        }
-                        else if (dynamic_cast<Aggressive*>(player_list[winnerIndex]->getPlayerStrategy()) != nullptr){
-                            type = "Aggressive";
-                        }
-                        else if (dynamic_cast<Benevolent*>(player_list[winnerIndex]->getPlayerStrategy()) != nullptr){
-                            type = "Benevolent";
-                        }
-                        else if (dynamic_cast<Cheater*>(player_list[winnerIndex]->getPlayerStrategy()) != nullptr){
-                            type = "Cheater";
-                        }
-                        else if (dynamic_cast<Neutral*>(player_list[winnerIndex]->getPlayerStrategy()) != nullptr){
-                            type = "Neutral";
-                        }
-                        result_[i].push_back(type);
-                        player_list.clear();
+                    //Splitting listOfMapsFiles
+                    int pos = 0;
+                    std::string token;
+                    while ((pos = listOfMapFiles.find(", ")) != std::string::npos) {
+                        token = listOfMapFiles.substr(1, pos - 1);
+                        listOfMaps.push_back(token);
+                        listOfMapFiles.erase(0, pos + 1);
                     }
+                    if ((pos = listOfMapFiles.find(",")) == std::string::npos) {
+                        listOfMaps.push_back(listOfMapFiles.substr(pos + 2));
+                    }
+                    if (listOfMaps.size() > 5 || listOfMaps.size() <= 0) {
+                        throw "Number of Maps: greater than 5 or less than 1";
+                    }
+                    //Splitting players
+                    pos = 0;
+                    while ((pos = listOfPlayersStrat.find(", ")) != std::string::npos) {
+                        token = listOfPlayersStrat.substr(1, pos - 1);
+                        listOfPlayers.push_back(token);
+                        listOfPlayersStrat.erase(0, pos + 1);
+                    }
+                    if ((pos = listOfPlayersStrat.find(", ")) == std::string::npos) {
+                        listOfPlayers.push_back(listOfPlayersStrat.substr(pos + 2));
+                    }
+                    if (listOfPlayers.size() < 2 || listOfPlayers.size() > 4) {
+                        throw "Number of Players less than 2 or greater than 4";
+                    }
+                    if (numberOfGames < 1 || numberOfGames > 5) {
+                        throw "Number of games less than 1 or greater than 5";
+                    }
+                    if (maxNoOfTurns < 10 || maxNoOfTurns > 50) {
+                        throw "Maximum number of turns is less than 10 or greater than 50";
+                    }
+                    vector<vector<string>> result_;
+
+                    for (int i = 0; i < listOfMaps.size(); i++) {
+                        if (loadAndValidateMap(listOfMaps[i])) {
+                            vector<string> empty_vector;
+                            result_.push_back(empty_vector);
+                            for (int j = 0; j < numberOfGames; j++) {
+                                cout << "__________________________________________________________________________"
+                                     << endl;
+                                cout << "GAME " << j + 1 << endl;
+                                cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+                                     << endl;
+
+                                for (int i = 0; i < listOfPlayers.size(); i++) {
+                                    string playerName = "addplayer player" + to_string(i);
+                                    addPlayer(playerName, listOfPlayers[i]);
+                                }
+                                gameStart(maxNoOfTurns, true);
+
+                                string type;
+                                if (winnerIndex == -1) {
+                                    type = "Draw";
+                                } else {
+                                    if (dynamic_cast<Human *>(player_list[winnerIndex]->getPlayerStrategy()) !=
+                                        nullptr) {
+                                        type = "Human";
+                                    } else if (
+                                            dynamic_cast<Aggressive *>(player_list[winnerIndex]->getPlayerStrategy()) !=
+                                            nullptr) {
+                                        type = "Aggressive";
+                                    } else if (
+                                            dynamic_cast<Benevolent *>(player_list[winnerIndex]->getPlayerStrategy()) !=
+                                            nullptr) {
+                                        type = "Benevolent";
+                                    } else if (dynamic_cast<Cheater *>(player_list[winnerIndex]->getPlayerStrategy()) !=
+                                               nullptr) {
+                                        type = "Cheater";
+                                    } else if (dynamic_cast<Neutral *>(player_list[winnerIndex]->getPlayerStrategy()) !=
+                                               nullptr) {
+                                        type = "Neutral";
+                                    }
+                                }
+                                result_[i].push_back(type);
+                                player_list.clear();
+                            }
+                        } else {
+                            cout << "COMMAND FAIL: tournament failed" << endl;
+                        }
+                    }
+                    tournamentSettings(maps, players, numberOfGames, maxNoOfTurns);
+                    results(result_);
                 }
-                tournamentSettings(maps, players, numberOfGames, maxNoOfTurns);
-                results(result_);
+                catch (const out_of_range &oor) {
+                    cout << "COMMAND FAIL: Tournament failed " << oor.what() << endl;
+                }
+                catch (const char *msg) {
+                    cout << "ERROR: " << msg << endl;
+                }
             }
-            catch (const out_of_range& oor){
-                cout << "COMMAND FAIL: Tournament failed " << oor.what() << endl;
-            }
-            catch (const char* msg){
-                cout << "ERROR: " << msg << endl;
+            else{
+                cout << "COMMAND FAIL: tournament failed" << endl;
             }
         }
         else{

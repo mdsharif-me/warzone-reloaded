@@ -97,6 +97,9 @@ bool CommandProcessor::validate(const string& command,const string& currentState
             }
 		}
 	}
+    if(command.find("tournament") != string::npos && currentState == "start"){
+        return true;
+    }
 	return false;
 }
 

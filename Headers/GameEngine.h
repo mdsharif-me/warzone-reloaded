@@ -31,7 +31,7 @@ public:
     void stringToLog(const std::string& message) override;
     void transition(const string& state_);
     void addPlayer(string command, string strategy);
-    void loadAndValidateMap(string& path);
+    bool loadAndValidateMap(string& path);
     void gameStart(int, bool);
     void results(vector<vector<string>>);
     void tournamentSettings(string&, string&, int, int);
